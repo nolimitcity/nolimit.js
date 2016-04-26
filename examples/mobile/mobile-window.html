@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Mobile Example - Smooth Operator</title>
+        <link type="image/x-icon" rel="shortcut icon" href="../../favicon.ico">
+
+        <style>
+            html, body {
+                margin: 0;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+
+    </head>
+    <body>
+        <script src="../../dist/nolimit-1.0.0.js"></script>
+        <script>
+            var gameName = 'CreepyCarnival';
+
+            var game = nolimit.load({
+                operator: 'FAKE1',
+                game: gameName,
+                device: 'mobile'
+            });
+
+            game.on('exit', function () {
+                history.back();
+            });
+
+            game.on('ready', function () {
+                console.log(gameName, 'is loaded');
+            });
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Iframe Example - Smooth Operator</title>
+        <link type="image/x-icon" rel="shortcut icon" href="../../favicon.ico">
+
+        <style>
+            html, body {
+                width: 100%;
+                height: 100%;
+            }
+
+            body, #container {
+                display: -ms-flexbox;
+                display: -webkit-flex;
+                display: flex;
+                -ms-flex-align: center;
+                -webkit-align-items: center;
+                align-items: center;
+                -ms-flex-pack: center;
+                -webkit-justify-content: center;
+                justify-content: center;
+            }
+
+            #game {
+                width: 800px;
+                height: 600px;
+            }
+        </style>
+
+    </head>
+    <body>
+        <div id="container">
+            <button id="iframe" type="button">Start Game in Iframe</button>
+        </div>
+
+        <script src="../../dist/nolimit-1.0.0.js"></script>
+
+        <script>
+            var gameName = 'CreepyCarnival';
+
+            nolimit.init({
+                operator: 'FAKE1',
+                environment: 'home'
+            });
+
+            function openGame() {
+                var gameElement = document.createElement('div');
+                gameElement.id = 'game';
+
+                document.getElementById('container').appendChild(gameElement);
+                document.getElementById('iframe').style.display = 'none';
+
+                var game = nolimit.load({
+                    target: gameElement,
+                    game: gameName
+                });
+
+                game.on('exit', function () {
+                    document.getElementById('container').removeChild(gameElement);
+                    document.getElementById('iframe').style.display = 'inline-block';
+                });
+
+                game.on('ready', function () {
+                    console.log(gameName, 'is loaded');
+                });
+            }
+
+            document.getElementById('iframe').addEventListener('click', openGame);
+
+        </script>
+    </body>
+</html>

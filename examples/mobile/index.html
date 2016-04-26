@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Mobile Example - Smooth Operator</title>
+        <link type="image/x-icon" rel="shortcut icon" href="../../favicon.ico">
+
+        <style>
+            h1, div {
+                text-align: center;
+            }
+
+        </style>
+
+    </head>
+    <body>
+        <h1>Smooth Operator</h1>
+        <div id="container">
+            <button id="replace" type="button">Start Game in Whole Window</button>
+        </div>
+        <script>
+            document.querySelector('#replace').addEventListener('click', function () {
+                location.href = 'mobile-window.html';
+            });
+        </script>
+    </body>
+</html>
