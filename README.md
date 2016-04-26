@@ -10,7 +10,7 @@ The operator makes all the design and layout, and will only need to provide a ta
 
 ## Load and initialize
 
-**nolimit.js** is available with sourcemap and some logging as `nolimit-VERSION.js` and as minified as `nolimit-VERSION.min.js` at *\[URL to be decided]*.
+**nolimit.js** is available with sourcemap and some logging as `nolimit-VERSION.js` or as minified as `nolimit-VERSION.min.js` at http://nolimitcity.github.io/nolimit.js/.
 
 **nolimit.js** files are packaged as [UMD](https://github.com/umdjs/umd), meaning it can be loaded using [CommonJS](http://wiki.commonjs.org/wiki/CommonJS) such as [Browserify](http://browserify.org/), [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) such as [RequireJS](http://requirejs.org/) or just standalone with a regular `<script>` tag.
 
