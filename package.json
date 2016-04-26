@@ -1,0 +1,43 @@
+{
+  "name": "@nolimit/nolimit.js",
+  "version": "1.0.0",
+  "description": "Javascript game loader and API for operators",
+  "scripts": {
+    "dist": "npm run dist-dev && npm run dist-min",
+    "dist-dev": "browserify src/nolimit.js --standalone nolimit --debug -t partialify -o www/dist/nolimit-$npm_package_version.js",
+    "dist-min": "browserify src/nolimit.js --standalone nolimit -t partialify -t stripify -t uglifyify -o www/dist/nolimit-$npm_package_version.min.js",
+    "postdist": "npm run jsdoc",
+    "jsdoc": "jsdoc -t node_modules/minami -q title=nolimit.js -d www/jsdoc package.json src/*.js README.md",
+    "postjsdoc": "git add www/jsdoc/@nolimit/nolimit.js/$npm_package_version",
+    "lint": "jshint src/*.js",
+    "preversion": "npm run lint",
+    "version": "npm run dist && git add www/dist/nolimit-$npm_package_version*.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "www": "git subtree push --prefix www origin gh-pages"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nolimitcity/nolimit.js.git"
+  },
+  "author": "Nolimit",
+  "bugs": {
+    "url": "https://github.com/nolimitcity/nolimit.js/issues"
+  },
+  "main": "src/nolimit.js",
+  "homepage": "https://github.com/nolimitcity/nolimit.js#readme",
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "browserify-versionify": "^1.0.6",
+    "jsdoc": "^3.4.0",
+    "jshint": "^2.9.2",
+    "minami": "kribblo/minami",
+    "partialify": "^3.1.6",
+    "stripify": "^4.0.0",
+    "uglifyify": "^3.0.1"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-versionify"
+    ]
+  }
+}

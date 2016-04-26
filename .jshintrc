@@ -1,0 +1,17 @@
+{
+    "bitwise": true,
+    "browser": true,
+    "browserify": true,
+    "curly": true,
+    "devel": true,
+    "eqeqeq": true,
+    "quotmark": "single",
+    "singleGroups": true,
+    "strict": true,
+    "undef": true,
+    "unused": true,
+    "globals": {
+        "require": true,
+        "module": true
+    }
+}
