@@ -32,7 +32,6 @@ var nolimit = {
      */
     init: function (options) {
         this.options = options;
-        console.log('nolimit.init', options);
     },
 
 
@@ -138,15 +137,16 @@ function html(window, options) {
     var cdn = CDN.replace('{ENV}', options.environment);
     loaderElement.src = LOADER_URL.replace('{CDN}', cdn).replace('{DEVICE}', options.device);
 
-    var optionsElement = document.createElement('script');
+    window.nolimit = window.nolimit || {};
+    
+    window.nolimit.options = options;
 
-    delete options.target;
-    var jsonOptions = JSON.stringify(options);
-
-    console.log('nolimit.options', options);
-
-    optionsElement.textContent = 'window.nolimit = window.nolimit || {}; window.nolimit.options = ' + jsonOptions;
-
+    var development = window.nolimit.development || JSON.parse(sessionStorage.getItem('nolimit.development'));
+    if(development) {
+        window.nolimit.development = development;
+        console.log('window.nolimit', window.nolimit);
+    }
+    
     var gameElement = document.createElement('script');
 
     var staticRoot = options.staticRoot || GAMES_URL.replace('{CDN}', cdn);
@@ -155,7 +155,6 @@ function html(window, options) {
     body.innerHTML = '';
 
     loaderElement.onload = function () {
-        body.appendChild(optionsElement);
         body.appendChild(gameElement);
     };
 
