@@ -30,7 +30,7 @@
     "browserify-versionify": "^1.0.6",
     "jsdoc": "^3.4.0",
     "jshint": "^2.9.2",
-    "minami": "kribblo/minami",
+    "minami": "nijikokun/minami",
     "partialify": "^3.1.6",
     "stripify": "^4.0.0",
     "uglifyify": "^3.0.1"
