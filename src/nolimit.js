@@ -141,12 +141,6 @@ function html(window, options) {
     
     window.nolimit.options = options;
 
-    var development = window.nolimit.development || JSON.parse(sessionStorage.getItem('nolimit.development'));
-    if(development) {
-        window.nolimit.development = development;
-        console.log('window.nolimit', window.nolimit);
-    }
-    
     var gameElement = document.createElement('script');
 
     var staticRoot = options.staticRoot || GAMES_URL.replace('{CDN}', cdn);
