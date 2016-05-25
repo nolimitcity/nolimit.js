@@ -134,8 +134,8 @@ function html(window, options) {
     loaderElement.style.height = '100vh';
     loaderElement.style.zIndex = '2147483647';
 
-    var cdn = CDN.replace('{ENV}', options.environment);
-    loaderElement.src = LOADER_URL.replace('{CDN}', cdn).replace('{DEVICE}', options.device);
+    var cdn = CDN.replace('{ENV}', options.environment.toLowerCase());
+    loaderElement.src = LOADER_URL.replace('{CDN}', cdn).replace('{DEVICE}', options.device.toLowerCase());
 
     window.nolimit = window.nolimit || {};
     
