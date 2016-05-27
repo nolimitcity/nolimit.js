@@ -14,8 +14,8 @@ var nolimitApiFactory = function (target) {
         gameWindow.addEventListener('message', function (e) {
             if (e.ports.length > 0) {
                 port = e.ports[0];
-                registerEvents(Object.keys(listeners));
                 port.onmessage = onMessage;
+                registerEvents(Object.keys(listeners));
             }
         });
     }
