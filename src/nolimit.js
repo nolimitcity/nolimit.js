@@ -1,11 +1,13 @@
 'use strict';
 
 var nolimitApiFactory = require('./nolimit-api');
+var info = require('./info');
 
 var CDN = 'https://{ENV}.nolimitcdn.com';
 var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html';
 var GAMES_URL = '{CDN}/games';
-var GAME_JS_URL = '/{GAME}/game.js';
+var INFO_JSON_URL = '/{GAME}/info.json';
+var GAME_JS_URL = '/{GAME}{VERSION}/game.js';
 
 var DEFAULT_OPTIONS = {
     currency: 'EUR',
@@ -45,21 +47,21 @@ var nolimit = {
      * @param {Object}              options
      * @param {String}              options.game case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'
      * @param {HTMLElement|Window}  [options.target=window] the HTMLElement or Window to load the game in
-     * @param {String}              [options.token=undefined] the token to use for real money play
+     * @param {String}              [options.token] the token to use for real money play
      * @param {Boolean}             [options.mute=false] start the game without sound
-     * @param {Object}              [options.events={}] events from within the game
+     * @param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache
      */
     load: function (options) {
         var target = options.target || window;
         options.mute = options.mute || false;
 
-        var allOptions = mergeOptions(this.options, options);
+        var gameOptions = mergeOptions(this.options, options);
 
         if (target instanceof HTMLElement) {
             var iframe = makeIframe(target);
 
             iframe.addEventListener('load', function () {
-                html(iframe.contentWindow, allOptions);
+                html(iframe.contentWindow, gameOptions);
             });
 
             var iframeConnection = nolimitApiFactory(iframe);
@@ -70,7 +72,7 @@ var nolimit = {
         } else if (target.Window && target instanceof target.Window) {
 
             var windowConnection = nolimitApiFactory(target);
-            html(target, allOptions);
+            html(target, gameOptions);
             return windowConnection;
 
         } else {
@@ -119,10 +121,10 @@ function setupViewport(head) {
     }
 }
 
+
 function html(window, options) {
 
     var document = window.document;
-    var body = document.body;
 
     insertCss(document);
     setupViewport(document.head);
@@ -138,21 +140,26 @@ function html(window, options) {
     loaderElement.src = LOADER_URL.replace('{CDN}', cdn).replace('{DEVICE}', options.device.toLowerCase());
 
     window.nolimit = window.nolimit || {};
-    
     window.nolimit.options = options;
 
-    var gameElement = document.createElement('script');
-
-    var staticRoot = options.staticRoot || GAMES_URL.replace('{CDN}', cdn);
-    gameElement.src = staticRoot + GAME_JS_URL.replace('{GAME}', options.game);
-
-    body.innerHTML = '';
+    document.body.innerHTML = '';
 
     loaderElement.onload = function () {
-        body.appendChild(gameElement);
+        var staticRoot = options.staticRoot || GAMES_URL.replace('{CDN}', cdn);
+        var game = options.game;
+        var url = staticRoot + INFO_JSON_URL.replace('{GAME}', game);
+
+        info.load(url, options.version, function (info) {
+            window.nolimit.info = info;
+            var version = info.version === 'development' ? '' : '/' + info.version;
+
+            var gameElement = document.createElement('script');
+            gameElement.src = staticRoot + GAME_JS_URL.replace('{GAME}', game).replace('{VERSION}', version);
+            document.body.appendChild(gameElement);
+        });
     };
 
-    body.appendChild(loaderElement);
+    document.body.appendChild(loaderElement);
 }
 
 function copyAttributes(from, to) {

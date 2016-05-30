@@ -112,9 +112,9 @@ For playing with real money, a one time **token** is required, that is generated
 
 * `@param {String}              options.game case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'`
 * `@param {HTMLElement|Window}  [options.target=window] the HTMLElement or Window to load the game in`
-* `@param {String}              [options.token=undefined] the token to use for real money play`
+* `@param {String}              [options.token] the token to use for real money play`
 * `@param {Boolean}             [options.mute=false] start the game without sound`
-* `@param {Object}              [options.events={}] events from within the game`
+* `@param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache`
 
 ```javascript
     nolimit.load({
