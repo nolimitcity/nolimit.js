@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-nolimit.html">nolimit</a><ul class='methods'><li data-type='method'><a href="module-nolimit.html#.init">init</a></li><li data-type='method'><a href="module-nolimit.html#.load">load</a></li></ul></li><li><a href="module-nolimitApi.html">nolimitApi</a><ul class='methods'><li data-type='method'><a href="module-nolimitApi.html#.on">on</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>nolimit.js</h1><p>Javascript game loader and API for operators to load and  communicate with Nolimit games.</p>
+<h2>Introduction</h2><p><strong>nolimit.js</strong> provides a powerful yet simple way to load games, while still putting most of the control in the hands of the operator.</p>
+<p>The operator makes all the design and layout, and will only need to provide a target element for the loader to use.</p>
+<h2>Load and initialize</h2><p><strong>nolimit.js</strong> is available with sourcemap and some logging as <code>nolimit-VERSION.js</code> or as minified as <code>nolimit-VERSION.min.js</code> at http://nolimitcity.github.io/nolimit.js/.</p>
+<p><strong>nolimit.js</strong> files are packaged as <a href="https://github.com/umdjs/umd">UMD</a>, meaning it can be loaded using <a href="http://wiki.commonjs.org/wiki/CommonJS">CommonJS</a> such as <a href="http://browserify.org/">Browserify</a>, <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">AMD</a> such as <a href="http://requirejs.org/">RequireJS</a> or just standalone with a regular <code>&lt;script&gt;</code> tag.</p>
+<p>When loaded standalone, it will add a global variable <code>window.nolimit</code> which is used to load the games. See examples below.</p>
+<h3>Using CommonJS</h3><pre class="prettyprint source lang-javascript"><code>var nolimit = require('nolimit');
+nolimit.init({
+    operator: 'SMOOTHOPERATOR'
+});</code></pre><h3>Using AMD</h3><pre class="prettyprint source lang-javascript"><code>define(['nolimit'], function(nolimit) {
+    nolimit.init({
+        operator: 'SMOOTHOPERATOR'
+    });
+});</code></pre><h3>As a global variable</h3><pre class="prettyprint source lang-html"><code>&lt;script src=&quot;nolimit-1.0.0.js&quot;>&lt;/script>
+&lt;script>
+nolimit.init({
+    operator: 'SMOOTHOPERATOR'
+});
+&lt;/script></code></pre><h2>Loading a game</h2><h3>As part of the page</h3><p>Create an element, usually a <code>&lt;div&gt;</code>, that will be <em>replaced</em> by the game's <code>&lt;iframe&gt;</code>. The iframe will retain styling information such as <code>width</code> and <code>height</code>, <code>display</code> and so on.</p>
+<pre class="prettyprint source lang-javascript"><code>var api = nolimit.load({
+    target: document.querySelector('#game'),
+    game: gameName
+});
+
+api.on('exit', closeGame);</code></pre><h3>Replace window</h3><p>Common use case on mobile, where the game should fill the whole screen and you still want the back button to work. </p>
+<p>Make a separate page which contains the game loading script and navigate to that. <code>nolimit.load()</code> will default to replacing the whole current window.</p>
+<pre class="prettyprint source lang-javascript"><code>var api = nolimit.load({
+    game: gameName
+});
+
+api.on('exit', function() {
+    // or go to specific lobby page, or any other special handling
+    history.back();
+});</code></pre><p>It's of course also possible to simply make a full screen <code>&lt;div&gt;</code> and use that as target if that fits your flow better. Note though, that you need to make the game element responsive or resize manually in that case.</p>
+<h2>Options</h2><p>It's not strictly required to call <code>init()</code>, it's possible to call <code>load()</code> directly with all the options instead. <code>init()</code> just provides a way to setup some common defaults and the options will actually be merged before each game load.</p>
+<p>The only required options are the <strong>operator</strong> code for init, the <strong>game</strong> code for game loading - and the HTMLElement** or Window to replace.</p>
+<h3>Real money or play money</h3><p>For playing with real money, a one time <strong>token</strong> is required, that is generated by the operator. The token will be verified via an API call to the operator's server. If the token is missing, fun mode is automatically enabled. If the token is present, but fails validation, there will be an error inside the game.</p>
+<h3>init(options)</h3><ul>
+<li><code>@param {String}  options.operator the operator code for the operator</code></li>
+<li><code>@param {String}  [options.language=&quot;en&quot;] the language to use for the game</code></li>
+<li><code>@param {String}  [options.device=desktop] type of device: 'desktop' or 'mobile'</code></li>
+<li><code>@param {String}  [options.environment=partner] which environment to use; usually 'partner' or 'production'</code></li>
+<li><code>@param {String}  [options.currency=EUR] currency to use, if not provided by server</code></li>
+</ul>
+<pre class="prettyprint source lang-javascript"><code>    nolimit.init({
+        operator: operator,
+        language: 'sv',
+        device: 'mobile',
+        environment: 'production',
+        currency: 'SEK'
+    });</code></pre><h3>load(options)</h3><ul>
+<li><code>@param {String}              options.game case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'</code></li>
+<li><code>@param {HTMLElement|Window}  [options.target=window] the HTMLElement or Window to load the game in</code></li>
+<li><code>@param {String}              [options.token] the token to use for real money play</code></li>
+<li><code>@param {Boolean}             [options.mute=false] start the game without sound</code></li>
+<li><code>@param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache</code></li>
+</ul>
+<pre class="prettyprint source lang-javascript"><code>    nolimit.load({
+        game: gameName,
+        target: gameElement,
+        token: realMoneyToken,
+        mute: true,        
+        events: {}
+    });</code></pre><h2>Communicating with the game</h2><h3>Events</h3><p>The operator can add callbacks for certain events, such as the player trying to close the game or do a deposit from within the game.</p>
+<pre class="prettyprint source lang-javascript"><code>    var api = nolimit.load({
+        game: gameName
+    });
+
+    api.on('ready', function onLoad() {
+        // ...
+    });
+
+    api.on('exit', function goToLobby() {
+        // ...
+    });
+
+    api.on('deposit', function openDeposit() {
+        // ...
+    });
+
+    api.on('support', function openHelpChat() {
+        // ...
+    });</code></pre><ul>
+<li>ready - fired when the game is loaded and ready, and the API can be used.</li>
+<li>exit - (mobile only) fired when the player presses the exit button in the game.</li>
+<li>balance - fired when it's safe to update the total balance, as far as this game is concerned. Use only for timing.</li>
+<li>deposit - fired when the player presses the Deposit button in the game.</li>
+<li>support - fired when the player presses the Support button in the game.</li>
+</ul>
+<h2>More Examples</h2><h3>Multiple games</h3><pre class="prettyprint source lang-html"><code>&lt;div class=&quot;multigame&quot;>
+    &lt;div id=&quot;game1&quot;>
+    &lt;div id=&quot;game2&quot;>
+&lt;/div></code></pre><pre class="prettyprint source lang-javascript"><code>nolimit.init({
+    operator: 'SMOOTHOPERATOR',
+    language: 'sv',
+    environment: 'production'
+});
+
+var gameElement1 = document.getElementById('game1');
+nolimit.load({
+    target: gameElement1,
+    game: 'KitchenDrama'
+});
+
+var gameElement2 = document.getElementById('game2');
+nolimit.load({
+    target: gameElement2,
+    game: 'CreepyCarnival'
+});</code></pre><h2>How do I...?</h2><h3>Style the game iframe</h3><p>For instance, set the initial background color, width/height etc.</p>
+<p>Style the original element (probably a <code>&lt;div&gt;</code>). Note that if you do this with CSS, the tag will be <code>iframe</code>, so this selector will not work:</p>
+<pre class="prettyprint source lang-css"><code>div.game {...}</code></pre><p>but any of these will:</p>
+<pre class="prettyprint source lang-css"><code>div.game, iframe.game {...}
+
+.game {...}</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Jun 15 2016 11:26:50 GMT+0200 (CEST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
