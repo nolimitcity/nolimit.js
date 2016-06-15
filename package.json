@@ -11,7 +11,8 @@
     "postjsdoc": "git add www/jsdoc/@nolimit/nolimit.js/$npm_package_version",
     "lint": "jshint src/*.js",
     "preversion": "npm run lint",
-    "version": "npm run dist && git add www/dist/nolimit-$npm_package_version*.js",
+    "version": "npm run dist && git add www/dist/nolimit-$npm_package_version*.js && npm run version-www",
+    "version-www": "replace '\\d+\\.\\d+\\.\\d+' $npm_package_version www/index.html && git add www/index.html",
     "test": "echo \"Error: no test specified\" && exit 1",
     "www": "git subtree push --prefix www origin gh-pages"
   },
@@ -32,6 +33,7 @@
     "jshint": "^2.9.2",
     "minami": "nijikokun/minami",
     "partialify": "^3.1.6",
+    "replace": "^0.3.0",
     "stripify": "^4.0.0",
     "uglifyify": "^3.0.1"
   },
