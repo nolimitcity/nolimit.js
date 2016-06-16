@@ -38,7 +38,7 @@ define(['nolimit'], function(nolimit) {
 ### As a global variable
 
 ```html
-<script src="nolimit-1.0.0.js"></script>
+<script src="nolimit-1.1.0.js"></script>
 <script>
 nolimit.init({
     operator: 'SMOOTHOPERATOR'
@@ -99,13 +99,13 @@ For playing with real money, a one time **token** is required, that is generated
 * `@param {String}  [options.currency=EUR] currency to use, if not provided by server`
 
 ```javascript
-    nolimit.init({
-        operator: operator,
-        language: 'sv',
-        device: 'mobile',
-        environment: 'production',
-        currency: 'SEK'
-    });
+nolimit.init({
+    operator: operator,
+    language: 'sv',
+    device: 'mobile',
+    environment: 'production',
+    currency: 'SEK'
+});
 ```
 
 ### load(options)
@@ -117,13 +117,13 @@ For playing with real money, a one time **token** is required, that is generated
 * `@param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache`
 
 ```javascript
-    nolimit.load({
-        game: gameName,
-        target: gameElement,
-        token: realMoneyToken,
-        mute: true,        
-        events: {}
-    });
+nolimit.load({
+    game: gameName,
+    target: gameElement,
+    token: realMoneyToken,
+    mute: true,
+    events: {}
+});
 ```
 
 ## Communicating with the game
@@ -133,25 +133,25 @@ For playing with real money, a one time **token** is required, that is generated
 The operator can add callbacks for certain events, such as the player trying to close the game or do a deposit from within the game.
 
 ```javascript
-    var api = nolimit.load({
-        game: gameName
-    });
+var api = nolimit.load({
+    game: gameName
+});
 
-    api.on('ready', function onLoad() {
-        // ...
-    });
+api.on('ready', function onLoad() {
+    // ...
+});
 
-    api.on('exit', function goToLobby() {
-        // ...
-    });
+api.on('exit', function goToLobby() {
+    // ...
+});
 
-    api.on('deposit', function openDeposit() {
-        // ...
-    });
+api.on('deposit', function openDeposit() {
+    // ...
+});
 
-    api.on('support', function openHelpChat() {
-        // ...
-    });
+api.on('support', function openHelpChat() {
+    // ...
+});
 ```
 
 * ready - fired when the game is loaded and ready, and the API can be used.
@@ -160,7 +160,33 @@ The operator can add callbacks for certain events, such as the player trying to 
 * deposit - fired when the player presses the Deposit button in the game.
 * support - fired when the player presses the Support button in the game.
 
+### Calling methods
+
+The operator can also control the game using RPC calls:
+
+```javascript
+api.call('refresh');
+
+api.call('reload');
+```
+
+* refresh - ask game to refresh balance from server
+* reload - reload the game
+
 ## More Examples
+
+### Opening a deposit dialog from the game
+
+If the operator has added an event listener for the 'deposit' event, the game will offer the player an option to open this when they run out of money. After a successful deposit, the game can be asked to refresh the balance:
+
+```javascript
+api.on('deposit', function openDeposit () {
+    showDeposit().then(function() {
+        // ask the game to refresh balance from server
+        api.call('refresh');
+    });
+});
+```
 
 ### Multiple games
 

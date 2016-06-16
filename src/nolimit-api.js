@@ -32,15 +32,20 @@ var nolimitApiFactory = function (target) {
         trigger(e.data.method, e.data.params);
     }
 
-    function registerEvents(events) {
+    function sendMessage(method, data) {
         if (port) {
             var message = {
-                method: 'register',
-                params: events
+                jsonrpc: '2.0',
+                method: method,
+                params: data
             };
 
             port.postMessage(message);
         }
+    }
+
+    function registerEvents(events) {
+        sendMessage('register', events);
     }
 
     function trigger(event, data) {
@@ -60,12 +65,20 @@ var nolimitApiFactory = function (target) {
      */
     var nolimitApi = {
         /**
-         * Add listener for event from the opened game
+         * Add listener for event from the started game
          *
+         * @function on
          * @param {String}   event    name of the event
-         * @param {Function} callback callback for the event, see documentation for the specific events to
+         * @param {Function} callback callback for the event, see specific event documentation for any parameters
+         * 
+         * @example
+         * api.on('deposit', function openDeposit () {
+         *     showDeposit().then(function() {
+         *         // ask the game to refresh balance from server
+         *         api.call('refresh');
+         *     });
+         * });
          */
-
         on: function (event, callback) {
             listeners[event] = listeners[event] || [];
             listeners[event].push(callback);
@@ -74,7 +87,20 @@ var nolimitApiFactory = function (target) {
             }
 
             registerEvents([event]);
-        }
+        },
+
+        /**
+         * Call method in the open game
+         *
+         * @function call
+         * @param {String} method name of the method to call
+         * @param {Object} [data] optional data for the method called, if any
+         * 
+         * @example
+         * // reload the game
+         * api.call('reload');
+         */
+        call: sendMessage
     };
 
     return nolimitApi;
