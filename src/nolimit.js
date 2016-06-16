@@ -31,6 +31,15 @@ var nolimit = {
      * @param {String}  [options.device=desktop] type of device: 'desktop' or 'mobile'
      * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or 'production'
      * @param {String}  [options.currency=EUR] currency to use, if not provided by server
+     *
+     * @example
+     * nolimit.init({
+     *    operator: 'SMOOTHOPERATOR',
+     *    language: 'sv',
+     *    device: 'mobile',
+     *    environment: 'production',
+     *    currency: 'SEK'
+     * });
      */
     init: function (options) {
         this.options = options;
@@ -50,6 +59,15 @@ var nolimit = {
      * @param {String}              [options.token] the token to use for real money play
      * @param {Boolean}             [options.mute=false] start the game without sound
      * @param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache
+     *
+     * @example
+     * nolimit.load({
+     *    game: 'SpaceArcade',
+     *    target: document.getElementById('game'),
+     *    token: realMoneyToken,
+     *    mute: true,        
+     *    events: {}
+     * });
      */
     load: function (options) {
         var target = options.target || window;
@@ -120,7 +138,6 @@ function setupViewport(head) {
         head.insertAdjacentHTML('beforeend', '<meta name="viewport" content="width=device-width, initial-scale=1">');
     }
 }
-
 
 function html(window, options) {
 
