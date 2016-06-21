@@ -8,10 +8,10 @@
     "dist-min": "browserify src/nolimit.js --standalone nolimit -t partialify -t stripify -t uglifyify -o www/dist/nolimit-$npm_package_version.min.js",
     "postdist": "npm run jsdoc",
     "jsdoc": "jsdoc -t node_modules/minami -q title=nolimit.js -d www/jsdoc package.json src/*.js README.md",
-    "postjsdoc": "git add www/jsdoc/@nolimit/nolimit.js/$npm_package_version",
+    "add-jsdoc": "git add www/jsdoc/@nolimit/nolimit.js/$npm_package_version",
     "lint": "jshint src/*.js",
     "preversion": "npm run lint",
-    "version": "npm run dist && git add www/dist/nolimit-$npm_package_version*.js && npm run version-www",
+    "version": "npm run dist && git add www/dist/nolimit-$npm_package_version*.js && npm run version-www && npm run add-jsdoc",
     "version-www": "replace '\\d+\\.\\d+\\.\\d+' $npm_package_version www/index.html && git add www/index.html",
     "test": "echo \"Error: no test specified\" && exit 1",
     "www": "git subtree push --prefix www origin gh-pages"
