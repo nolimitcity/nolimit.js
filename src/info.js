@@ -2,7 +2,7 @@
 
 var info = {
     load: function (url, options, callback) {
-        if (options) {
+        if (options.version) {
             callback({
                 name: options.game,
                 version: options.version

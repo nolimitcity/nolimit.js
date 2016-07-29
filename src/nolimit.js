@@ -167,14 +167,14 @@ function html(window, options) {
         var url = staticRoot + INFO_JSON_URL.replace('{GAME}', game);
 
         info.load(url, options, function (info) {
+            console.log(info.name, info.version);
+
             window.nolimit.info = info;
             var version = /^\d+\.\d+\.\d+$/.test(info.version) ? '/' + info.version : '';
 
             var gameElement = document.createElement('script');
             gameElement.src = staticRoot + GAME_JS_URL.replace('{GAME}', game).replace('{VERSION}', version);
             document.body.appendChild(gameElement);
-
-            console.log(game, version);
         });
     };
 
