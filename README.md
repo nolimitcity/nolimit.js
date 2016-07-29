@@ -237,3 +237,27 @@ div.game, iframe.game {...}
 
 .game {...}
 ```
+
+## Development
+
+### Publishing a new version
+
+Make sure that JSHint runs cleanly:
+
+    npm run lint
+
+Commit all outstanding changes:
+
+    git commit
+
+Run tests and increment version number, possibly replacing `patch` with `minor` or `major`, see [npm-version](https://docs.npmjs.com/cli/version):
+
+    npm version patch
+    
+Push to server:
+    
+    git push
+    
+Publish new version of [http://nolimitcity.github.io/nolimit.js/](http://nolimitcity.github.io/nolimit.js/):
+   
+    npm run www
