@@ -152,6 +152,7 @@ function html(window, options) {
     loaderElement.style.width = '100vw';
     loaderElement.style.height = '100vh';
     loaderElement.style.zIndex = '2147483647';
+    loaderElement.classList.add('loader');
 
     var cdn = CDN.replace('{ENV}', options.environment.toLowerCase());
     loaderElement.src = LOADER_URL.replace('{CDN}', cdn).replace('{DEVICE}', options.device.toLowerCase());
