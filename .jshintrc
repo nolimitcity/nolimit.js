@@ -5,6 +5,7 @@
     "curly": true,
     "devel": true,
     "eqeqeq": true,
+    "forin": false,
     "quotmark": "single",
     "singleGroups": true,
     "strict": true,
