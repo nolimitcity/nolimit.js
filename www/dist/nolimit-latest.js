@@ -356,7 +356,7 @@ var generateName = (function () {
     };
 })();
 
-console.log('nolimit.js', '1.1.2');
+console.log('nolimit.js', '1.1.1');
 
 module.exports = nolimit;
 
