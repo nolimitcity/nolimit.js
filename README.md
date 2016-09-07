@@ -145,6 +145,10 @@ api.on('exit', function goToLobby() {
     // ...
 });
 
+api.on('balance', function updateBalance(balance) {
+    // ...
+});
+
 api.on('deposit', function openDeposit() {
     // ...
 });
@@ -156,7 +160,7 @@ api.on('support', function openHelpChat() {
 
 * ready - fired when the game is loaded and ready, and the API can be used.
 * exit - (mobile only) fired when the player presses the exit button in the game.
-* balance - fired when it's safe to update the total balance, as far as this game is concerned. Use only for timing.
+* balance - fired when the game displays a new balance, with that balance as in-parameter. 
 * deposit - fired when the player presses the Deposit button in the game.
 * support - fired when the player presses the Support button in the game.
 
