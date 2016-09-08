@@ -73,7 +73,7 @@ var nolimit = {
         var target = options.target || window;
         options.mute = options.mute || false;
 
-        var gameOptions = mergeOptions(this.options, options);
+        var gameOptions = processOptions(mergeOptions(this.options, options));
 
         if (target instanceof HTMLElement) {
             var iframe = makeIframe(target);
@@ -96,6 +96,28 @@ var nolimit = {
         } else {
             throw 'Invalid option target: ' + target;
         }
+    },
+
+    /**
+     * Load information about the game, such as: current version, preferred width/height etc.
+     *
+     * @param {Object}      options
+     * @param {String}      [options.environment=partner] which environment to use; usually 'partner' or 'production'
+     * @param {String}      options.game case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'
+     * @param {Function}    callback  called with the info object, if there was an error, the 'error' field will be set
+     *
+     * @example
+     * nolimit.info({game: 'SpaceArcade'}, function(info) {
+     *     var target = document.getElementById('game');
+     *     target.style.width = info.size.width;
+     *     target.style.height = info.size.height;
+     *     console.log(info.name, info.version);
+     * });
+     */
+    info: function(options, callback) {
+        var gameOptions = processOptions(mergeOptions(this.options, options));
+        var url = gameOptions.staticRoot + INFO_JSON_URL.replace('{GAME}', options.game);
+        info.load(url, gameOptions, callback);
     }
 };
 
@@ -139,8 +161,14 @@ function setupViewport(head) {
     }
 }
 
-function html(window, options) {
+function processOptions(options) {
+    options.device = options.device.toLowerCase();
+    options.cdn = CDN.replace('{ENV}', options.environment.toLowerCase());
+    options.staticRoot = options.staticRoot || GAMES_URL.replace('{CDN}', options.cdn);
+    return options;
+}
 
+function html(window, options) {
     var document = window.document;
 
     insertCss(document);
@@ -154,8 +182,7 @@ function html(window, options) {
     loaderElement.style.zIndex = '2147483647';
     loaderElement.classList.add('loader');
 
-    var cdn = CDN.replace('{ENV}', options.environment.toLowerCase());
-    loaderElement.src = LOADER_URL.replace('{CDN}', cdn).replace('{DEVICE}', options.device.toLowerCase());
+    loaderElement.src = LOADER_URL.replace('{CDN}', options.cdn).replace('{DEVICE}', options.device);
 
     window.nolimit = window.nolimit || {};
     window.nolimit.options = options;
@@ -163,18 +190,14 @@ function html(window, options) {
     document.body.innerHTML = '';
 
     loaderElement.onload = function () {
-        var staticRoot = options.staticRoot || GAMES_URL.replace('{CDN}', cdn);
-        var game = options.game;
-        var url = staticRoot + INFO_JSON_URL.replace('{GAME}', game);
-
-        info.load(url, options, function (info) {
+        nolimit.info(options, function (info) {
             console.log(info.name, info.version);
 
             window.nolimit.info = info;
             var version = /^\d+\.\d+\.\d+$/.test(info.version) ? '/' + info.version : '';
 
             var gameElement = document.createElement('script');
-            gameElement.src = staticRoot + GAME_JS_URL.replace('{GAME}', game).replace('{VERSION}', version);
+            gameElement.src = options.staticRoot + GAME_JS_URL.replace('{GAME}', options.game).replace('{VERSION}', version);
             document.body.appendChild(gameElement);
         });
     };
