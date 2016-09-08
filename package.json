@@ -32,7 +32,7 @@
     "browserify-versionify": "^1.0.6",
     "jsdoc": "^3.4.0",
     "jshint": "^2.9.3",
-    "minami": "nijikokun/minami",
+    "minami": "nolimitcity/minami",
     "partialify": "^3.1.6",
     "replace": "^0.3.0",
     "stripify": "^4.0.0",
