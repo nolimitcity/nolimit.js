@@ -13,8 +13,9 @@ var info = {
         var request = new XMLHttpRequest();
 
         function onFail() {
+            var error = request.statusText || 'Probably: Not found or missing CORS headers';
             callback({
-                error: request.statusText
+                error: error
             });
         }
 
