@@ -36,7 +36,7 @@
     "partialify": "^3.1.6",
     "replace": "^0.3.0",
     "stripify": "^4.0.0",
-    "uglifyify": "^3.0.1"
+    "uglifyify": "^3.0.2"
   },
   "browserify": {
     "transform": [
