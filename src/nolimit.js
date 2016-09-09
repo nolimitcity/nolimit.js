@@ -193,7 +193,6 @@ function html(window, options) {
         nolimit.info(options, function (info) {
             console.log(info.name, info.version);
 
-            window.nolimit.info = info;
             var version = /^\d+\.\d+\.\d+$/.test(info.version) ? '/' + info.version : '';
 
             var gameElement = document.createElement('script');
