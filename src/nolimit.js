@@ -179,6 +179,7 @@ function html(window, options) {
     loaderElement.style.backgroundColor = 'black';
     loaderElement.style.width = '100vw';
     loaderElement.style.height = '100vh';
+    loaderElement.style.position = 'relative';
     loaderElement.style.zIndex = '2147483647';
     loaderElement.classList.add('loader');
 
