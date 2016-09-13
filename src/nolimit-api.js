@@ -7,8 +7,15 @@
 var nolimitApiFactory = function (target) {
 
     var listeners = {};
-    var unHandled = {};
+    var unhandledEvents = {};
+    var unhandledCalls = [];
     var port;
+
+    function handleUnhandledCalls(port) {
+        while (unhandledCalls.length > 0) {
+            port.postMessage(unhandledCalls.shift());
+        }
+    }
 
     function addMessageListener(gameWindow) {
         gameWindow.addEventListener('message', function (e) {
@@ -16,6 +23,7 @@ var nolimitApiFactory = function (target) {
                 port = e.ports[0];
                 port.onmessage = onMessage;
                 registerEvents(Object.keys(listeners));
+                handleUnhandledCalls(port);
             }
         });
     }
@@ -33,14 +41,19 @@ var nolimitApiFactory = function (target) {
     }
 
     function sendMessage(method, data) {
-        if (port) {
-            var message = {
-                jsonrpc: '2.0',
-                method: method,
-                params: data
-            };
+        var message = {
+            jsonrpc: '2.0',
+            method: method
+        };
 
+        if(data) {
+            message.params = data;
+        }
+
+        if (port) {
             port.postMessage(message);
+        } else {
+            unhandledCalls.push(message);
         }
     }
 
@@ -54,8 +67,8 @@ var nolimitApiFactory = function (target) {
                 callback(data);
             });
         } else {
-            unHandled[name] = unHandled[name] || [];
-            unHandled[name].push(data);
+            unhandledEvents[name] = unhandledEvents[name] || [];
+            unhandledEvents[name].push(data);
         }
     }
 
@@ -82,8 +95,8 @@ var nolimitApiFactory = function (target) {
         on: function (event, callback) {
             listeners[event] = listeners[event] || [];
             listeners[event].push(callback);
-            while (unHandled[event] && unHandled[event].length > 0) {
-                trigger(event, unHandled[event].pop());
+            while (unhandledEvents[event] && unhandledEvents[event].length > 0) {
+                trigger(event, unhandledEvents[event].pop());
             }
 
             registerEvents([event]);
