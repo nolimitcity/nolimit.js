@@ -1,13 +1,13 @@
 'use strict';
 
+var cache = {};
+
 var info = {
     load: function (url, options, callback) {
-        if (options.version) {
-            callback({
-                name: options.game,
-                version: options.version
-            });
-            return;
+        var info = cache[url];
+        if (info) {
+            info.version = options.version || info.version;
+            return callback(info);
         }
 
         var request = new XMLHttpRequest();
@@ -25,6 +25,8 @@ var info = {
             if (request.status >= 200 && request.status < 400) {
                 try {
                     var info = JSON.parse(request.responseText);
+                    info.version = options.version || info.version;
+                    cache[url] = info;
                     callback(info);
                 } catch (e) {
                     callback({
