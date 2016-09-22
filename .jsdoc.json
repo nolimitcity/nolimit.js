@@ -1,0 +1,20 @@
+{
+    "source": {
+        "include": [
+            "package.json",
+            "src",
+            "README.md"
+        ],
+        "includePattern": ".js$"
+    },
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "markdown": {
+        "idInHeadings": true
+    },
+    "opts": {
+        "destination": "./www/jsdoc",
+        "template": "./node_modules/minami"
+    }
+}
