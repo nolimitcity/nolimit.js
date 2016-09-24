@@ -38,7 +38,7 @@ define(['nolimit'], function(nolimit) {
 ### As a global variable
 
 ```html
-<script src="/js/nolimit-1.1.2.js"></script>
+<script src="https://nolimitcity.github.io/nolimit.js/dist/nolimit-latest.min.js"></script>
 <script>
 nolimit.init({
     operator: 'SMOOTHOPERATOR'
