@@ -35,14 +35,14 @@
             <button id="iframe" type="button">Start Game in Iframe</button>
         </div>
 
-        <script src="../../dist/nolimit-1.0.2.js"></script>
+        <script src="../../dist/nolimit-latest.min.js"></script>
 
         <script>
-            var gameName = 'CreepyCarnival';
+            var gameName = 'SpaceArcade';
 
             nolimit.init({
                 operator: 'FAKE1',
-                environment: 'home'
+                environment: 'partner'
             });
 
             function openGame() {
@@ -57,12 +57,12 @@
                     game: gameName
                 });
 
-                game.on('exit', function () {
+                game.on('exit', function() {
                     document.getElementById('container').removeChild(gameElement);
                     document.getElementById('iframe').style.display = 'inline-block';
                 });
 
-                game.on('ready', function () {
+                game.on('ready', function() {
                     console.log(gameName, 'is loaded');
                 });
             }

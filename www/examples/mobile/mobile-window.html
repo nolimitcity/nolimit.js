@@ -15,21 +15,22 @@
 
     </head>
     <body>
-        <script src="../../dist/nolimit-1.0.2.js"></script>
+        <script src="../../dist/nolimit-latest.min.js"></script>
         <script>
-            var gameName = 'CreepyCarnival';
+            var gameName = 'SpaceArcade';
 
             var game = nolimit.load({
                 operator: 'FAKE1',
+                environment: 'partner',
                 game: gameName,
                 device: 'mobile'
             });
 
-            game.on('exit', function () {
+            game.on('exit', function() {
                 history.back();
             });
 
-            game.on('ready', function () {
+            game.on('ready', function() {
                 console.log(gameName, 'is loaded');
             });
 
