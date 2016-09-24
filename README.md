@@ -8,9 +8,13 @@ Javascript game loader and API for operators to load and  communicate with Nolim
 
 The operator makes all the design and layout, and will only need to provide a target element for the loader to use.
 
-## Load and initialize
+## Get nolimit.js
 
 **nolimit.js** is available with sourcemap and some logging as `nolimit-VERSION.js` or as minified as `nolimit-VERSION.min.js` at http://nolimitcity.github.io/nolimit.js/.
+
+It can also be installed using NPM:
+
+    npm install --save @nolimit/nolimit.js
 
 **nolimit.js** files are packaged as [UMD](https://github.com/umdjs/umd), meaning it can be loaded using [CommonJS](http://wiki.commonjs.org/wiki/CommonJS) such as [Browserify](http://browserify.org/), [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) such as [RequireJS](http://requirejs.org/) or just standalone with a regular `<script>` tag.
 
