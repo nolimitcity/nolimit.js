@@ -27,6 +27,7 @@
     "url": "https://github.com/nolimitcity/nolimit.js/issues"
   },
   "main": "src/nolimit.js",
+  "files": ["src"],
   "homepage": "https://github.com/nolimitcity/nolimit.js#readme",
   "devDependencies": {
     "browserify": "^13.1.0",
