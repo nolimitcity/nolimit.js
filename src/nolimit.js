@@ -60,13 +60,14 @@ var nolimit = {
      * @param {Boolean}             [options.mute=false] start the game without sound
      * @param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache
      *
+     * @returns {nolimitApi}        The API connection to the opened game.
+     *
      * @example
-     * nolimit.load({
+     * var api = nolimit.load({
      *    game: 'SpaceArcade',
      *    target: document.getElementById('game'),
      *    token: realMoneyToken,
-     *    mute: true,        
-     *    events: {}
+     *    mute: true
      * });
      */
     load: function (options) {
