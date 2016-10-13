@@ -3,7 +3,7 @@
 var nolimitApiFactory = require('./nolimit-api');
 var info = require('./info');
 
-var CDN = 'https://{ENV}.nolimitcdn.com';
+var CDN = 'https://{ENV}';
 var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}';
 var GAMES_URL = '{CDN}/games';
 var INFO_JSON_URL = '/{GAME}/info.json';
@@ -164,7 +164,11 @@ function setupViewport(head) {
 
 function processOptions(options) {
     options.device = options.device.toLowerCase();
-    options.cdn = CDN.replace('{ENV}', options.environment.toLowerCase());
+    var environment = options.environment.toLowerCase();
+    if (environment.indexOf('.') === -1) {
+        environment += '.nolimitcdn.com';
+    }
+    options.cdn = CDN.replace('{ENV}', environment);
     options.staticRoot = options.staticRoot || GAMES_URL.replace('{CDN}', options.cdn);
     return options;
 }
