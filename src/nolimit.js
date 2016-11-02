@@ -158,7 +158,7 @@ function insertCss(document) {
 function setupViewport(head) {
     var viewport = head.querySelector('meta[name="viewport"]');
     if (!viewport) {
-        head.insertAdjacentHTML('beforeend', '<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">');
+        head.insertAdjacentHTML('beforeend', '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">');
     }
 }
 
