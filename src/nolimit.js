@@ -10,7 +10,6 @@ var INFO_JSON_URL = '/{GAME}/info.json';
 var GAME_JS_URL = '/{GAME}{VERSION}/game.js';
 
 var DEFAULT_OPTIONS = {
-    currency: 'EUR',
     device: 'desktop',
     environment: 'partner',
     language: 'en',
