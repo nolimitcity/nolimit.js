@@ -249,6 +249,6 @@ Push to server:
     
     git push
     
-Publish new version of [http://nolimitcity.github.io/nolimit.js/](http://nolimitcity.github.io/nolimit.js/):
+Publish new version to <http://nolimitcity.github.io/nolimit.js>:
    
     npm run www
