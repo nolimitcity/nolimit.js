@@ -175,6 +175,8 @@ function processOptions(options) {
 function html(window, options) {
     var document = window.document;
 
+    window.focus();
+
     insertCss(document);
     setupViewport(document.head);
 
