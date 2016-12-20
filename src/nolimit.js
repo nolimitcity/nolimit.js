@@ -162,6 +162,7 @@ function setupViewport(head) {
 }
 
 function processOptions(options) {
+    options['nolimit.js'] = '__VERSION__';
     options.device = options.device.toLowerCase();
     var environment = options.environment.toLowerCase();
     if (environment.indexOf('.') === -1) {
