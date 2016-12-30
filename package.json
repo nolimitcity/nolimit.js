@@ -32,14 +32,14 @@
   ],
   "homepage": "https://github.com/nolimitcity/nolimit.js#readme",
   "devDependencies": {
-    "browserify": "^13.1.0",
+    "browserify": "^13.1.1",
     "browserify-versionify": "^1.0.6",
-    "jsdoc": "^3.4.0",
-    "jshint": "^2.9.3",
+    "jsdoc": "^3.4.3",
+    "jshint": "^2.9.4",
     "minami": "nolimitcity/minami",
     "partialify": "^3.1.6",
     "replace": "^0.3.0",
-    "uglifyify": "^3.0.2"
+    "uglifyify": "^3.0.4"
   },
   "browserify": {
     "transform": [
