@@ -45,7 +45,7 @@ var nolimit = {
      *    currency: 'SEK'
      * });
      */
-    init: function (options) {
+    init: function(options) {
         this.options = options;
     },
 
@@ -74,23 +74,23 @@ var nolimit = {
      *    mute: true
      * });
      */
-    load: function (options) {
+    load: function(options) {
         var target = options.target || window;
         options.mute = options.mute || false;
 
         var gameOptions = processOptions(mergeOptions(this.options, options));
 
-        if (target instanceof HTMLElement) {
+        if(target instanceof HTMLElement) {
             var iframe = makeIframe(target);
 
-            var iframeConnection = nolimitApiFactory(iframe, function () {
+            var iframeConnection = nolimitApiFactory(iframe, function() {
                 html(iframe.contentWindow, gameOptions);
             });
 
             target.parentNode.replaceChild(iframe, target);
             return iframeConnection;
 
-        } else if (target.Window && target instanceof target.Window) {
+        } else if(target.Window && target instanceof target.Window) {
             var windowConnection = nolimitApiFactory(target, function() {
                 html(target, gameOptions);
             });
@@ -140,13 +140,13 @@ function makeIframe(element) {
 
 function mergeOptions(globalOptions, gameOptions) {
     var options = {}, name;
-    for (name in DEFAULT_OPTIONS) {
+    for(name in DEFAULT_OPTIONS) {
         options[name] = DEFAULT_OPTIONS[name];
     }
-    for (name in globalOptions) {
+    for(name in globalOptions) {
         options[name] = globalOptions[name];
     }
-    for (name in gameOptions) {
+    for(name in gameOptions) {
         options[name] = gameOptions[name];
     }
     return options;
@@ -160,7 +160,7 @@ function insertCss(document) {
 
 function setupViewport(head) {
     var viewport = head.querySelector('meta[name="viewport"]');
-    if (!viewport) {
+    if(!viewport) {
         head.insertAdjacentHTML('beforeend', '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">');
     }
 }
@@ -169,7 +169,7 @@ function processOptions(options) {
     options['nolimit.js'] = '__VERSION__';
     options.device = options.device.toLowerCase();
     var environment = options.environment.toLowerCase();
-    if (environment.indexOf('.') === -1) {
+    if(environment.indexOf('.') === -1) {
         environment += '.nolimitcdn.com';
     }
     options.cdn = CDN.replace('{ENV}', environment);
@@ -205,8 +205,8 @@ function html(window, options) {
 
     document.body.innerHTML = '';
 
-    loaderElement.onload = function () {
-        nolimit.info(options, function (info) {
+    loaderElement.onload = function() {
+        nolimit.info(options, function(info) {
             if(info.error) {
                 window.trigger('error', info.error);
             } else {
@@ -226,15 +226,15 @@ function html(window, options) {
 
 function copyAttributes(from, to) {
     var attributes = from.attributes;
-    for (var i = 0; i < attributes.length; i++) {
+    for(var i = 0; i < attributes.length; i++) {
         var attr = attributes[i];
         to.setAttribute(attr.name, attr.value);
     }
 }
 
-var generateName = (function () {
+var generateName = (function() {
     var generatedIndex = 1;
-    return function (name) {
+    return function(name) {
         return name || 'Nolimit-' + generatedIndex++;
     };
 })();

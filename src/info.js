@@ -3,9 +3,9 @@
 var cache = {};
 
 var info = {
-    load: function (url, options, callback) {
+    load: function(url, options, callback) {
         var info = cache[url];
-        if (info) {
+        if(info) {
             info.version = options.version || info.version;
             return callback(info);
         }
@@ -21,14 +21,14 @@ var info = {
 
         request.open('GET', url, true);
 
-        request.onload = function () {
-            if (request.status >= 200 && request.status < 400) {
+        request.onload = function() {
+            if(request.status >= 200 && request.status < 400) {
                 try {
                     var info = JSON.parse(request.responseText);
                     info.version = options.version || info.version;
                     cache[url] = info;
                     callback(info);
-                } catch (e) {
+                } catch(e) {
                     callback({
                         error: e.message
                     });

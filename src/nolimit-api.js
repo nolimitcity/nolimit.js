@@ -4,7 +4,7 @@
  * @exports nolimitApiFactory
  * @private
  */
-var nolimitApiFactory = function (target, onload) {
+var nolimitApiFactory = function(target, onload) {
 
     var listeners = {};
     var unhandledEvents = {};
@@ -12,14 +12,14 @@ var nolimitApiFactory = function (target, onload) {
     var port;
 
     function handleUnhandledCalls(port) {
-        while (unhandledCalls.length > 0) {
+        while(unhandledCalls.length > 0) {
             port.postMessage(unhandledCalls.shift());
         }
     }
 
     function addMessageListener(gameWindow) {
-        gameWindow.addEventListener('message', function (e) {
-            if (e.ports.length > 0) {
+        gameWindow.addEventListener('message', function(e) {
+            if(e.ports.length > 0) {
                 port = e.ports[0];
                 port.onmessage = onMessage;
                 registerEvents(Object.keys(listeners));
@@ -30,8 +30,8 @@ var nolimitApiFactory = function (target, onload) {
         onload();
     }
 
-    if (target.nodeName === 'IFRAME') {
-        target.addEventListener('load', function () {
+    if(target.nodeName === 'IFRAME') {
+        target.addEventListener('load', function() {
             addMessageListener(target.contentWindow);
         });
     } else {
@@ -52,7 +52,7 @@ var nolimitApiFactory = function (target, onload) {
             message.params = data;
         }
 
-        if (port) {
+        if(port) {
             port.postMessage(message);
         } else {
             unhandledCalls.push(message);
@@ -64,8 +64,8 @@ var nolimitApiFactory = function (target, onload) {
     }
 
     function trigger(event, data) {
-        if (listeners[event]) {
-            listeners[event].forEach(function (callback) {
+        if(listeners[event]) {
+            listeners[event].forEach(function(callback) {
                 callback(data);
             });
         } else {
@@ -94,10 +94,10 @@ var nolimitApiFactory = function (target, onload) {
          *     });
          * });
          */
-        on: function (event, callback) {
+        on: function(event, callback) {
             listeners[event] = listeners[event] || [];
             listeners[event].push(callback);
-            while (unhandledEvents[event] && unhandledEvents[event].length > 0) {
+            while(unhandledEvents[event] && unhandledEvents[event].length > 0) {
                 trigger(event, unhandledEvents[event].pop());
             }
 
