@@ -22,6 +22,11 @@ var DEFAULT_OPTIONS = {
 var nolimit = {
 
     /**
+     * @property {String} version current version of nolimit.js
+     */
+    version: '__VERSION__',
+
+    /**
      * Initialize loader with default parameters. Can be skipped if the parameters are included in the call to load instead.
      *
      * @param {Object}  options
@@ -233,7 +238,5 @@ var generateName = (function () {
         return name || 'Nolimit-' + generatedIndex++;
     };
 })();
-
-console.log('nolimit.js', '__VERSION__');
 
 module.exports = nolimit;

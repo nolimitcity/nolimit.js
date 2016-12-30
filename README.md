@@ -54,6 +54,12 @@ nolimit.init({
 
 For more information on the available methods, see the [generated JSDOC](module-nolimit.html).
 
+## Current version
+
+```javascript
+console.log('nolimit.js', nolimit.version);
+```
+
 ## Loading a game
 
 ### As part of the page

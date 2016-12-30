@@ -5,7 +5,7 @@
   "scripts": {
     "dist": "npm run dist-dev && npm run dist-min && npm run dist-latest",
     "dist-dev": "browserify src/nolimit.js --standalone nolimit --debug -t partialify -o www/dist/nolimit-$npm_package_version.js",
-    "dist-min": "browserify src/nolimit.js --standalone nolimit -t partialify -t stripify -t uglifyify -o www/dist/nolimit-$npm_package_version.min.js",
+    "dist-min": "browserify src/nolimit.js --standalone nolimit -t partialify -t uglifyify -o www/dist/nolimit-$npm_package_version.min.js",
     "dist-latest": "cp www/dist/nolimit-$npm_package_version.js www/dist/nolimit-latest.js && cp www/dist/nolimit-$npm_package_version.min.js www/dist/nolimit-latest.min.js",
     "postdist": "npm run jsdoc",
     "jsdoc": "jsdoc -q title=nolimit.js -c .jsdoc.json",
@@ -39,7 +39,6 @@
     "minami": "nolimitcity/minami",
     "partialify": "^3.1.6",
     "replace": "^0.3.0",
-    "stripify": "^4.0.0",
     "uglifyify": "^3.0.2"
   },
   "browserify": {
