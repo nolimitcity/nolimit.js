@@ -205,7 +205,7 @@ function html(window, options) {
             if(info.error) {
                 window.trigger('error', info.error);
             } else {
-                console.log(info.name, info.version);
+                window.trigger('info', info);
 
                 var version = /^\d+\.\d+\.\d+$/.test(info.version) ? '/' + info.version : '';
 

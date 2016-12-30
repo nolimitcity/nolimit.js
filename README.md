@@ -147,6 +147,10 @@ api.on('support', function openHelpChat() {
 api.on('error', function logError(message) {
     console.error('nolimit.js:', message);
 });
+
+api.on('info', function logInfo(info) {
+    console.log('Loading:', info.name, info.version);
+});
 ```
 
 * ready - fired when the game is loaded and ready, and the API can be used.
@@ -154,7 +158,8 @@ api.on('error', function logError(message) {
 * balance - fired when the game displays a new balance, with that balance as data to the callback. 
 * deposit - fired when the player presses the Deposit button in the game.
 * support - fired when the player presses the Support button in the game.
-* error - fired when a fatal error has occured, with some error message as data to the callback. 
+* error - fired when a fatal error has occured, with some error message as data to the callback.
+* info - fired when loader has obtained information about the game, same as `nolimit.info()`.
 
 ### Calling methods
 
