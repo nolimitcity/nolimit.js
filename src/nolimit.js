@@ -78,19 +78,18 @@ var nolimit = {
         if (target instanceof HTMLElement) {
             var iframe = makeIframe(target);
 
-            iframe.addEventListener('load', function () {
+            var iframeConnection = nolimitApiFactory(iframe, function () {
                 html(iframe.contentWindow, gameOptions);
             });
-
-            var iframeConnection = nolimitApiFactory(iframe);
 
             target.parentNode.replaceChild(iframe, target);
             return iframeConnection;
 
         } else if (target.Window && target instanceof target.Window) {
+            var windowConnection = nolimitApiFactory(target, function() {
+                html(target, gameOptions);
+            });
 
-            var windowConnection = nolimitApiFactory(target);
-            html(target, gameOptions);
             return windowConnection;
 
         } else {

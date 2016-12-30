@@ -4,7 +4,7 @@
  * @exports nolimitApiFactory
  * @private
  */
-var nolimitApiFactory = function (target) {
+var nolimitApiFactory = function (target, onload) {
 
     var listeners = {};
     var unhandledEvents = {};
@@ -26,6 +26,7 @@ var nolimitApiFactory = function (target) {
                 handleUnhandledCalls(port);
             }
         });
+        onload();
     }
 
     if (target.nodeName === 'IFRAME') {
@@ -83,7 +84,7 @@ var nolimitApiFactory = function (target) {
          * @function on
          * @param {String}   event    name of the event
          * @param {Function} callback callback for the event, see specific event documentation for any parameters
-         * 
+         *
          * @example
          * api.on('deposit', function openDeposit () {
          *     showDeposit().then(function() {
@@ -108,7 +109,7 @@ var nolimitApiFactory = function (target) {
          * @function call
          * @param {String} method name of the method to call
          * @param {Object} [data] optional data for the method called, if any
-         * 
+         *
          * @example
          * // reload the game
          * api.call('reload');
