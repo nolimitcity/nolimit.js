@@ -26,6 +26,7 @@ var nolimitApiFactory = function (target, onload) {
                 handleUnhandledCalls(port);
             }
         });
+        gameWindow.trigger = trigger;
         onload();
     }
 

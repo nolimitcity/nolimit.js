@@ -202,13 +202,17 @@ function html(window, options) {
 
     loaderElement.onload = function () {
         nolimit.info(options, function (info) {
-            console.log(info.name, info.version);
+            if(info.error) {
+                window.trigger('error', info.error);
+            } else {
+                console.log(info.name, info.version);
 
-            var version = /^\d+\.\d+\.\d+$/.test(info.version) ? '/' + info.version : '';
+                var version = /^\d+\.\d+\.\d+$/.test(info.version) ? '/' + info.version : '';
 
-            var gameElement = document.createElement('script');
-            gameElement.src = options.staticRoot + GAME_JS_URL.replace('{GAME}', options.game).replace('{VERSION}', version);
-            document.body.appendChild(gameElement);
+                var gameElement = document.createElement('script');
+                gameElement.src = options.staticRoot + GAME_JS_URL.replace('{GAME}', options.game).replace('{VERSION}', version);
+                document.body.appendChild(gameElement);
+            }
         });
     };
 

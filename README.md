@@ -143,13 +143,18 @@ api.on('deposit', function openDeposit() {
 api.on('support', function openHelpChat() {
     // ...
 });
+
+api.on('error', function logError(message) {
+    console.error('nolimit.js:', message);
+});
 ```
 
 * ready - fired when the game is loaded and ready, and the API can be used.
 * exit - (mobile only) fired when the player presses the exit button in the game.
-* balance - fired when the game displays a new balance, with that balance as in-parameter. 
+* balance - fired when the game displays a new balance, with that balance as data to the callback. 
 * deposit - fired when the player presses the Deposit button in the game.
 * support - fired when the player presses the Support button in the game.
+* error - fired when a fatal error has occured, with some error message as data to the callback. 
 
 ### Calling methods
 
