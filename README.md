@@ -161,6 +161,7 @@ api.on('info', function logInfo(info) {
 
 * ready - fired when the game is loaded and ready, and the API can be used.
 * exit - (mobile only) fired when the player presses the exit button in the game.
+* exit - (any device) fired when the player chooses to "End session" in some dialog (Responsible Gaming).
 * balance - fired when the game displays a new balance, with that balance as data to the callback. 
 * deposit - fired when the player presses the Deposit button in the game.
 * support - fired when the player presses the Support button in the game.
