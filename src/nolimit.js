@@ -200,9 +200,6 @@ function html(window, options) {
         .replace('{OPERATOR}', options.operator)
         .replace('{GAME}', options.game);
 
-    window.nolimit = window.nolimit || {};
-    window.nolimit.options = options;
-
     document.body.innerHTML = '';
 
     loaderElement.onload = function() {
@@ -216,6 +213,11 @@ function html(window, options) {
 
                 var gameElement = document.createElement('script');
                 gameElement.src = options.staticRoot + GAME_JS_URL.replace('{GAME}', options.game).replace('{VERSION}', version);
+
+                options.loadStart = Date.now();
+                window.nolimit = window.nolimit || {};
+                window.nolimit.options = options;
+
                 document.body.appendChild(gameElement);
             }
         });
