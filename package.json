@@ -11,7 +11,7 @@
     "jsdoc": "jsdoc -q title=nolimit.js -c .jsdoc.json",
     "postjsdoc": "rm -rf www/jsdoc/@nolimit/nolimit.js/latest && cp -r www/jsdoc/@nolimit/nolimit.js/$npm_package_version www/jsdoc/@nolimit/nolimit.js/latest",
     "add-jsdoc": "git add www/jsdoc/@nolimit/nolimit.js/*",
-    "lint": "jshint src/*.js",
+    "lint": "eslint src",
     "preversion": "npm run lint",
     "version": "npm run dist && git add www/dist/nolimit-*.js && npm run version-www && npm run add-jsdoc",
     "version-www": "replace '\\d+\\.\\d+\\.\\d+' $npm_package_version www/index.html && git add www/index.html",
@@ -34,8 +34,8 @@
   "devDependencies": {
     "browserify": "^13.1.1",
     "browserify-versionify": "^1.0.6",
+    "eslint": "^3.15.0",
     "jsdoc": "^3.4.3",
-    "jshint": "^2.9.4",
     "minami": "nolimitcity/minami",
     "partialify": "^3.1.6",
     "replace": "^0.3.0",
