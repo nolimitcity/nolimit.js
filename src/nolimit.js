@@ -206,6 +206,7 @@ function html(window, options) {
         nolimit.info(options, function(info) {
             if(info.error) {
                 window.trigger('error', info.error);
+                loaderElement.contentWindow.postMessage(JSON.stringify(info), '*');
             } else {
                 window.trigger('info', info);
 
