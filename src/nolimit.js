@@ -201,6 +201,12 @@ function html(window, options) {
     document.body.innerHTML = '';
 
     loaderElement.onload = function() {
+        window.on('error', function(error) {
+            if(loaderElement) {
+                loaderElement.contentWindow.sendMessage('error', error);
+            }
+        });
+
         nolimit.info(options, function(info) {
             if(info.error) {
                 window.trigger('error', info.error);

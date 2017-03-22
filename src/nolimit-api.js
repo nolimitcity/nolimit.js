@@ -27,6 +27,7 @@ var nolimitApiFactory = function(target, onload) {
             }
         });
         gameWindow.trigger = trigger;
+        gameWindow.on = on;
         onload();
     }
 
@@ -74,6 +75,16 @@ var nolimitApiFactory = function(target, onload) {
         }
     }
 
+    function on(event, callback) {
+        listeners[event] = listeners[event] || [];
+        listeners[event].push(callback);
+        while(unhandledEvents[event] && unhandledEvents[event].length > 0) {
+            trigger(event, unhandledEvents[event].pop());
+        }
+
+        registerEvents([event]);
+    }
+
     /**
      * Connection to the game using MessageChannel
      * @exports nolimitApi
@@ -94,15 +105,7 @@ var nolimitApiFactory = function(target, onload) {
          *     });
          * });
          */
-        on: function(event, callback) {
-            listeners[event] = listeners[event] || [];
-            listeners[event].push(callback);
-            while(unhandledEvents[event] && unhandledEvents[event].length > 0) {
-                trigger(event, unhandledEvents[event].pop());
-            }
-
-            registerEvents([event]);
-        },
+        on: on,
 
         /**
          * Call method in the open game
