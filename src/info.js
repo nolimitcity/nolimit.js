@@ -30,7 +30,7 @@ var info = {
                 try {
                     var info = JSON.parse(request.responseText);
                     info.version = options.version || info.version;
-                    info.staticRoot = options.staticRoot;
+                    info.staticRoot = [options.staticRoot, info.name, info.version].join('/');
                     cache[url] = info;
                     callback(info);
                 } catch(e) {
