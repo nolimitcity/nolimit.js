@@ -6,7 +6,6 @@ var info = require('./info');
 var CDN = 'https://{ENV}';
 var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}';
 var GAMES_URL = '{CDN}/games';
-var INFO_JSON_URL = '/{GAME}/info.json';
 var GAME_JS_URL = '/{GAME}{VERSION}/game.js';
 
 var DEFAULT_OPTIONS = {
@@ -119,9 +118,8 @@ var nolimit = {
      * });
      */
     info: function(options, callback) {
-        var gameOptions = processOptions(mergeOptions(this.options, options));
-        var url = gameOptions.staticRoot + INFO_JSON_URL.replace('{GAME}', options.game);
-        info.load(url, gameOptions, callback);
+        options = processOptions(mergeOptions(this.options, options));
+        info.load(options, callback);
     }
 };
 

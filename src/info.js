@@ -1,9 +1,13 @@
 'use strict';
 
+var INFO_JSON_URL = '/{GAME}/info.json';
+
 var cache = {};
 
 var info = {
-    load: function(url, options, callback) {
+    load: function(options, callback) {
+        var url = options.staticRoot + INFO_JSON_URL.replace('{GAME}', options.game);
+
         var info = cache[url];
         if(info) {
             info.version = options.version || info.version;
@@ -26,6 +30,7 @@ var info = {
                 try {
                     var info = JSON.parse(request.responseText);
                     info.version = options.version || info.version;
+                    info.staticRoot = options.staticRoot;
                     cache[url] = info;
                     callback(info);
                 } catch(e) {
