@@ -12,7 +12,7 @@ var DEFAULT_OPTIONS = {
     device: 'desktop',
     environment: 'partner',
     language: 'en',
-    loader: 'nolimit.js'
+    'nolimit.js': '__VERSION__'
 };
 
 /**
