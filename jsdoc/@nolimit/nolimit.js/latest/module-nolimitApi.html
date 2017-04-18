@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-nolimit.html">nolimit</a><ul class='methods'><li data-type='method'><a href="module-nolimit.html#.info">info</a></li><li data-type='method'><a href="module-nolimit.html#.init">init</a></li><li data-type='method'><a href="module-nolimit.html#.load">load</a></li></ul></li><li><a href="module-nolimitApi.html">nolimitApi</a><ul class='methods'><li data-type='method'><a href="module-nolimitApi.html#~call">call</a></li><li data-type='method'><a href="module-nolimitApi.html#~on">on</a></li></ul></li></ul>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Modules</li><li class="nav-heading"><a href="module-nolimit.html">nolimit</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.info">info</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.init">init</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.load">load</a></span></li><li class="nav-heading"><a href="module-nolimitApi.html">nolimitApi</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimitApi.html#~call">call</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimitApi.html#~on">on</a></span></li>
 </nav>
 
 <div id="main">
@@ -56,14 +56,7 @@
 
         
             
-
-
-
-
-
-
-
-
+<div class="section-method">
 
 
 
@@ -126,6 +119,14 @@
 
 
 
+
+
+
+
+
+
+
+</div>
         
     
     </div>
@@ -147,6 +148,7 @@
 
         
             
+<div class="section-method">
 
     
 
@@ -159,106 +161,6 @@
 <div class="description">
     <p>Call method in the open game</p>
 </div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>method</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>name of the method to call</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>data</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>optional data for the method called, if any</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
 
 
 
@@ -312,42 +214,6 @@
 
 
 
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>// reload the game
-api.call('reload');</code></pre>
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="~on"><span class="type-signature">(inner) </span>on<span class="signature">(event, callback)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Add listener for event from the started game</p>
-</div>
-
-
-
-
-
-
-
-
-
     <h5>Parameters:</h5>
     
 
@@ -361,6 +227,8 @@ api.call('reload');</code></pre>
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -373,52 +241,109 @@ api.call('reload');</code></pre>
 
         <tr>
             
-                <td class="name"><code>event</code></td>
+                <td class="name"><code>method</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type"><code>String</code></span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>name of the event</p></td>
+            <td class="description last"><p>name of the method to call</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>callback</code></td>
+                <td class="name"><code>data</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">function</span>
+<span class="param-type"><code>Object</code></span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>callback for the event, see specific event documentation for any parameters</p></td>
+            <td class="description last"><p>optional data for the method called, if any</p></td>
         </tr>
 
     
     </tbody>
 </table>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>// reload the game
+api.call('reload');</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="~on"><span class="type-signature">(inner) </span>on<span class="signature">(event, callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Add listener for event from the started game</p>
+</div>
 
 
 
@@ -472,14 +397,95 @@ api.call('reload');</code></pre>
 
 
 
-
-
-
-
-
-
-    <h5>Example</h5>
+    <h5>Parameters:</h5>
     
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>String</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>name of the event</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>function</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>callback for the event, see specific event documentation for any parameters</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
     <pre class="prettyprint"><code>api.on('deposit', function openDeposit () {
     showDeposit().then(function() {
         // ask the game to refresh balance from server
@@ -487,8 +493,9 @@ api.call('reload');</code></pre>
     });
 });</code></pre>
 
+</div>
 
-
+</div>
         
     
 
@@ -507,7 +514,7 @@ api.call('reload');</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Feb 14 2017 18:45:06 GMT+0100 (CET) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Apr 18 2017 11:09:40 GMT+0200 (CEST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
