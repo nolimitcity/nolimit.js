@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-nolimit.html">nolimit</a><ul class='methods'><li data-type='method'><a href="module-nolimit.html#.info">info</a></li><li data-type='method'><a href="module-nolimit.html#.init">init</a></li><li data-type='method'><a href="module-nolimit.html#.load">load</a></li></ul></li><li><a href="module-nolimitApi.html">nolimitApi</a><ul class='methods'><li data-type='method'><a href="module-nolimitApi.html#~call">call</a></li><li data-type='method'><a href="module-nolimitApi.html#~on">on</a></li></ul></li></ul>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Modules</li><li class="nav-heading"><a href="module-nolimit.html">nolimit</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.info">info</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.init">init</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.load">load</a></span></li><li class="nav-heading"><a href="module-nolimitApi.html">nolimitApi</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimitApi.html#~call">call</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimitApi.html#~on">on</a></span></li>
 </nav>
 
 <div id="main">
@@ -69,9 +69,8 @@
 
         
             
+<div class="section-members">
 <h4 class="name" id=".version"><span class="type-signature">(static) </span>version<span class="type-signature"></span></h4>
-
-
 
 
 
@@ -112,7 +111,7 @@
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type"><code>String</code></span>
 
 
             
@@ -177,6 +176,9 @@
 
 
 
+
+</div>
+
         
     
 
@@ -185,6 +187,7 @@
 
         
             
+<div class="section-method">
 
     
 
@@ -197,190 +200,6 @@
 <div class="description">
     <p>Load information about the game, such as: current version, preferred width/height etc.</p>
 </div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>environment</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    partner
-                
-                </td>
-            
-
-            <td class="description last"><p>which environment to use; usually 'partner' or 'production'</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>game</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>called with the info object, if there was an error, the 'error' field will be set</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
 
 
 
@@ -434,46 +253,6 @@
 
 
 
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>nolimit.info({game: 'SpaceArcade'}, function(info) {
-    var target = document.getElementById('game');
-    target.style.width = info.size.width;
-    target.style.height = info.size.height;
-    console.log(info.name, info.version);
-});</code></pre>
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".init"><span class="type-signature">(static) </span>init<span class="signature">(options)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Initialize loader with default parameters. Can be skipped if the parameters are included in the call to load instead.</p>
-</div>
-
-
-
-
-
-
-
-
-
     <h5>Parameters:</h5>
     
 
@@ -505,7 +284,7 @@
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type"><code>Object</code></span>
 
 
             
@@ -545,126 +324,13 @@
 
         <tr>
             
-                <td class="name"><code>operator</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>the operator code for the operator</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>language</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    "en"
-                
-                </td>
-            
-
-            <td class="description last"><p>the language to use for the game</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>device</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    desktop
-                
-                </td>
-            
-
-            <td class="description last"><p>type of device: 'desktop' or 'mobile'</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
                 <td class="name"><code>environment</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type"><code>String</code></span>
 
 
             
@@ -697,13 +363,13 @@
 
         <tr>
             
-                <td class="name"><code>currency</code></td>
+                <td class="name"><code>game</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type"><code>String</code></span>
 
 
             
@@ -711,8 +377,6 @@
 
             
                 <td class="attributes">
-                
-                    &lt;optional><br>
                 
 
                 
@@ -724,12 +388,10 @@
             
                 <td class="default">
                 
-                    EUR
-                
                 </td>
             
 
-            <td class="description last"><p>currency to use, if not provided by server</p></td>
+            <td class="description last"><p>case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'</p></td>
         </tr>
 
     
@@ -740,9 +402,75 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>function</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>called with the info object, if there was an error, the 'error' field will be set</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>nolimit.info({game: 'SpaceArcade'}, function(info) {
+    var target = document.getElementById('game');
+    target.style.width = info.size.width;
+    target.style.height = info.size.height;
+    console.log(info.name, info.version);
+});</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".init"><span class="type-signature">(static) </span>init<span class="signature">(options)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Initialize loader with default parameters. Can be skipped if the parameters are included in the call to load instead.</p>
+</div>
 
 
 
@@ -796,50 +524,6 @@
 
 
 
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>nolimit.init({
-   operator: 'SMOOTHOPERATOR',
-   language: 'sv',
-   device: 'mobile',
-   environment: 'production',
-   currency: 'SEK'
-});</code></pre>
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".load"><span class="type-signature">(static) </span>load<span class="signature">(options)</span><span class="type-signature"> &rarr; {nolimitApi}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Load game, replacing target with the game.</p>
-<p><li> If target is a HTML element, it will be replaced with an iframe, keeping all the attributes of the original element, so those can be used to set id, classes, styles and more.</p>
-<p><li> If target is a Window element, the game will be loaded directly in that.</p>
-<p><li> If target is undefined, it will default to the current window.</p>
-</div>
-
-
-
-
-
-
-
-
-
     <h5>Parameters:</h5>
     
 
@@ -871,7 +555,7 @@
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type"><code>Object</code></span>
 
 
             
@@ -911,13 +595,13 @@
 
         <tr>
             
-                <td class="name"><code>game</code></td>
+                <td class="name"><code>operator</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type"><code>String</code></span>
 
 
             
@@ -939,23 +623,20 @@
                 </td>
             
 
-            <td class="description last"><p>case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'</p></td>
+            <td class="description last"><p>the operator code for the operator</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>target</code></td>
+                <td class="name"><code>language</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">HTMLElement</span>
-|
-
-<span class="param-type">Window</span>
+<span class="param-type"><code>String</code></span>
 
 
             
@@ -976,25 +657,25 @@
             
                 <td class="default">
                 
-                    window
+                    "en"
                 
                 </td>
             
 
-            <td class="description last"><p>the HTMLElement or Window to load the game in</p></td>
+            <td class="description last"><p>the language to use for the game</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>token</code></td>
+                <td class="name"><code>device</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type"><code>String</code></span>
 
 
             
@@ -1015,23 +696,25 @@
             
                 <td class="default">
                 
+                    desktop
+                
                 </td>
             
 
-            <td class="description last"><p>the token to use for real money play</p></td>
+            <td class="description last"><p>type of device: 'desktop' or 'mobile'</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>mute</code></td>
+                <td class="name"><code>environment</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Boolean</span>
+<span class="param-type"><code>String</code></span>
 
 
             
@@ -1052,25 +735,25 @@
             
                 <td class="default">
                 
-                    false
+                    partner
                 
                 </td>
             
 
-            <td class="description last"><p>start the game without sound</p></td>
+            <td class="description last"><p>which environment to use; usually 'partner' or 'production'</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>version</code></td>
+                <td class="name"><code>currency</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type"><code>String</code></span>
 
 
             
@@ -1091,10 +774,12 @@
             
                 <td class="default">
                 
+                    EUR
+                
                 </td>
             
 
-            <td class="description last"><p>force specific game version such as '1.2.3', or 'development' to disable cache</p></td>
+            <td class="description last"><p>currency to use, if not provided by server</p></td>
         </tr>
 
     
@@ -1108,6 +793,53 @@
     </tbody>
 </table>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>nolimit.init({
+   operator: 'SMOOTHOPERATOR',
+   language: 'sv',
+   device: 'mobile',
+   environment: 'production',
+   currency: 'SEK'
+});</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".load"><span class="type-signature">(static) </span>load<span class="signature">(options)</span><span class="type-signature"> &rarr; {nolimitApi}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Load game, replacing target with the game.</p>
+<p><li> If target is a HTML element, it will be replaced with an iframe, keeping all the attributes of the original element, so those can be used to set id, classes, styles and more.</p>
+<p><li> If target is a Window element, the game will be loaded directly in that.</p>
+<p><li> If target is undefined, it will default to the current window.</p>
+</div>
 
 
 
@@ -1161,36 +893,317 @@
 
 
 
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Object</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>game</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>String</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>target</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>HTMLElement</code></span>
+|
+
+<span class="param-type"><code>Window</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    window
+                
+                </td>
+            
+
+            <td class="description last"><p>the HTMLElement or Window to load the game in</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>token</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>String</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>the token to use for real money play</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mute</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>start the game without sound</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>String</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>force specific game version such as '1.2.3', or 'development' to disable cache</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
 <h5>Returns:</h5>
 
         
-<div class="param-desc">
-    <p>The API connection to the opened game.</p>
-</div>
-
-
 
 <dl class="param-type">
     <dt>
-        Type
+        Type:
     </dt>
     <dd>
         
-<span class="param-type">nolimitApi</span>
+<span class="param-type"><code>nolimitApi</code></span>
 
 
     </dd>
 </dl>
 
+
+<div class="param-desc">
+    <p>The API connection to the opened game.</p>
+</div>
+
     
+</div>
 
 
-    <h5>Example</h5>
-    
+
+<div class="section-examples">
+<h5>Example</h5>
+
     <pre class="prettyprint"><code>var api = nolimit.load({
    game: 'SpaceArcade',
    target: document.getElementById('game'),
@@ -1198,8 +1211,9 @@
    mute: true
 });</code></pre>
 
+</div>
 
-
+</div>
         
     
 
@@ -1218,7 +1232,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Feb 14 2017 18:45:06 GMT+0100 (CET) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Apr 18 2017 11:09:40 GMT+0200 (CEST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
