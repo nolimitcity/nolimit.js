@@ -19,7 +19,7 @@ var nolimitApiFactory = function(target, onload) {
 
     function addMessageListener(gameWindow) {
         gameWindow.addEventListener('message', function(e) {
-            if(e.ports.length > 0) {
+            if(e.ports && e.ports.length > 0) {
                 port = e.ports[0];
                 port.onmessage = onMessage;
                 registerEvents(Object.keys(listeners));
@@ -54,7 +54,12 @@ var nolimitApiFactory = function(target, onload) {
         }
 
         if(port) {
-            port.postMessage(message);
+            try {
+                port.postMessage(message);
+            } catch(ignored) {
+                port = undefined;
+                unhandledCalls.push(message);
+            }
         } else {
             unhandledCalls.push(message);
         }
