@@ -29,6 +29,7 @@
             "error",
             "all"
         ],
-        "no-warning-comments": "error"
+        "no-warning-comments": "error",
+        "space-before-function-paren": ["error", "never"]
     }
 }
