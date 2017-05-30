@@ -203,7 +203,7 @@ function html(window, options) {
 
     loaderElement.onload = function() {
         window.on('error', function(error) {
-            if(loaderElement) {
+            if(loaderElement && loaderElement.contentWindow) {
                 loaderElement.contentWindow.postMessage(JSON.stringify('error', error), '*');
             }
         });
