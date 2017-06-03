@@ -111,8 +111,8 @@ Ask environment for some information such as optimal game size and version numbe
 ```javascript
 nolimit.info({game: 'SpaceArcade'}, function(info) {
     var target = document.getElementById('game');
-    target.style.width = info.size.width;
-    target.style.height = info.size.height;
+    target.style.width = info.size.width + 'px';
+    target.style.height = info.size.height + 'px';
     console.log('Loading:', info.name, info.version);
 });
 ```
