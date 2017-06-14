@@ -204,7 +204,7 @@ function html(window, options) {
     loaderElement.onload = function() {
         window.on('error', function(error) {
             if(loaderElement && loaderElement.contentWindow) {
-                loaderElement.contentWindow.postMessage(JSON.stringify('error', error), '*');
+                loaderElement.contentWindow.postMessage(JSON.stringify({'error': error}), '*');
             }
         });
 
