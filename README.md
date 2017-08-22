@@ -271,7 +271,7 @@ Push to server:
     
     git push
     
-Publish new version to <http://nolimitcity.github.io/nolimit.js>:
+Publish new version to <https://nolimitcity.github.io/nolimit.js>:
    
     npm run www
 
