@@ -50,6 +50,15 @@ nolimit.init({
 </script>
 ```
 
+### Using typescript
+
+```typescript
+import * as nolimit from '@nolimit/nolimit.js';
+nolimit.init({
+    operator: 'SMOOTHOPERATOR'
+});
+```
+
 ## API documentation
 
 For more information on the available methods, see the [generated JSDOC](module-nolimit.html).
