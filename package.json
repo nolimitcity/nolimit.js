@@ -3,11 +3,10 @@
   "version": "1.1.14",
   "description": "Javascript game loader and API for operators",
   "scripts": {
-    "dist": "npm run dist-dev && npm run dist-min && npm run dist-latest && npm run dist-typescript",
+    "dist": "npm run dist-dev && npm run dist-min && npm run dist-latest",
     "dist-dev": "browserify src/nolimit.js --standalone nolimit --debug -t partialify -o www/dist/nolimit-$npm_package_version.js",
     "dist-min": "browserify src/nolimit.js --standalone nolimit -t partialify -t uglifyify -o www/dist/nolimit-$npm_package_version.min.js",
     "dist-latest": "cp www/dist/nolimit-$npm_package_version.js www/dist/nolimit-latest.js && cp www/dist/nolimit-$npm_package_version.min.js www/dist/nolimit-latest.min.js",
-    "dist-typescript": "cp src/nolimit.d.ts www/dist",
     "postdist": "npm run jsdoc",
     "jsdoc": "jsdoc -q title=nolimit.js -c .jsdoc.json",
     "postjsdoc": "rm -rf www/jsdoc/@nolimit/nolimit.js/latest && cp -r www/jsdoc/@nolimit/nolimit.js/$npm_package_version www/jsdoc/@nolimit/nolimit.js/latest",
@@ -16,6 +15,9 @@
     "preversion": "npm run lint",
     "version": "npm run dist && git add www/dist/* && npm run version-www && npm run add-jsdoc",
     "version-www": "replace '\\d+\\.\\d+\\.\\d+' $npm_package_version www/index.html && git add www/index.html",
+    "prepublish": "npm run module",
+    "module": "mkdir -p npm && cp src/* npm",
+    "postmodule": "replace __VERSION__ $npm_package_version npm/nolimit*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "www": "git subtree push --prefix www origin gh-pages"
   },
@@ -27,10 +29,10 @@
   "bugs": {
     "url": "https://github.com/nolimitcity/nolimit.js/issues"
   },
-  "main": "src/nolimit.js",
-  "types": "src/nolimit.d.ts",
+  "main": "npm/nolimit.js",
+  "types": "npm/nolimit.d.ts",
   "files": [
-    "src"
+    "npm"
   ],
   "homepage": "https://github.com/nolimitcity/nolimit.js#readme",
   "devDependencies": {

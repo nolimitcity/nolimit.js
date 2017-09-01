@@ -1,8 +1,12 @@
-// Type definitions for nolimit.js
+// Type definitions for nolimit.js __VERSION__
+// https://nolimitcity.github.io/nolimit.js/
 
 export = nolimit;
 
 declare namespace nolimit {
+
+    export const version: string;
+
     export interface InitOptions {
         operator: string;
         game?: string;
