@@ -6,12 +6,14 @@ export = nolimit;
 declare namespace nolimit {
 
     export const version: string;
+    
+    export type DeviceType = 'desktop' | 'mobile';
 
     export interface InitOptions {
         operator: string;
         game?: string;
         language?: string;
-        device?: string;
+        device?: DeviceType;
         environment?: string;
         currency?: string;
         target?: HTMLElement|Window;
@@ -25,7 +27,7 @@ declare namespace nolimit {
         operator?: string;
         game: string;
         language?: string;
-        device?: string;
+        device?: DeviceType;
         environment?: string;
         currency?: string;
         target?: HTMLElement|Window;
