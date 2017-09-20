@@ -80,6 +80,12 @@ var nolimit = {
 
         var gameOptions = processOptions(mergeOptions(this.options, options));
 
+        if(target.Window && target instanceof target.Window) {
+            target = document.createElement('div');
+            target.setAttribute('style', 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;');
+            document.body.appendChild(target);
+        }
+
         if(target instanceof HTMLElement) {
             var iframe = makeIframe(target);
 
@@ -89,14 +95,6 @@ var nolimit = {
 
             target.parentNode.replaceChild(iframe, target);
             return iframeConnection;
-
-        } else if(target.Window && target instanceof target.Window) {
-            var windowConnection = nolimitApiFactory(target, function() {
-                html(target, gameOptions);
-            });
-
-            return windowConnection;
-
         } else {
             throw 'Invalid option target: ' + target;
         }
@@ -129,6 +127,8 @@ function makeIframe(element) {
     copyAttributes(element, iframe);
 
     iframe.setAttribute('frameBorder', '0');
+    iframe.setAttribute('allowfullscreen', '');
+
     var name = generateName(iframe.getAttribute('name') || iframe.id);
     iframe.setAttribute('name', name);
 
