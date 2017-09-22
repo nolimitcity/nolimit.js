@@ -1,5 +1,5 @@
 // Type definitions for nolimit.js __VERSION__
-// https://nolimitcity.github.io/nolimit.js/
+// https://nolimitjs.nolimitcdn.com/
 
 export = nolimit;
 

@@ -10,7 +10,7 @@ The operator makes all the design and layout, and will only need to provide a ta
 
 ## Get nolimit.js
 
-**nolimit.js** is available with sourcemap and some logging as `nolimit-VERSION.js` or as minified as `nolimit-VERSION.min.js` at http://nolimitcity.github.io/nolimit.js/.
+**nolimit.js** is available with sourcemap and some logging as `nolimit-VERSION.js` or as minified as `nolimit-VERSION.min.js` at http://nolimitjs.nolimitcdn.com/.
 
 It can also be installed using NPM:
 
@@ -42,7 +42,7 @@ define(['nolimit'], function(nolimit) {
 ### As a global variable
 
 ```html
-<script src="https://nolimitcity.github.io/nolimit.js/dist/nolimit-latest.min.js"></script>
+<script src="https://nolimitjs.nolimitcdn.com/dist/nolimit-latest.min.js"></script>
 <script>
 nolimit.init({
     operator: 'SMOOTHOPERATOR'
@@ -280,7 +280,7 @@ Push to server:
     
     git push
     
-Publish new version to <https://nolimitcity.github.io/nolimit.js>:
+Publish new version to <https://nolimitjs.nolimitcdn.com>:
    
     npm run www
 
