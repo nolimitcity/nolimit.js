@@ -41,7 +41,7 @@
     "browserify-versionify": "^1.0.6",
     "eslint": "^4.6.1",
     "exorcist": "^0.4.0",
-    "jsdoc": "^3.4.3",
+    "jsdoc": "3.5.5",
     "minami": "^1.2.1",
     "partialify": "^3.1.6",
     "replace": "^0.3.0",
