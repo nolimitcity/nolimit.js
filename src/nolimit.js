@@ -132,8 +132,6 @@ function makeIframe(element) {
     var name = generateName(iframe.getAttribute('name') || iframe.id);
     iframe.setAttribute('name', name);
 
-    iframe.style.display = getComputedStyle(element).display;
-
     return iframe;
 }
 
