@@ -15,9 +15,9 @@
     "preversion": "npm run lint",
     "version": "npm run dist && git add www/dist/* && npm run version-www && npm run add-jsdoc",
     "version-www": "replace '\\d+\\.\\d+\\.\\d+' $npm_package_version www/index.html && git add www/index.html",
-    "prepublish": "npm run module",
+    "prepublishOnly": "npm run module",
     "premodule": "mkdir -p npm",
-    "module": "browserify src/nolimit.js -s nolimit -d -t partialify | exorcist npm/nolimit.js.map > npm/nolimit.js",
+    "module": "browserify src/nolimit.js -s nolimit -d -t partialify | derequire | exorcist npm/nolimit.js.map > npm/nolimit.js",
     "postmodule": "cp src/nolimit.d.ts npm/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "www": "git subtree push --prefix www origin gh-pages"
@@ -39,8 +39,9 @@
   "devDependencies": {
     "browserify": "^14.4.0",
     "browserify-versionify": "^1.0.6",
-    "eslint": "^4.6.1",
-    "exorcist": "^0.4.0",
+    "derequire": "^2.0.6",
+    "eslint": "^4.8.0",
+    "exorcist": "^1.0.0",
     "jsdoc": "3.5.5",
     "minami": "^1.2.1",
     "partialify": "^3.1.6",
