@@ -100,10 +100,7 @@ var nolimit = {
     },
 
     /**
-     * Load game in target or a new page.
-     *
-     * <li> If target is a HTML element, it will be replaced with an iframe, keeping all the attributes of the original element, so those can be used to set id, classes, styles and more.
-     * <li> If target is undefined, game will be loaded in a new page and can not be communicated with via the API.
+     * Load game in a new, separate page. This offers the best isolation, but no communication with the game is possible.
      *
      * @param {Object}              options
      * @param {String}              options.game case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'
