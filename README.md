@@ -86,18 +86,24 @@ api.on('exit', closeGame);
 
 ### Replace window
 
-Common use case on mobile, where the game should fill the whole screen and you still want the back button to work. 
-
-Make a separate page which contains the game loading script and navigate to that. `nolimit.load()` will default to replacing the whole current window.
+Common use case on mobile, where the game should fill the whole screen and you still want the back button to work.
 
 ```javascript
-var api = nolimit.load({
+var api = nolimit.replace({
     game: gameName
 });
+```
 
-api.on('exit', function() {
-    // or go to specific lobby page, or any other special handling
-    history.back();
+This goes to a completely separate page, so listening to events are not possible. So to specify what to do on exit, deposit or support, it's instead possible to give URLs as parameters:
+
+Exiting will still default to `history.back()` which will usually work in the common case.
+ 
+```javascript
+var api = nolimit.replace({
+    game: gameName,
+    lobbyUrl: lobbyUrl,
+    supportUrl: supportUrl,
+    depositUrl: depositUrl
 });
 ```
 
@@ -134,7 +140,7 @@ nolimit.info({game: 'SpaceArcade'}, function(info) {
 
 ## Communicating with the game
 
-For more information on the available methods, see the [generated JSDOC](module-nolimitApi.html).
+For more information on the available methods, see the [generated JSDOC](module-nolimitApi.html). Note that `replace()` does not return an API connection.
 
 ### Events
 

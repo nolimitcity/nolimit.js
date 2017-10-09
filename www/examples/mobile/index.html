@@ -16,11 +16,22 @@
     <body>
         <h1>Smooth Operator</h1>
         <div id="container">
-            <button id="replace" type="button">Start Game in Whole Window</button>
+            <button id="replace" type="button">Start Game using <code>replace()</code></button>
         </div>
+
+        <script src="../../dist/nolimit-latest.min.js"></script>
+
         <script>
+            nolimit.init({
+                operator: 'FAKE1',
+                environment: 'partner',
+                device: 'mobile'
+            });
+
             document.querySelector('#replace').addEventListener('click', function () {
-                location.href = 'mobile-window.html';
+                nolimit.replace({
+                   game: 'SpaceArcade'
+                });
             });
         </script>
     </body>

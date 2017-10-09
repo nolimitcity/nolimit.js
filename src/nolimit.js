@@ -5,6 +5,7 @@ var info = require('./info');
 
 var CDN = 'https://{ENV}';
 var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}';
+var REPLACE_URL = '{CDN}/loader/game-loader.html?{QUERY}';
 var GAMES_URL = '{CDN}/games';
 var GAME_JS_URL = '/{GAME}{VERSION}/game.js';
 
@@ -48,7 +49,6 @@ var nolimit = {
         this.options = options;
     },
 
-
     /**
      * Load game, replacing target with the game.
      *
@@ -76,7 +76,6 @@ var nolimit = {
      */
     load: function(options) {
         var target = options.target || window;
-        options.mute = options.mute || false;
 
         var gameOptions = processOptions(mergeOptions(this.options, options));
 
@@ -101,6 +100,38 @@ var nolimit = {
     },
 
     /**
+     * Load game in target or a new page.
+     *
+     * <li> If target is a HTML element, it will be replaced with an iframe, keeping all the attributes of the original element, so those can be used to set id, classes, styles and more.
+     * <li> If target is undefined, game will be loaded in a new page and can not be communicated with via the API.
+     *
+     * @param {Object}              options
+     * @param {String}              options.game case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'
+     * @param {HTMLElement|Window}  [options.target] the HTMLElement or Window to load the game in
+     * @param {String}              [options.token] the token to use for real money play
+     * @param {Boolean}             [options.mute=false] start the game without sound
+     * @param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache
+     * @param {Boolean}             [options.hideCurrency] hide currency symbols/codes in the game
+     * @param {String}              [options.lobbyUrl="history:back()"] URL to redirect back to lobby on mobile, if not using a target
+     * @param {String}              [options.depositUrl] URL to deposit page, if not using a target element
+     * @param {String}              [options.supportUrl] URL to support page, if not using a target element
+     *
+     * @example
+     * var api = nolimit.load({
+     *    game: 'SpaceArcade',
+     *    target: document.getElementById('game'),
+     *    token: realMoneyToken,
+     *    mute: true
+     * });
+     */
+    replace: function(options) {
+        var gameOptions = processOptions(mergeOptions(this.options, options));
+        location.href = REPLACE_URL
+            .replace('{CDN}', gameOptions.cdn)
+            .replace('{QUERY}', makeQueryString(gameOptions));
+    },
+
+    /**
      * Load information about the game, such as: current version, preferred width/height etc.
      *
      * @param {Object}      options
@@ -121,6 +152,14 @@ var nolimit = {
         info.load(options, callback);
     }
 };
+
+function makeQueryString(options) {
+    var query = [];
+    for(var key in options) {
+        query.push(encodeURIComponent(key) + '=' + encodeURIComponent(options[key]));
+    }
+    return query.join('&');
+}
 
 function makeIframe(element) {
     var iframe = document.createElement('iframe');
@@ -164,6 +203,7 @@ function setupViewport(head) {
 
 function processOptions(options) {
     options.device = options.device.toLowerCase();
+    options.mute = options.mute || false;
     var environment = options.environment.toLowerCase();
     if(environment.indexOf('.') === -1) {
         environment += '.nolimitcdn.com';

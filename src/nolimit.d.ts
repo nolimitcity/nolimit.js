@@ -20,7 +20,10 @@ declare namespace nolimit {
         token?: string;
         mute?: boolean;
         version?: string;
-        hideCurrency?:boolean;
+        hideCurrency?: boolean;
+        lobbyUrl?: string;
+        depositUrl?: string;
+        supportUrl?: string;
     }
 
     export interface LoadOptions {
@@ -34,7 +37,24 @@ declare namespace nolimit {
         token?: string;
         mute?: boolean;
         version?: string;
-        hideCurrency?:boolean;
+        hideCurrency?: boolean;
+    }
+
+    export interface ReplaceOptions {
+        operator?: string;
+        game: string;
+        language?: string;
+        device?: DeviceType;
+        environment?: string;
+        currency?: string;
+        target?: HTMLElement|Window;
+        token?: string;
+        mute?: boolean;
+        version?: string;
+        hideCurrency?: boolean;
+        lobbyUrl?: string;
+        depositUrl?: string;
+        supportUrl?: string;
     }
 
     export interface InfoOptions {
@@ -54,5 +74,6 @@ declare namespace nolimit {
 
     function init(options: InitOptions): void;
     function load(options: LoadOptions): NolimitApi;
+    function replace(options: ReplaceOptions): void;
     function info(options: InfoOptions, callback: (info: GameInfo) => void): void;
 }
