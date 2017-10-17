@@ -26,6 +26,8 @@ var nolimit = {
      */
     version: '__VERSION__',
 
+    options: {},
+
     /**
      * Initialize loader with default parameters. Can be skipped if the parameters are included in the call to load instead.
      *
