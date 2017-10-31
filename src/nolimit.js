@@ -155,7 +155,11 @@ var nolimit = {
 function makeQueryString(options) {
     var query = [];
     for(var key in options) {
-        query.push(encodeURIComponent(key) + '=' + encodeURIComponent(options[key]));
+        var value = options[key];
+        if(typeof value === 'object') {
+            value = JSON.stringify(value);
+        }
+        query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
     }
     return query.join('&');
 }
