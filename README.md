@@ -109,6 +109,23 @@ var api = nolimit.replace({
 
 It's also possible to make a full screen `<div>` and use that as target if that fits your flow better. Note though, that you need to make the game element responsive or resize manually in that case.
 
+### Construct URL manually
+
+If you wish to *not* make use of nolimit.js, but rather construct a URL, this is also possible:
+
+The minimal URL that loads a game looks like: https://partner.nolimitcdn.com/loader/game-loader.html?game=GAME&operator=OPERATOR
+
+To construct this URL manually:
+
+1. Take all needed options as documented here and construct a query string by pairing `<key>=<value>` and joining them with `&`
+    * It is highly recommended to URI-escape both keys and values
+    * Some games need extra data that's not plain strings, these need to pass through a JSON serialization before being URL encoded
+2. Append the query string to: `https://<environment>.nolimitcdn.com/loader/game-loader.html?`
+    * `<environment>` is either `'partner'` for test environments, or a name such as `'production'` that you have gotten from us.
+    * If you prefer, you can always use `casino` as environment in the hostname, but then you have to specify environment as an option instead.
+
+Note: `nolimit.url(options)` can build this URL for you if you use javascript, and `nolimit.replace(options)` can also redirect there.
+
 ## Options
 
 It's not strictly required to call `init()`, it's possible to call `load()` directly with all the options instead. `init()` just provides a way to setup some common defaults and the options will actually be merged before each game load.

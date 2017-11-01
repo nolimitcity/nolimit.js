@@ -116,7 +116,7 @@ var nolimit = {
      * @param {String}              [options.supportUrl] URL to support page, if not using a target element
      *
      * @example
-     * var api = nolimit.load({
+     * var api = nolimit.replace({
      *    game: 'SpaceArcade',
      *    target: document.getElementById('game'),
      *    token: realMoneyToken,
@@ -124,8 +124,19 @@ var nolimit = {
      * });
      */
     replace: function(options) {
+        location.href = this.url(options);
+    },
+
+    /**
+     * Constructs a URL for manually loading the game in an iframe or via redirect.
+
+     * @param {Object} options see replace for details
+     * @see {@link nolimit.replace} for details on options
+     * @return {string}
+     */
+    url: function(options) {
         var gameOptions = processOptions(mergeOptions(this.options, options));
-        location.href = REPLACE_URL
+        return REPLACE_URL
             .replace('{CDN}', gameOptions.cdn)
             .replace('{QUERY}', makeQueryString(gameOptions));
     },
