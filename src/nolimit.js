@@ -4,7 +4,7 @@ var nolimitApiFactory = require('./nolimit-api');
 var info = require('./info');
 
 var CDN = '{PROTOCOL}//{ENV}';
-var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}';
+var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}';
 var REPLACE_URL = '{CDN}/loader/game-loader.html?{QUERY}';
 var GAMES_URL = '{CDN}/games';
 var GAME_JS_URL = '/{GAME}{VERSION}/game.js';
@@ -248,7 +248,8 @@ function html(window, options) {
         .replace('{CDN}', options.cdn)
         .replace('{DEVICE}', options.device)
         .replace('{OPERATOR}', options.operator)
-        .replace('{GAME}', options.game);
+        .replace('{GAME}', options.game)
+        .replace('{LANGUAGE}', options.language);
 
     document.body.innerHTML = '';
 
