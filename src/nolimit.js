@@ -279,6 +279,7 @@ function html(window, options) {
                 gameElement.src = options.staticRoot + GAME_JS_URL.replace('{GAME}', options.game).replace('{VERSION}', version);
 
                 options.loadStart = Date.now();
+                options.version = info.version;
                 window.nolimit = window.nolimit || {};
                 window.nolimit.options = options;
 
