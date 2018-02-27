@@ -287,7 +287,7 @@ div.game, iframe.game {...}
 
 ### Publishing a new version
 
-Make sure that JSHint runs cleanly:
+Make sure that Eslint runs cleanly:
 
     npm run lint
 
