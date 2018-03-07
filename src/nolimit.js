@@ -37,6 +37,7 @@ var nolimit = {
      * @param {String}  [options.device=desktop] type of device: 'desktop' or 'mobile'
      * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or 'production'
      * @param {String}  [options.currency=EUR] currency to use, if not provided by server
+     * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
      *
      * @example
      * nolimit.init({
