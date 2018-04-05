@@ -212,11 +212,13 @@ The operator can also control the game using RPC calls:
 ```javascript
 api.call('refresh');
 
-api.call('reload');
+api.call('pause');
+api.call('resume');
 ```
 
 * refresh - ask game to refresh balance from server
-* reload - reload the game
+* pause - freeze the game
+* resume - unfreeze the game
 
 ## More Examples
 
