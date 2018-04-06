@@ -204,6 +204,8 @@ api.on('info', function logInfo(info) {
 * support - fired when the player presses the Support button in the game.
 * error - fired when a fatal error has occured, with some error message as data to the callback.
 * info - fired when loader has obtained information about the game, same as `nolimit.info()`.
+* busy - game is currently spinning or should otherwise not be interrupted
+* idle - game is idle and can be blocked by other UI
 
 ### Calling methods
 
