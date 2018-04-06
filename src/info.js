@@ -27,18 +27,20 @@ var info = {
 
         request.onload = function() {
             if(request.status >= 200 && request.status < 400) {
+                var info;
                 try {
-                    var info = JSON.parse(request.responseText);
+                    info = JSON.parse(request.responseText);
                     info.version = options.version || info.version;
                     info.staticRoot = [options.staticRoot, info.name, info.version].join('/');
                     info.aspectRatio = info.size.width / info.size.height;
                     cache[url] = info;
-                    callback(info);
                 } catch(e) {
                     callback({
                         error: e.message
                     });
+                    return;
                 }
+                callback(info);
             } else {
                 onFail();
             }
