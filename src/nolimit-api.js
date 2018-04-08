@@ -22,7 +22,6 @@ var nolimitApiFactory = function(target, onload) {
             if(e.ports && e.ports.length > 0) {
                 port = e.ports[0];
                 port.onmessage = onMessage;
-                registerEvents(Object.keys(listeners));
                 handleUnhandledCalls(port);
             }
         });
