@@ -26,6 +26,7 @@ var info = {
                     info.version = options.version || info.version;
                     info.staticRoot = [options.staticRoot, info.name, info.version].join('/');
                     info.aspectRatio = info.size.width / info.size.height;
+                    info.infoJson = url;
                 } catch(e) {
                     callback({
                         error: e.message
