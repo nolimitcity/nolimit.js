@@ -2,17 +2,10 @@
 
 var INFO_JSON_URL = '/{GAME}/info.json';
 
-var cache = {};
-
 var info = {
     load: function(options, callback) {
-        var url = options.staticRoot + INFO_JSON_URL.replace('{GAME}', options.game);
-
-        var info = cache[url];
-        if(info) {
-            info.version = options.version || info.version;
-            return callback(info);
-        }
+        var url = options.staticRoot + INFO_JSON_URL
+            .replace('{GAME}/', options.game + (options.version ? '/' + options.version + '/' : '/'));
 
         var request = new XMLHttpRequest();
 
@@ -33,7 +26,6 @@ var info = {
                     info.version = options.version || info.version;
                     info.staticRoot = [options.staticRoot, info.name, info.version].join('/');
                     info.aspectRatio = info.size.width / info.size.height;
-                    cache[url] = info;
                 } catch(e) {
                     callback({
                         error: e.message
