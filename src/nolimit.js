@@ -184,6 +184,7 @@ function makeIframe(element) {
 
     iframe.setAttribute('frameBorder', '0');
     iframe.setAttribute('allowfullscreen', '');
+    iframe.setAttribute('allow', 'autoplay; fullscreen');
 
     var name = generateName(iframe.getAttribute('name') || iframe.id);
     iframe.setAttribute('name', name);
