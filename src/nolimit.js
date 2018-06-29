@@ -284,7 +284,7 @@ function html(window, options) {
 
                 options.loadStart = Date.now();
                 options.version = info.version;
-                window.nolimit = window.nolimit || {};
+                window.nolimit = nolimit;
                 window.nolimit.options = options;
 
                 document.body.appendChild(gameElement);
