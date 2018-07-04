@@ -31,16 +31,9 @@ var nolimitApiFactory = function(target, onload) {
     }
 
     if(target.nodeName === 'IFRAME') {
-        if (target.contentWindow) {
-            target.addEventListener('nolimit-load', function() {
-                addMessageListener(target.contentWindow);
-            });
-            target.dispatchEvent(new CustomEvent('nolimit-load'));
-        } else {
-            target.addEventListener('load', function() {
-                addMessageListener(target.contentWindow);
-            });
-        }
+        target.addEventListener('load', function() {
+            addMessageListener(target.contentWindow);
+        });
     } else {
         addMessageListener(target);
     }

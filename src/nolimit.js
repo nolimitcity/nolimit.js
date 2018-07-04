@@ -90,11 +90,12 @@ var nolimit = {
 
         if(target instanceof HTMLElement) {
             var iframe = makeIframe(target);
-            target.parentNode.replaceChild(iframe, target);
 
             var iframeConnection = nolimitApiFactory(iframe, function() {
                 html(iframe.contentWindow, gameOptions);
             });
+
+            target.parentNode.replaceChild(iframe, target);
 
             return iframeConnection;
         } else {
