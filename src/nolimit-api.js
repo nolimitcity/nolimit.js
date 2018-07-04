@@ -31,9 +31,13 @@ var nolimitApiFactory = function(target, onload) {
     }
 
     if(target.nodeName === 'IFRAME') {
-        target.addEventListener('load', function() {
+        if (target.contentWindow) {
             addMessageListener(target.contentWindow);
-        });
+        } else {
+            target.addEventListener('load', function() {
+                addMessageListener(target.contentWindow);
+            });
+        }
     } else {
         addMessageListener(target);
     }
