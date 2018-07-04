@@ -90,14 +90,11 @@ var nolimit = {
 
         if(target instanceof HTMLElement) {
             var iframe = makeIframe(target);
-
-            var iframeConnection = nolimitApiFactory(iframe, function() {
-                html(iframe.contentWindow, gameOptions);
-            });
-
             target.parentNode.replaceChild(iframe, target);
 
-            return iframeConnection;
+            return nolimitApiFactory(iframe, function() {
+                html(iframe.contentWindow, gameOptions);
+            });
         } else {
             throw 'Invalid option target: ' + target;
         }
