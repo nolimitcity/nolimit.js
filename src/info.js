@@ -5,7 +5,7 @@ var INFO_JSON_URL = '/{GAME}/info.json';
 var info = {
     load: function(options, callback) {
         var url = options.staticRoot + INFO_JSON_URL
-            .replace('{GAME}/', options.game + (options.version ? '/' + options.version + '/' : '/'));
+            .replace('{GAME}', options.game);
 
         var request = new XMLHttpRequest();
 
