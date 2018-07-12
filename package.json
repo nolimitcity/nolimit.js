@@ -39,7 +39,7 @@
   "devDependencies": {
     "browserify": "^14.4.0",
     "derequire": "^2.0.6",
-    "eslint": "^4.8.0",
+    "eslint": "^5.1.0",
     "exorcist": "^1.0.0",
     "jsdoc": "3.5.5",
     "minami": "^1.2.1",
