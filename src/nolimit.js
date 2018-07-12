@@ -227,7 +227,7 @@ function processOptions(options) {
     if(environment.indexOf('.') === -1) {
         environment += '.nolimitcdn.com';
     }
-    options.cdn = CDN.replace('{PROTOCOL}', location.protocol).replace('{ENV}', environment);
+    options.cdn = options.cdn || CDN.replace('{PROTOCOL}', location.protocol).replace('{ENV}', environment);
     options.staticRoot = options.staticRoot || GAMES_URL.replace('{CDN}', options.cdn);
     return options;
 }
