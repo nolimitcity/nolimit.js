@@ -168,6 +168,9 @@ function makeQueryString(options) {
     var query = [];
     for(var key in options) {
         var value = options[key];
+        if(typeof value === 'undefined') {
+            continue;
+        }
         if(typeof value === 'object') {
             value = JSON.stringify(value);
         }
