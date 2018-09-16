@@ -38,6 +38,7 @@ var nolimit = {
      * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or 'production'
      * @param {String}  [options.currency=EUR] currency to use, if not provided by server
      * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
+     * @param {String}  [options.jurisdiction] force a specific jurisdiction to enforce specific license requirements. Ask Nolimit City for the correct code(s) to use.
      *
      * @example
      * nolimit.init({

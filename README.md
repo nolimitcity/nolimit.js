@@ -61,7 +61,7 @@ nolimit.init({
 
 ## API documentation
 
-For more information on the available methods, see the [generated JSDOC](module-nolimit.html).
+For more information on the available methods and options, see the [generated JSDOC](module-nolimit.html).
 
 ## Current version
 
