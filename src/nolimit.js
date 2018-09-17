@@ -79,9 +79,9 @@ var nolimit = {
      * });
      */
     load: function(options) {
-        var target = options.target || window;
+        options = processOptions(mergeOptions(this.options, options));
 
-        var gameOptions = processOptions(mergeOptions(this.options, options));
+        var target = options.target || window;
 
         if(target.Window && target instanceof target.Window) {
             target = document.createElement('div');
@@ -94,7 +94,7 @@ var nolimit = {
             target.parentNode.replaceChild(iframe, target);
 
             return nolimitApiFactory(iframe, function() {
-                html(iframe.contentWindow, gameOptions);
+                html(iframe.contentWindow, options);
             });
         } else {
             throw 'Invalid option target: ' + target;
@@ -124,6 +124,7 @@ var nolimit = {
      * });
      */
     replace: function(options) {
+        options = processOptions(mergeOptions(this.options, options));
         location.href = this.url(options);
         function noop() {}
         return {on: noop, call: noop};
