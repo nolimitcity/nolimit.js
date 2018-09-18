@@ -124,7 +124,6 @@ var nolimit = {
      * });
      */
     replace: function(options) {
-        options = processOptions(mergeOptions(this.options, options));
         location.href = this.url(options);
         function noop() {}
         return {on: noop, call: noop};
