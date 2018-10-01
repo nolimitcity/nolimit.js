@@ -89,7 +89,7 @@ var nolimit = {
             document.body.appendChild(target);
         }
 
-        if(target instanceof HTMLElement) {
+        if(target.ownerDocument && target instanceof target.ownerDocument.defaultView.HTMLElement) {
             var iframe = makeIframe(target);
             target.parentNode.replaceChild(iframe, target);
 
