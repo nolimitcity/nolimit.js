@@ -267,6 +267,36 @@ nolimit.load({
 
 ```
 
+## Jurisdictions
+
+Use `options.jurisdiction.name=<JURISDICTION CODE>` to override which jurisdiction's license that should be used.
+
+Currently there is special behaviour in our games for jurisdictions `"UKGC"` (UK) and `"SE"` (Lotteriinspektionen, Sweden).
+
+### UKGC
+
+No extra configuration needed.
+
+### SE
+
+Lotteriinspektionen has [three mandatory buttons](https://www.lotteriinspektionen.se/press/nyhetsarkiv/enklare-for-spelare-att-ta-kontroll-over-sitt-spelande/) that must be displayed for play in Sweden. Either the operator can show them on their site, but when this is impossible or impractical (say, on mobile) we can display these buttons in-game.
+
+On top of setting `jurisdiction.name` to `"SE"`, the three buttons each need a URL to corresponding pages maintained by the operator. Add them to the jurisdiction object when setting jurisdiction 'SE'. They are named after the icon names, see the documentation from Lotteriinspektionen.
+
+Optionally, you can also add a [`target` for the links](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attr-target), default is `"_top"`, replacing the current site. To open in a new tab/window, set it to `"_blank"` or see HTML documentation for more options. 
+
+```javascript
+{
+    options.jurisdiction = {
+        name: 'SE',
+        target: '_top',
+        spelpaus: '<URL>',
+        spelgranser: '<URL>',
+        sjalvtest: '<URL>'
+    }
+}
+```
+
 ## How do I...?
 
 ### Style the game iframe
