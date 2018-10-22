@@ -297,6 +297,13 @@ Optionally, you can also add a [`target` for the links](https://developer.mozill
 }
 ```
 
+## Reality Check
+
+At regular intervals (default once per hour), a dialog is shown to the player, listing time elapsed, bets and wins during the game session and an option to close the game.
+
+Interval, message and intial values can all be changed, or it can be completely disabled. See the javascript options for `nolimit.init()`. It is also possible to update these values via the server-to-server API, see integration documentation.
+
+
 ## How do I...?
 
 ### Style the game iframe
