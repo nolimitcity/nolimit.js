@@ -38,7 +38,9 @@ var nolimit = {
      * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or 'production'
      * @param {String}  [options.currency=EUR] currency to use, if not provided by server
      * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
-     * @param {String}  [options.jurisdiction] force a specific jurisdiction to enforce specific license requirements. Ask Nolimit City for the correct code(s) to use.
+     * @param {Object}  [options.jurisdiction] force a specific jurisdiction to enforce specific license requirements and set specific options and overrides. See README for jurisdiction-specific details.
+     * @param {Object}  [options.jurisdiction.name] the name of the jurisdiction, for example "UKGC" or "SE".
+     *
      *
      * @example
      * nolimit.init({
@@ -46,7 +48,10 @@ var nolimit = {
      *    language: 'sv',
      *    device: 'mobile',
      *    environment: 'production',
-     *    currency: 'SEK'
+     *    currency: 'SEK',
+     *    jurisdiction: {
+     *        name: 'SE'
+     *    }
      * });
      */
     init: function(options) {
