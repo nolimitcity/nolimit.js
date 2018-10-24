@@ -264,7 +264,26 @@ nolimit.load({
     target: gameElement2,
     game: 'CreepyCarnival'
 });
+```
 
+## Pause/resume/busy/idle
+
+The api can listen to events for when the game is busy/idle as well as call pause/resume. Game will usually be in "busy" state when doing a spin (or equivalent).
+
+The usual use case for pausing is to show some operator-specific content. It is recommended to first wait for the game to be in "idle" state, then call "pause" and once done with the custom content, call "resume".
+
+Game cannot be paused in the middle of a spin or other equivalent "busy" state, but will pause once "idle" state is reached. It is recommended to use the events to keep track of this for maximum control. 
+
+```javascript
+var busy = false;
+api.on('busy', function() {busy = true;});
+api.on('idle', function() {busy = false;});
+
+// Pause the game at next possible time
+api.call('pause');
+
+// unpause the game
+api.call('resume');
 ```
 
 ## Jurisdictions
