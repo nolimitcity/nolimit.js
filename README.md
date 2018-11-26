@@ -126,6 +126,16 @@ To construct this URL manually:
 
 Note: `nolimit.url(options)` can build this URL for you if you use javascript, and `nolimit.replace(options)` can also redirect there.
 
+#### Passing along option objects in the URL
+
+Some objects can be passed along in the URL, e.g. `jurisdiction`. However, this needs to be encoded properly to be accepted. The value is added into to the options structure by decoding in the following way conceptually.
+
+`options.value = JSON.parse(decodeURIComponent(value in url))`
+
+So when adding the value to the URL first encode it in this way, where `{...}` represents the object you need to pass along.
+
+`encodeURIComponent(JSON.stringify({...}))`
+
 ## Options
 
 It's not strictly required to call `init()`, it's possible to call `load()` directly with all the options instead. `init()` just provides a way to setup some common defaults and the options will actually be merged before each game load.
