@@ -43,6 +43,7 @@ var nolimit = {
      * @param {Object}  [options.realityCheck] set options for reality check. See README for more details.
      * @param {Object}  [options.realityCheck.enabled=true] set to false to disable reality-check dialog.
      * @param {Number}  [options.realityCheck.interval=60] Interval in minutes between showing reality-check dialog.
+     * @param {Number}  [options.realityCheck.sessionStart=Date.now()] override session start, default is Date.now().
      * @param {Number}  [options.realityCheck.nextTime] next time to show dialog, defaults to Date.now() + interval.
      * @param {Number}  [options.realityCheck.bets=0] set initial bets if player already has bets in the session.
      * @param {Number}  [options.realityCheck.winnings=0] set initial winnings if player already has winnings in the session.
