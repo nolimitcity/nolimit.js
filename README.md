@@ -217,6 +217,8 @@ api.on('info', function logInfo(info) {
 * busy - game is currently spinning or should otherwise not be interrupted
 * idle - game is idle and can be blocked by other UI
 
+There may be more specific events for Jurisdictions and other special cases, see those specific parts.  
+
 ### Calling methods
 
 The operator can also control the game using RPC calls:
@@ -310,6 +312,12 @@ No extra configuration needed.
 
 Lotteriinspektionen has [three mandatory buttons](https://www.lotteriinspektionen.se/press/nyhetsarkiv/enklare-for-spelare-att-ta-kontroll-over-sitt-spelande/) that must be displayed for play in Sweden. Either the operator can show them on their site, but when this is impossible or impractical (say, on mobile) we can display these buttons in-game.
 
+It may help the experience to set the option `fullscreen` to `false`; default enabled on Android mobile.  
+
+There are currently two ways to configure these buttons:
+
+#### Configure as regular links:
+
 On top of setting `jurisdiction.name` to `"SE"`, the three buttons each need a URL to corresponding pages maintained by the operator. Add them to the jurisdiction object when setting jurisdiction 'SE'. They are named after the icon names, see the documentation from Lotteriinspektionen.
 
 Optionally, you can also add a [`target` for the links](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attr-target), default is `"_top"`, replacing the current site. To open in a new tab/window, set it to `"_blank"` or see HTML documentation for more options. 
@@ -325,6 +333,32 @@ Optionally, you can also add a [`target` for the links](https://developer.mozill
     }
 }
 ```
+
+#### Configure as events:
+
+Use the external API to get callbacks:
+
+```javascript
+api.on('spelgranser', function() {
+    // ...
+});
+
+api.on('spelpaus', function() {
+    // ...
+});
+
+api.on('sjalvtest', function() {
+    // ...
+});
+
+{
+    options.jurisdiction = {
+        name: 'SE',
+        events: true
+    }
+}
+```
+
 
 ## Reality Check
 
