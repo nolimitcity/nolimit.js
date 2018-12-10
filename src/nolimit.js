@@ -38,6 +38,7 @@ var nolimit = {
      * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or 'production'
      * @param {String}  [options.currency=EUR] currency to use, if not provided by server
      * @param {Boolean} [options.fullscreen=true] set to false to disable automatic fullscreen on mobile (Android only)
+     * @param {Boolean} [options.clock=true] set to false to disable in-game clock
      * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
      * @param {Object}  [options.jurisdiction] force a specific jurisdiction to enforce specific license requirements and set specific options and overrides. See README for jurisdiction-specific details.
      * @param {Object}  [options.jurisdiction.name] the name of the jurisdiction, for example "UKGC" or "SE".
