@@ -24,6 +24,7 @@ declare namespace nolimit {
         lobbyUrl?: string;
         depositUrl?: string;
         supportUrl?: string;
+        accountHistoryUrl?: string;
     }
 
     export interface LoadOptions {
@@ -55,6 +56,7 @@ declare namespace nolimit {
         lobbyUrl?: string;
         depositUrl?: string;
         supportUrl?: string;
+        accountHistoryUrl?: string;
     }
 
     export interface InfoOptions {

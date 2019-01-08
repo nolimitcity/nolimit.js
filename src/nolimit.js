@@ -131,6 +131,7 @@ var nolimit = {
      * @param {String}              [options.lobbyUrl="history:back()"] URL to redirect back to lobby on mobile, if not using a target
      * @param {String}              [options.depositUrl] URL to deposit page, if not using a target element
      * @param {String}              [options.supportUrl] URL to support page, if not using a target element
+     * @param {String}              [options.accountHistoryUrl] URL to support page, if not using a target element
      *
      * @example
      * var api = nolimit.replace({
