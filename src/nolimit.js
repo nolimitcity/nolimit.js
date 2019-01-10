@@ -205,6 +205,7 @@ function makeIframe(element) {
     iframe.setAttribute('frameBorder', '0');
     iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('allow', 'autoplay; fullscreen');
+    iframe.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin allow-top-navigation allow-popups');
 
     var name = generateName(iframe.getAttribute('name') || iframe.id);
     iframe.setAttribute('name', name);
