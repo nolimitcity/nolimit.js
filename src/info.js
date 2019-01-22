@@ -1,12 +1,12 @@
-'use strict';
-
-var INFO_JSON_URL = '/{GAME}/info.json';
-
 var info = {
     load: function(options, callback) {
-        var url = options.staticRoot + INFO_JSON_URL
-            .replace('{GAME}', options.game);
+        var parts = [options.staticRoot, options.game];
+        if(options.version) {
+            parts.push(options.version);
+        }
+        parts.push('info.json');
 
+        var url = parts.join('/');
         var request = new XMLHttpRequest();
 
         function onFail() {
