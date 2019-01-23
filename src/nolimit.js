@@ -40,7 +40,6 @@ var nolimit = {
      * @param {Boolean} [options.fullscreen=true] set to false to disable automatic fullscreen on mobile (Android only)
      * @param {Boolean} [options.clock=true] set to false to disable in-game clock
      * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
-     * @param {String}  [options.version] force specific version of game to load.
      * @param {Object}  [options.jurisdiction] force a specific jurisdiction to enforce specific license requirements and set specific options and overrides. See README for jurisdiction-specific details.
      * @param {Object}  [options.jurisdiction.name] the name of the jurisdiction, for example "UKGC" or "SE".
      * @param {Object}  [options.realityCheck] set options for reality check. See README for more details.
@@ -216,6 +215,7 @@ function makeIframe(element) {
 }
 
 function mergeOptions(globalOptions, gameOptions) {
+    delete globalOptions.version;
     var options = {}, name;
     for(name in DEFAULT_OPTIONS) {
         options[name] = DEFAULT_OPTIONS[name];
@@ -306,9 +306,9 @@ function html(window, options) {
                 gameElement.src = options.staticRoot + GAME_JS_URL.replace('{GAME}', options.game).replace('{VERSION}', version);
 
                 options.loadStart = Date.now();
-                options.version = info.version;
                 window.nolimit = nolimit;
                 window.nolimit.options = options;
+                window.nolimit.options.version = info.version;
 
                 document.body.appendChild(gameElement);
             }
