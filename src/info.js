@@ -10,7 +10,7 @@ var info = {
         var request = new XMLHttpRequest();
 
         function onFail() {
-            var error = request.statusText || 'No error message available; probably a CORS issue.';
+            var error = request.statusText || 'No error message available; CORS or server missing?';
             callback({
                 error: error
             });
