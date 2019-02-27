@@ -77,5 +77,6 @@ declare namespace nolimit {
     function init(options: InitOptions): void;
     function load(options: LoadOptions): NolimitApi;
     function replace(options: ReplaceOptions): void;
+    function url(options: ReplaceOptions): string;
     function info(options: InfoOptions, callback: (info: GameInfo) => void): void;
 }
