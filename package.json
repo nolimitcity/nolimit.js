@@ -16,10 +16,11 @@
     "version": "npm run dist && git add www/dist/* && npm run version-www && npm run add-jsdoc",
     "version-www": "replace '\\d+\\.\\d+\\.\\d+' $npm_package_version www/index.html && git add www/index.html",
     "prepublishOnly": "npm run module",
-    "premodule": "mkdir -p npm",
+    "premodule": "mkdir -p npm && cp src/nolimit.d.ts npm/",
     "module": "browserify src/nolimit.js -s nolimit -d -t partialify | derequire | exorcist npm/nolimit.js.map > npm/nolimit.js",
-    "postmodule": "cp src/nolimit.d.ts npm/",
+    "postmodule": "node bin/check-size npm/nolimit.js 10000",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "prewww": "node bin/check-size.js www/dist/nolimit-latest.min.js 5000",
     "www": "git subtree push --prefix www origin gh-pages"
   },
   "repository": {
