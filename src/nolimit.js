@@ -7,7 +7,6 @@ var CDN = '{PROTOCOL}//{ENV}';
 var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}';
 var REPLACE_URL = '{CDN}/loader/game-loader.html?{QUERY}';
 var GAMES_URL = '{CDN}/games';
-var GAME_JS_URL = '/{GAME}{VERSION}/game.js';
 
 var DEFAULT_OPTIONS = {
     device: 'desktop',
@@ -300,10 +299,8 @@ function html(window, options) {
             } else {
                 window.trigger('info', info);
 
-                var version = /^\d+\.\d+\.\d+$/.test(info.version) ? '/' + info.version : '';
-
                 var gameElement = document.createElement('script');
-                gameElement.src = options.staticRoot + GAME_JS_URL.replace('{GAME}', options.game).replace('{VERSION}', version);
+                gameElement.src = info.staticRoot + '/game.js';
 
                 options.loadStart = Date.now();
                 window.nolimit = nolimit;
