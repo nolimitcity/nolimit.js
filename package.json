@@ -4,8 +4,8 @@
   "description": "Javascript game loader and API for operators",
   "scripts": {
     "dist": "npm run dist-dev && npm run dist-min && npm run dist-latest",
-    "dist-dev": "browserify src/nolimit.js --standalone nolimit --debug -t partialify -o www/dist/nolimit-$npm_package_version.js",
-    "dist-min": "browserify src/nolimit.js --standalone nolimit -t partialify -t uglifyify -o www/dist/nolimit-$npm_package_version.min.js",
+    "dist-dev": "browserify src/nolimit.js -s nolimit -d -t partialify -o www/dist/nolimit-$npm_package_version.js",
+    "dist-min": "browserify src/nolimit.js -s nolimit -d -t partialify -t uglifyify | exorcist www/dist/nolimit-$npm_package_version.min.js.map > www/dist/nolimit-$npm_package_version.min.js",
     "dist-latest": "cp www/dist/nolimit-$npm_package_version.js www/dist/nolimit-latest.js && cp www/dist/nolimit-$npm_package_version.min.js www/dist/nolimit-latest.min.js",
     "postdist": "npm run jsdoc",
     "jsdoc": "jsdoc -q title=nolimit.js -c .jsdoc.json",
