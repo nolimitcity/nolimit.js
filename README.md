@@ -255,35 +255,6 @@ api.on('deposit', function openDeposit () {
 });
 ```
 
-### Multiple games
-
-```html
-<div class="multigame">
-    <div id="game1">
-    <div id="game2">
-</div>
-```
-
-```javascript
-nolimit.init({
-    operator: 'SMOOTHOPERATOR',
-    language: 'sv',
-    environment: 'production'
-});
-
-var gameElement1 = document.getElementById('game1');
-nolimit.load({
-    target: gameElement1,
-    game: 'KitchenDrama'
-});
-
-var gameElement2 = document.getElementById('game2');
-nolimit.load({
-    target: gameElement2,
-    game: 'CreepyCarnival'
-});
-```
-
 ## Pause/resume/busy/idle
 
 The api can listen to events for when the game is busy/idle as well as call pause/resume. Game will usually be in "busy" state when doing a spin (or equivalent).
