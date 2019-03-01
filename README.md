@@ -240,6 +240,21 @@ api.call('resume');
 * pause - freeze the game
 * resume - unfreeze the game
 
+### If loading via url / launcher page
+
+```javascript
+window.addEventListener('message', function(e) {
+    if(e.data) {
+        console.log(e.data); // busy, idle, ready
+    }
+});
+
+// iframe with the launcher URL 
+var gameFrame = document.getElementById('game');
+gameFrame.contentWindow.postMessage('pause', '*');
+gameFrame.contentWindow.postMessage('resume', '*');
+```
+
 ## More Examples
 
 ### Opening a deposit dialog from the game
