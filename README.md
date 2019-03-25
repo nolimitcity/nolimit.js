@@ -253,6 +253,10 @@ window.addEventListener('message', function(e) {
 var gameFrame = document.getElementById('game');
 gameFrame.contentWindow.postMessage('pause', '*');
 gameFrame.contentWindow.postMessage('resume', '*');
+
+// To handle this way, use depositEvent=true and lobbyEvent=true instead of depositUrl and lobbyUrl, see game loading options
+gameFrame.contentWindow.postMessage('deposit', '*');
+gameFrame.contentWindow.postMessage('lobby', '*'); // this is the same as "exit" in regular api
 ```
 
 ## More Examples

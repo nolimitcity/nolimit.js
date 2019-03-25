@@ -84,8 +84,6 @@ var nolimit = {
      * @param {Boolean}             [options.mute=false] start the game without sound
      * @param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache
      * @param {Boolean}             [options.hideCurrency] hide currency symbols/codes in the game
-     * @param {Boolean}             [options.depositEvent] instead of using URL, emit "deposit" event (see event documentation)
-     * @param {Boolean}             [options.lobbyEvent] instead of using URL, emit "lobby" event (see event documentation) (mobile only)
      *
      * @returns {nolimitApi}        The API connection to the opened game.
      *
@@ -132,6 +130,8 @@ var nolimit = {
      * @param {String}              [options.lobbyUrl="history:back()"] URL to redirect back to lobby on mobile, if not using a target
      * @param {String}              [options.depositUrl] URL to deposit page, if not using a target element
      * @param {String}              [options.supportUrl] URL to support page, if not using a target element
+     * @param {Boolean}             [options.depositEvent] instead of using URL, emit "deposit" event (see event documentation)
+     * @param {Boolean}             [options.lobbyEvent] instead of using URL, emit "lobby" event (see event documentation) (mobile only)
      * @param {String}              [options.accountHistoryUrl] URL to support page, if not using a target element
      *
      * @example
