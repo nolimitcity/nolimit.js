@@ -192,6 +192,9 @@ function makeQueryString(options) {
         if(typeof value === 'undefined') {
             continue;
         }
+        if(value instanceof HTMLElement) {
+            continue;
+        }
         if(typeof value === 'object') {
             value = JSON.stringify(value);
         }
