@@ -23,7 +23,7 @@ When loaded standalone, it will add a global variable `window.nolimit` which is 
 ### Using CommonJS
 
 ```javascript
-const nolimit = require('@nolimit/nolimit.js');
+var nolimit = require('@nolimit/nolimit.js');
 nolimit.init({
     operator: 'SMOOTHOPERATOR'
 });
