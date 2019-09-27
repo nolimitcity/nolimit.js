@@ -29,3 +29,8 @@ Publish to <https://www.npmjs.com/~nolimit>:
     
 * Login as `nolimit` and use email <buildbot@nolimitcity.com> (ask for password if you don't have it).
 * `--userconfig=.npmrc` makes sure you don't pollute your regular `.npmrc`.
+
+## Build locally
+
+    npm run dist
+    
