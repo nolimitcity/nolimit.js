@@ -5,7 +5,7 @@
   "scripts": {
     "dist": "npm run dist-dev && npm run dist-min && npm run dist-latest",
     "dist-dev": "browserify src/nolimit.js -s nolimit -d -t partialify -o www/dist/nolimit-$npm_package_version.js",
-    "dist-min": "browserify src/nolimit.js -s nolimit -d -t partialify -t uglifyify | exorcist www/dist/nolimit-$npm_package_version.min.js.map > www/dist/nolimit-$npm_package_version.min.js",
+    "dist-min": "browserify src/nolimit.js -s nolimit -d -t partialify -g uglifyify | exorcist www/dist/nolimit-$npm_package_version.min.js.map > www/dist/nolimit-$npm_package_version.min.js",
     "dist-latest": "cp www/dist/nolimit-$npm_package_version.js www/dist/nolimit-latest.js && cp www/dist/nolimit-$npm_package_version.min.js www/dist/nolimit-latest.min.js",
     "postdist": "npm run jsdoc",
     "jsdoc": "jsdoc -q title=nolimit.js -c .jsdoc.json",
@@ -49,7 +49,8 @@
     "uglifyify": "^5.0.1"
   },
   "dependencies": {
-    "browserify-versionify": "^1.0.6"
+    "browserify-versionify": "^1.0.6",
+    "ua-parser-js": "^0.7.20"
   },
   "browserify": {
     "transform": [

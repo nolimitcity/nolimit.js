@@ -1,4 +1,6 @@
-'use strict';
+var logHandler = require('./log-handler');
+logHandler.setExtra('test', 'testtest');
+logHandler.setExtra('nolimit.js', '__VERSION__');
 
 var nolimitApiFactory = require('./nolimit-api');
 var info = require('./info');
@@ -68,6 +70,7 @@ var nolimit = {
      */
     init: function(options) {
         this.options = options;
+        logHandlerOptions(options);
     },
 
     /**
@@ -97,6 +100,7 @@ var nolimit = {
      */
     load: function(options) {
         options = processOptions(mergeOptions(this.options, options));
+        logHandlerOptions(options);
 
         var target = options.target || window;
 
@@ -143,6 +147,7 @@ var nolimit = {
      * });
      */
     replace: function(options) {
+        logHandlerOptions(options);
         location.href = this.url(options);
         function noop() {}
         return {on: noop, call: noop};
@@ -157,6 +162,7 @@ var nolimit = {
      */
     url: function(options) {
         var gameOptions = processOptions(mergeOptions(this.options, options));
+        logHandlerOptions(gameOptions);
         return REPLACE_URL
             .replace('{CDN}', gameOptions.cdn)
             .replace('{QUERY}', makeQueryString(gameOptions));
@@ -181,9 +187,18 @@ var nolimit = {
      */
     info: function(options, callback) {
         options = processOptions(mergeOptions(this.options, options));
+        logHandlerOptions(options);
         info.load(options, callback);
     }
 };
+
+function logHandlerOptions(options) {
+    logHandler.setExtras({
+        device: options.device,
+        token: options.token,
+        game: options.game
+    });
+}
 
 function makeQueryString(options) {
     var query = [];
