@@ -44,9 +44,9 @@ function sendLog(event, data) {
         console.warn('Logger error:', request.status, request.statusText, event, data);
     };
 
-
     var device = uaParser.getDevice();
     var body = {
+        event: event,
         session: session,
         browser: ua.browser.name + ' ' + ua.browser.version,
         os: ua.os.name + ' ' + ua.os.version,
@@ -70,9 +70,23 @@ function sendLog(event, data) {
 
 var logHandler = {
     sendError: function(e) {
-        var message = e.message ? e.message : e;
+        var message = e.message || e;
+
+        /*
+                if(message === 'Script error.') {
+                    return;
+                }
+        */
+
+        if(e.code) {
+            message = message + ' (' + e.code + ')';
+        }
+
+        if(e.filename && e.lineno) {
+            message = message + ' @ ' + e.filename + ' line:' + e.lineno;
+        }
+
         var data = {
-            type: 'ERROR',
             message: message
         };
 
