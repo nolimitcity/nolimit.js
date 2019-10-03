@@ -25,7 +25,7 @@ function handleSession() {
 function sendLog(event, data) {
     var request = new XMLHttpRequest();
     request.open('POST', URL, true);
-    request.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+    request.setRequestHeader('Content-Type', 'application/json');
 
     request.onload = function() {
         if(request.status >= 200 && request.status < 400) {
@@ -44,12 +44,14 @@ function sendLog(event, data) {
         console.warn('Logger error:', request.status, request.statusText, event, data);
     };
 
+
+    var device = uaParser.getDevice();
     var body = {
         session: session,
-        browser: ua.browser,
-        os: ua.os,
-        vendor: ua.vendor,
-        model: ua.model
+        browser: ua.browser.name + ' ' + ua.browser.version,
+        os: ua.os.name + ' ' + ua.os.version,
+        vendor: device.vendor,
+        model: device.model
     };
 
     for(var name in extras) {
@@ -68,8 +70,10 @@ function sendLog(event, data) {
 
 var logHandler = {
     sendError: function(e) {
+        var message = e.message ? e.message : e;
         var data = {
-            message: e.message
+            type: 'ERROR',
+            message: message
         };
 
         sendLog('ERROR', data);

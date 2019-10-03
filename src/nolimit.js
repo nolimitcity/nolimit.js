@@ -116,6 +116,9 @@ var nolimit = {
 
             return nolimitApiFactory(iframe, function() {
                 html(iframe.contentWindow, options);
+                iframe.contentWindow.addEventListener('error', function(e) {
+                    logHandler.sendError(e);
+                });
             });
         } else {
             throw 'Invalid option target: ' + target;
@@ -149,7 +152,10 @@ var nolimit = {
     replace: function(options) {
         logHandlerOptions(options);
         location.href = this.url(options);
-        function noop() {}
+
+        function noop() {
+        }
+
         return {on: noop, call: noop};
     },
 
@@ -196,7 +202,8 @@ function logHandlerOptions(options) {
     logHandler.setExtras({
         device: options.device,
         token: options.token,
-        game: options.game
+        game: options.game,
+        environment: options.environment
     });
 }
 
@@ -301,6 +308,7 @@ function html(window, options) {
 
     loaderElement.onload = function() {
         window.on('error', function(error) {
+            logHandler.sendError(error);
             if(loaderElement && loaderElement.contentWindow) {
                 loaderElement.contentWindow.postMessage(JSON.stringify({'error': error}), '*');
             }
