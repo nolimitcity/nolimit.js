@@ -1,6 +1,6 @@
 {
   "name": "@nolimit/nolimit.js",
-  "version": "1.2.31-dev",
+  "version": "1.2.32-dev",
   "description": "Javascript game loader and API for operators",
   "scripts": {
     "dist": "npm run dist-dev && npm run dist-min && npm run dist-latest",

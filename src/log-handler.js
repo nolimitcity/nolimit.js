@@ -72,11 +72,9 @@ var logHandler = {
     sendError: function(e) {
         var message = e.message || e;
 
-        /*
-                if(message === 'Script error.') {
-                    return;
-                }
-        */
+        if(message === 'Script error.') {
+            return;
+        }
 
         if(e.code) {
             message = message + ' (' + e.code + ')';
