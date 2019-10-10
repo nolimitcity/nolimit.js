@@ -169,9 +169,10 @@ var nolimit = {
     url: function(options) {
         var gameOptions = processOptions(mergeOptions(this.options, options));
         logHandlerOptions(gameOptions);
-        return REPLACE_URL
+        var gameUrl = REPLACE_URL
             .replace('{CDN}', gameOptions.cdn)
             .replace('{QUERY}', makeQueryString(gameOptions));
+        return gameUrl;
     },
 
     /**
@@ -243,6 +244,7 @@ function makeIframe(element) {
 
 function mergeOptions(globalOptions, gameOptions) {
     delete globalOptions.version;
+    delete globalOptions.replay;
     var options = {}, name;
     for(name in DEFAULT_OPTIONS) {
         options[name] = DEFAULT_OPTIONS[name];
