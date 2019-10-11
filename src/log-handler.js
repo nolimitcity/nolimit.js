@@ -8,6 +8,7 @@ var URL = 'https://gamelog.nolimitcity.com/';
 var session = handleSession();
 
 var extras = {};
+var storedEvents = [];
 
 function uuidv4() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -23,6 +24,7 @@ function handleSession() {
 }
 
 function sendLog(event, data) {
+    data = data || {};
     var request = new XMLHttpRequest();
     request.open('POST', URL, true);
     request.setRequestHeader('Content-Type', 'application/json');
@@ -88,8 +90,10 @@ var logHandler = {
             message: message
         };
 
-        sendLog('ERROR', data);
+        this.sendLog('ERROR', data);
     },
+
+    sendLog: sendLog,
 
     setExtra: function(name, extra) {
         extras[name] = extra;
@@ -99,6 +103,23 @@ var logHandler = {
         for(var name in extras) {
             this.setExtra(name, extras[name]);
         }
+    },
+
+    storeEvent: function(name, data) {
+        var event = {
+            name: data,
+            timestamp: Date.now()
+        };
+        storedEvents.push(event);
+    },
+
+    getEvents: function(filter) {
+        if(filter) {
+            return storedEvents.filter(function(event) {
+                return event.name === filter;
+            });
+        }
+        return storedEvents;
     }
 };
 

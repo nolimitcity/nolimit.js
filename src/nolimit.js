@@ -114,12 +114,27 @@ var nolimit = {
             var iframe = makeIframe(target);
             target.parentNode.replaceChild(iframe, target);
 
-            return nolimitApiFactory(iframe, function() {
+            var nolimitApi = nolimitApiFactory(iframe, function() {
                 html(iframe.contentWindow, options);
                 iframe.contentWindow.addEventListener('error', function(e) {
                     logHandler.sendError(e);
                 });
             });
+
+            nolimitApi.on('external', function(external) {
+                if(external.name === 'halt') {
+                    var betEvents = logHandler.getEvents('bet');
+                    console.log('nolimit.js halt', betEvents);
+                    if(betEvents.length === 0) {
+                        logHandler.sendLog('NO_BETS_PLACED', {message: 'Game closed with no bets'});
+                    }
+                }
+                if(external.name ==='bet') {
+                    logHandler.storeEvent('bet', external.data);
+                }
+            });
+
+            return nolimitApi;
         } else {
             throw 'Invalid option target: ' + target;
         }
