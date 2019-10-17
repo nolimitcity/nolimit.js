@@ -34,3 +34,4 @@ Publish to <https://www.npmjs.com/~nolimit>:
 
     npm run dist
     
+Look in www/dist folder for the result (usually you want `nolimit-latest.js`)
