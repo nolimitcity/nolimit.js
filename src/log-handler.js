@@ -40,6 +40,10 @@ function sendLog(event, data) {
         return;
     }
 
+    if(extras.environment === 'test') {
+        return;
+    }
+
     data = data || {};
     var request = new XMLHttpRequest();
     request.open('POST', URL, true);
