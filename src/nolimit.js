@@ -216,6 +216,7 @@ var nolimit = {
 
 function logHandlerOptions(options) {
     logHandler.setExtras({
+        operator: options.operator,
         device: options.device,
         token: options.token,
         game: options.game,
