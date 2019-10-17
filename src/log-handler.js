@@ -6,7 +6,6 @@ var SESSION_KEY = 'nolimit.js.log.session';
 var URL = 'https://gamelog.nolimitcity.com/';
 var LATEST = 'nolimit-latest';
 var CURRENT_SCRIPT = currentScript();
-console.log('Current nolimit.js file', CURRENT_SCRIPT);
 
 var session = handleSession();
 
