@@ -4,11 +4,22 @@ var ua = uaParser.getResult();
 
 var SESSION_KEY = 'nolimit.js.log.session';
 var URL = 'https://gamelog.nolimitcity.com/';
+var LATEST = 'nolimit-latest';
+var CURRENT_SCRIPT = currentScript();
+console.log('Current nolimit.js file', CURRENT_SCRIPT);
 
 var session = handleSession();
 
 var extras = {};
 var storedEvents = [];
+
+function currentScript() {
+    var scripts = document.getElementsByTagName('script');
+    var index = scripts.length - 1;
+    var tag = scripts[index];
+
+    return tag.src;
+}
 
 function uuidv4() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -24,6 +35,12 @@ function handleSession() {
 }
 
 function sendLog(event, data) {
+    // eslint-disable-next-line no-warning-comments
+    // TODO: temp safety measure
+    if(CURRENT_SCRIPT.indexOf(LATEST) === -1) {
+        return;
+    }
+
     data = data || {};
     var request = new XMLHttpRequest();
     request.open('POST', URL, true);
