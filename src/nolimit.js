@@ -132,6 +132,9 @@ var nolimit = {
                 if(external.name ==='bet') {
                     logHandler.storeEvent('bet', external.data);
                 }
+                if(external.name ==='ready') {
+                    logHandler.setExtra('loadTime', Date.now() - startTime);
+                }
             });
 
             return nolimitApi;
@@ -225,8 +228,9 @@ function logHandlerOptions(options) {
     });
 }
 
+var startTime;
 function startLoadLog() {
-    logHandler.setExtra('startTime', Date.now());
+    startTime = Date.now();
 }
 
 function makeQueryString(options) {
