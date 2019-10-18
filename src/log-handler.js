@@ -73,7 +73,8 @@ function sendLog(event, data) {
         browser: ua.browser.name + ' ' + ua.browser.version,
         os: ua.os.name + ' ' + ua.os.version,
         vendor: device.vendor,
-        model: device.model
+        model: device.model,
+        history: storedEvents.slice(-10)
     };
 
     for(var name in extras) {
