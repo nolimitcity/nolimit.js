@@ -100,6 +100,7 @@ var nolimit = {
     load: function(options) {
         options = processOptions(mergeOptions(this.options, options));
         logHandlerOptions(options);
+        startLoadLog();
 
         var target = options.target || window;
 
@@ -165,6 +166,7 @@ var nolimit = {
      */
     replace: function(options) {
         logHandlerOptions(options);
+        startLoadLog();
         location.href = this.url(options);
 
         function noop() {
@@ -221,6 +223,10 @@ function logHandlerOptions(options) {
         game: options.game,
         environment: options.environment
     });
+}
+
+function startLoadLog() {
+    logHandler.setExtra('startTime', Date.now());
 }
 
 function makeQueryString(options) {

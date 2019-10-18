@@ -74,7 +74,8 @@ function sendLog(event, data) {
         os: ua.os.name + ' ' + ua.os.version,
         vendor: device.vendor,
         model: device.model,
-        history: storedEvents.slice(-10)
+        history: storedEvents.slice(-10),
+        deltaTime: extras.startTime - Date.now()
     };
 
     for(var name in extras) {
