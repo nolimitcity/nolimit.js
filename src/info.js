@@ -29,6 +29,7 @@ var info = {
                     info.aspectRatio = info.size.width / info.size.height;
                     info.infoJson = url;
 
+                    logHandler.setExtra('version', info.version);
                     var country = request.getResponseHeader('x-country');
                     if(country) {
                         info.country = country;

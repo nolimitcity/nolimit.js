@@ -220,7 +220,6 @@ function logHandlerOptions(options) {
         device: options.device,
         token: options.token,
         game: options.game,
-        version: options.version,
         environment: options.environment
     });
 }
