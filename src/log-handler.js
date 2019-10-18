@@ -143,9 +143,12 @@ var logHandler = {
     }
 };
 
-window.addEventListener('error', function(e) {
+window.addEventListener('error', onWindowError);
+
+function onWindowError(e) {
+    window.removeEventListener('error', onWindowError);
     console.warn(e.message, e);
     logHandler.sendError(e);
-});
+}
 
 module.exports = logHandler;

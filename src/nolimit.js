@@ -1,5 +1,4 @@
 var logHandler = require('./log-handler');
-logHandler.setExtra('test', 'testtest');
 logHandler.setExtra('nolimit.js', '__VERSION__');
 
 var nolimitApiFactory = require('./nolimit-api');
