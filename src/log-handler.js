@@ -75,7 +75,7 @@ function sendLog(event, data) {
         vendor: device.vendor,
         model: device.model,
         history: storedEvents.slice(-10),
-        deltaTime: extras.startTime - Date.now()
+        deltaTime: Date.now() - extras.startTime
     };
 
     for(var name in extras) {
