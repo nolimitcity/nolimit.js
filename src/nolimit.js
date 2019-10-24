@@ -36,7 +36,6 @@ var nolimit = {
      * @param {String}  [options.language="en"] the language to use for the game
      * @param {String}  [options.device=desktop] type of device: 'desktop' or 'mobile'
      * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or 'production'
-     * @param {String}  [options.currency=EUR] currency to use, if not provided by server
      * @param {Boolean} [options.fullscreen=true] set to false to disable automatic fullscreen on mobile (Android only)
      * @param {Boolean} [options.clock=true] set to false to disable in-game clock
      * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
@@ -50,6 +49,7 @@ var nolimit = {
      * @param {Number}  [options.realityCheck.bets=0] set initial bets if player already has bets in the session.
      * @param {Number}  [options.realityCheck.winnings=0] set initial winnings if player already has winnings in the session.
      * @param {Number}  [options.realityCheck.message] Message to display when dialog is opened. A generic default is provided.
+     * @param {String}  [options.playForFunCurrency=EUR] currency to use when in playing for fun mode. Uses EUR if not specified.
 
      *
      * @example
