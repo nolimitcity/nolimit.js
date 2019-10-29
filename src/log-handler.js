@@ -92,8 +92,16 @@ function sendLog(event, data) {
     request.send(JSON.stringify(payload));
 }
 
+var errorAlreadySent = false;
 var logHandler = {
     sendError: function(e) {
+        if(errorAlreadySent) {
+            console.log('Already sent errors, but was', e);
+            return;
+        }
+
+        errorAlreadySent = true;
+
         var message = e.message || e;
 
         if(message === 'Script error.') {
