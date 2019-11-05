@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Modules</li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-nolimit.html">nolimit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.info">info</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.init">init</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.load">load</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.replace">replace</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.url">url</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-nolimitApi.html">nolimitApi</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimitApi.html#~call">call</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimitApi.html#~on">on</a></span></li>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1 id="nolimit.js">nolimit.js</h1>
+<p>Javascript game loader and API for operators to load and  communicate with Nolimit games.</p>
+<h2 id="introduction">Introduction</h2>
+<p><strong>nolimit.js</strong> provides a powerful yet simple way to load games, while still putting most of the control in the hands of the operator.</p>
+<p>The operator makes all the design and layout, and will only need to provide a target element for the loader to use.</p>
+<h2 id="get-nolimit.js">Get nolimit.js</h2>
+<p><strong>nolimit.js</strong> is available with sourcemap and some logging as <code>nolimit-VERSION.js</code> or as minified as <code>nolimit-VERSION.min.js</code> at http://nolimitjs.nolimitcdn.com/.</p>
+<p>It can also be installed using NPM:</p>
+<pre><code>npm install --save @nolimit/nolimit.js
+</code></pre>
+<p><strong>nolimit.js</strong> files are packaged as <a href="https://github.com/umdjs/umd">UMD</a>, meaning it can be loaded using <a href="http://wiki.commonjs.org/wiki/CommonJS">CommonJS</a> such as <a href="http://browserify.org/">Browserify</a>, <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">AMD</a> such as <a href="http://requirejs.org/">RequireJS</a> or just standalone with a regular <code>&lt;script&gt;</code> tag.</p>
+<p>When loaded standalone, it will add a global variable <code>window.nolimit</code> which is used to load the games. See examples below.</p>
+<h3 id="using-commonjs">Using CommonJS</h3>
+<pre class="prettyprint source lang-javascript"><code>var nolimit = require('@nolimit/nolimit.js');
+nolimit.init({
+    operator: 'SMOOTHOPERATOR'
+});
+</code></pre>
+<h3 id="using-amd">Using AMD</h3>
+<pre class="prettyprint source lang-javascript"><code>define(['nolimit'], function(nolimit) {
+    nolimit.init({
+        operator: 'SMOOTHOPERATOR'
+    });
+});
+</code></pre>
+<h3 id="as-a-global-variable">As a global variable</h3>
+<pre class="prettyprint source lang-html"><code>&lt;script src=&quot;https://nolimitjs.nolimitcdn.com/dist/nolimit-latest.min.js&quot;>&lt;/script>
+&lt;script>
+nolimit.init({
+    operator: 'SMOOTHOPERATOR'
+});
+&lt;/script>
+</code></pre>
+<h3 id="using-typescript">Using typescript</h3>
+<pre class="prettyprint source lang-typescript"><code>import * as nolimit from '@nolimit/nolimit.js';
+nolimit.init({
+    operator: 'SMOOTHOPERATOR'
+});
+</code></pre>
+<h2 id="api-documentation">API documentation</h2>
+<p>For more information on the available methods and options, see the <a href="module-nolimit.html">generated JSDOC</a>.</p>
+<h2 id="current-version">Current version</h2>
+<pre class="prettyprint source lang-javascript"><code>console.log('nolimit.js', nolimit.version);
+</code></pre>
+<h2 id="loading-a-game">Loading a game</h2>
+<h3 id="as-part-of-the-page">As part of the page</h3>
+<p>Create an element, usually a <code>&lt;div&gt;</code>, that will be <em>replaced</em> by the game's <code>&lt;iframe&gt;</code>. The iframe will retain styling information such as <code>width</code> and <code>height</code>, <code>display</code> and so on.</p>
+<pre class="prettyprint source lang-javascript"><code>var api = nolimit.load({
+    target: document.querySelector('#game'),
+    game: gameName
+});
+
+api.on('exit', closeGame);
+</code></pre>
+<h3 id="replace-window">Replace window</h3>
+<p>Common use case on mobile, where the game should fill the whole screen and you still want the back button to work.</p>
+<pre class="prettyprint source lang-javascript"><code>var api = nolimit.replace({
+    game: gameName
+});
+</code></pre>
+<p>This goes to a completely separate page, so listening to events are not possible. So to specify what to do on exit, deposit or support, it's instead possible to give URLs as parameters:</p>
+<p>Exiting will still default to <code>history.back()</code> which will usually work in the common case.</p>
+<pre class="prettyprint source lang-javascript"><code>var api = nolimit.replace({
+    game: gameName,
+    lobbyUrl: lobbyUrl,
+    supportUrl: supportUrl,
+    depositUrl: depositUrl,
+    accountHistoryUrl: accountHistoryUrl
+});
+</code></pre>
+<p>It's also possible to make a full screen <code>&lt;div&gt;</code> and use that as target if that fits your flow better. Note though, that you need to make the game element responsive or resize manually in that case.</p>
+<h3 id="construct-url-manually">Construct URL manually</h3>
+<p>If you wish to <em>not</em> make use of nolimit.js, but rather construct a URL, this is also possible:</p>
+<p>The minimal URL that loads a game looks like: https://partner.nolimitcdn.com/loader/game-loader.html?game=GAME&amp;operator=OPERATOR</p>
+<p>To construct this URL manually:</p>
+<ol>
+<li>Take all needed options as documented here and construct a query string by pairing <code>&lt;key&gt;=&lt;value&gt;</code> and joining them with <code>&amp;</code>
+<ul>
+<li>It is highly recommended to URI-escape both keys and values</li>
+<li>Some games need extra data that's not plain strings, these need to pass through a JSON serialization before being URL encoded</li>
+</ul>
+</li>
+<li>Append the query string to: <code>https://&lt;environment&gt;.nolimitcdn.com/loader/game-loader.html?</code>
+<ul>
+<li><code>&lt;environment&gt;</code> is either <code>'partner'</code> for test environments, or a name such as <code>'production'</code> that you have gotten from us.</li>
+<li>If you prefer, you can always use <code>casino</code> as environment in the hostname, but then you have to specify environment as an option instead.</li>
+</ul>
+</li>
+</ol>
+<p>Note: <code>nolimit.url(options)</code> can build this URL for you if you use javascript, and <code>nolimit.replace(options)</code> can also redirect there.</p>
+<h4 id="passing-along-option-objects-in-the-url">Passing along option objects in the URL</h4>
+<p>Some objects can be passed along in the URL, e.g. <code>jurisdiction</code>. However, this needs to be encoded properly to be accepted. The value is added into to the options structure by decoding in the following way conceptually.</p>
+<p><code>options.value = JSON.parse(decodeURIComponent(value in url))</code></p>
+<p>So when adding the value to the URL first encode it in this way, where <code>{...}</code> represents the object you need to pass along.</p>
+<p><code>encodeURIComponent(JSON.stringify({...}))</code></p>
+<h2 id="options">Options</h2>
+<p>It's not strictly required to call <code>init()</code>, it's possible to call <code>load()</code> directly with all the options instead. <code>init()</code> just provides a way to setup some common defaults and the options will actually be merged before each game load.</p>
+<p>The only required options are the <strong>operator</strong> code for init, the <strong>game</strong> code for game loading, and the <strong>HTMLElement</strong> or <strong>Window</strong> to replace.</p>
+<h3 id="supported-languages">Supported languages</h3>
+<p>Option <strong>language</strong> defaults to <code>'en'</code>.</p>
+<p>Currently supported values are <code>'en', 'da', 'de', 'es', 'fi', 'fr', 'is', 'ja', 'ko', 'lv', 'nl', 'no', 'pl', 'ru', 'sv', 'th', 'tr', 'vi', 'zh'</code>.</p>
+<h3 id="real-money-or-play-money">Real money or play money</h3>
+<p>For playing with real money, a one time <strong>token</strong> is required, that is generated by the operator. The token will be verified via an API call to the operator's server. If the token is missing, fun mode is automatically enabled. If the token is present, but fails validation, there will be an error inside the game.</p>
+<h2 id="query-information-about-the-game">Query information about the game</h2>
+<p>Ask environment for some information such as optimal game size and version number. Used internally by game loader and exposed here in case it's useful.</p>
+<pre class="prettyprint source lang-javascript"><code>nolimit.info({game: 'SpaceArcade'}, function(info) {
+    var target = document.getElementById('game');
+    target.style.width = info.size.width + 'px';
+    target.style.height = info.size.height + 'px';
+    console.log('Loading:', info.name, info.version);
+});
+</code></pre>
+<h2 id="communicating-with-the-game">Communicating with the game</h2>
+<p>For more information on the available methods, see the <a href="module-nolimitApi.html">generated JSDOC</a>. Note that <code>replace()</code> does not return an API connection.</p>
+<h3 id="events">Events</h3>
+<p>The operator can add callbacks for certain events, such as the player trying to close the game or do a deposit from within the game.</p>
+<pre class="prettyprint source lang-javascript"><code>var api = nolimit.load({
+    game: gameName
+});
+
+api.on('ready', function onLoad() {
+    // ...
+});
+
+api.on('exit', function goToLobby() {
+    // ...
+});
+
+api.on('balance', function updateBalance(balance) {
+    // ...
+});
+
+api.on('deposit', function openDeposit() {
+    // ...
+});
+
+api.on('support', function openHelpChat() {
+    // ...
+});
+
+api.on('accountHistory', function openHelpChat() {
+    // ...
+});
+
+api.on('error', function logError(message) {
+    console.error('nolimit.js:', message);
+});
+
+api.on('info', function logInfo(info) {
+    console.log('Loading:', info.name, info.version);
+});
+</code></pre>
+<ul>
+<li>ready - fired when the game is loaded and ready, and the API can be used.</li>
+<li>exit - (mobile only) fired when the player presses the exit button in the game.</li>
+<li>balance - fired when the game displays a new balance, with that balance as data to the callback.</li>
+<li>deposit - fired when the player presses the Deposit button in the game.</li>
+<li>support - fired when the player presses the Support button in the game.</li>
+<li>accountHistory - fired when the player pushes the account history button on the reality check popup.</li>
+<li>error - fired when a fatal error has occured, with some error message as data to the callback.</li>
+<li>info - fired when loader has obtained information about the game, same as <code>nolimit.info()</code>.</li>
+<li>busy - game is currently spinning or should otherwise not be interrupted</li>
+<li>idle - game is idle and can be blocked by other UI</li>
+</ul>
+<p>There may be more specific events for Jurisdictions and other special cases, see those specific parts.</p>
+<h3 id="calling-methods">Calling methods</h3>
+<p>The operator can also control the game using RPC calls:</p>
+<pre class="prettyprint source lang-javascript"><code>api.call('refresh');
+
+api.call('pause');
+api.call('resume');
+</code></pre>
+<ul>
+<li>refresh - ask game to refresh balance from server</li>
+<li>pause - freeze the game</li>
+<li>resume - unfreeze the game</li>
+</ul>
+<h3 id="if-loading-via-url-%2F-launcher-page">If loading via url / launcher page</h3>
+<pre class="prettyprint source lang-javascript"><code>window.addEventListener('message', function(e) {
+    if(e.data) {
+        console.log(e.data); // busy, idle, ready
+    }
+});
+
+// iframe with the launcher URL 
+var gameFrame = document.getElementById('game');
+gameFrame.contentWindow.postMessage('pause', '*');
+gameFrame.contentWindow.postMessage('resume', '*');
+
+// To handle this way, use depositEvent=true and lobbyEvent=true instead of depositUrl and lobbyUrl, see game loading options
+gameFrame.contentWindow.postMessage('deposit', '*');
+gameFrame.contentWindow.postMessage('lobby', '*'); // this is the same as &quot;exit&quot; in regular api
+</code></pre>
+<h2 id="more-examples">More Examples</h2>
+<h3 id="opening-a-deposit-dialog-from-the-game">Opening a deposit dialog from the game</h3>
+<p>If the operator has added an event listener for the 'deposit' event, the game will offer the player an option to open this when they run out of money. After a successful deposit, the game can be asked to refresh the balance:</p>
+<pre class="prettyprint source lang-javascript"><code>api.on('deposit', function openDeposit () {
+    showDeposit().then(function() {
+        // ask the game to refresh balance from server
+        api.call('refresh');
+    });
+});
+</code></pre>
+<h2 id="pause%2Fresume%2Fbusy%2Fidle">Pause/resume/busy/idle</h2>
+<p>The api can listen to events for when the game is busy/idle as well as call pause/resume. Game will usually be in &quot;busy&quot; state when doing a spin (or equivalent).</p>
+<p>The usual use case for pausing is to show some operator-specific content. It is recommended to first wait for the game to be in &quot;idle&quot; state, then call &quot;pause&quot; and once done with the custom content, call &quot;resume&quot;.</p>
+<p>Game cannot be paused in the middle of a spin or other equivalent &quot;busy&quot; state, but will pause once &quot;idle&quot; state is reached. It is recommended to use the events to keep track of this for maximum control.</p>
+<pre class="prettyprint source lang-javascript"><code>var busy = false;
+api.on('busy', function() {busy = true;});
+api.on('idle', function() {busy = false;});
+
+// Pause the game at next possible time
+api.call('pause');
+
+// unpause the game
+api.call('resume');
+</code></pre>
+<h2 id="jurisdictions">Jurisdictions</h2>
+<p>Use <code>options.jurisdiction.name=&lt;JURISDICTION CODE&gt;</code> to override which jurisdiction's license that should be used.</p>
+<p>Currently there is special behaviour in our games for jurisdictions <code>&quot;UKGC&quot;</code> (UK) and <code>&quot;SE&quot;</code> (Lotteriinspektionen, Sweden).</p>
+<h3 id="ukgc">UKGC</h3>
+<p>No extra configuration needed.</p>
+<h3 id="se">SE</h3>
+<p>Lotteriinspektionen has <a href="https://www.lotteriinspektionen.se/press/nyhetsarkiv/enklare-for-spelare-att-ta-kontroll-over-sitt-spelande/">three mandatory buttons</a> that must be displayed for play in Sweden. Either the operator can show them on their site, but when this is impossible or impractical (say, on mobile) we can display these buttons in-game.</p>
+<p>It may help the experience to set the option <code>fullscreen</code> to <code>false</code>; default enabled on Android mobile.</p>
+<p>There are currently two ways to configure these buttons:</p>
+<h4 id="configure-as-regular-links%3A">Configure as regular links:</h4>
+<p>On top of setting <code>jurisdiction.name</code> to <code>&quot;SE&quot;</code>, the three buttons each need a URL to corresponding pages maintained by the operator. Add them to the jurisdiction object when setting jurisdiction 'SE'. They are named after the icon names, see the documentation from Lotteriinspektionen.</p>
+<p>Optionally, you can also add a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attr-target"><code>target</code> for the links</a>, default is <code>&quot;_top&quot;</code>, replacing the current site. To open in a new tab/window, set it to <code>&quot;_blank&quot;</code> or see HTML documentation for more options.</p>
+<pre class="prettyprint source lang-javascript"><code>{
+    options.jurisdiction = {
+        name: 'SE',
+        target: '_top',
+        spelpaus: '&lt;URL>',
+        spelgranser: '&lt;URL>',
+        sjalvtest: '&lt;URL>'
+    }
+}
+</code></pre>
+<h4 id="configure-as-events%3A">Configure as events:</h4>
+<p>Use the external API to get callbacks:</p>
+<pre class="prettyprint source lang-javascript"><code>api.on('spelgranser', function() {
+    // ...
+});
+
+api.on('spelpaus', function() {
+    // ...
+});
+
+api.on('sjalvtest', function() {
+    // ...
+});
+
+{
+    options.jurisdiction = {
+        name: 'SE',
+        events: true
+    }
+}
+</code></pre>
+<h2 id="reality-check">Reality Check</h2>
+<p>At regular intervals (default once per hour), a dialog is shown to the player, listing time elapsed, bets and wins during the game session and an option to close the game.</p>
+<p>Interval, message and intial values can all be changed, or it can be completely disabled. See the javascript options for <code>nolimit.init()</code>. It is also possible to update these values via the server-to-server API, see integration documentation.</p>
+<h2 id="how-do-i...%3F">How do I...?</h2>
+<h3 id="style-the-game-iframe">Style the game iframe</h3>
+<p>For instance, set the initial background color, width/height etc.</p>
+<p>Style the original element (probably a <code>&lt;div&gt;</code>). Note that if you do this with CSS, the tag will be <code>iframe</code>, so this selector will not work:</p>
+<pre class="prettyprint source lang-css"><code>div.game {...}
+</code></pre>
+<p>but any of these will:</p>
+<pre class="prettyprint source lang-css"><code>div.game, iframe.game {...}
+
+.game {...}
+</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Oct 18 2019 15:37:27 GMT+0200 (Central European Summer Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
