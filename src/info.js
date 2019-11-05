@@ -1,3 +1,5 @@
+var logHandler = require('./log-handler');
+
 var info = {
     load: function(options, callback) {
         var parts = [options.staticRoot, options.game];
@@ -26,6 +28,13 @@ var info = {
                     info.staticRoot = [options.staticRoot, info.name, info.version].join('/');
                     info.aspectRatio = info.size.width / info.size.height;
                     info.infoJson = url;
+
+                    logHandler.setExtra('version', info.version);
+                    var country = request.getResponseHeader('x-country');
+                    if(country) {
+                        info.country = country;
+                        logHandler.setExtra('country', country);
+                    }
                 } catch(e) {
                     callback({
                         error: e.message

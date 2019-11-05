@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>nolimit-api.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Modules</li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-nolimit.html">nolimit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.info">info</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.init">init</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.load">load</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.replace">replace</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimit.html#.url">url</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-nolimitApi.html">nolimitApi</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimitApi.html#~call">call</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-nolimitApi.html#~on">on</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">nolimit-api.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @exports nolimitApiFactory
+ * @private
+ */
+var nolimitApiFactory = function(target, onload) {
+
+    var listeners = {};
+    var unhandledEvents = {};
+    var unhandledCalls = [];
+    var port;
+
+    function handleUnhandledCalls(port) {
+        while(unhandledCalls.length > 0) {
+            port.postMessage(unhandledCalls.shift());
+        }
+    }
+
+    function addMessageListener(gameWindow) {
+        gameWindow.addEventListener('message', function(e) {
+            if(e.ports &amp;&amp; e.ports.length > 0) {
+                port = e.ports[0];
+                port.onmessage = onMessage;
+                handleUnhandledCalls(port);
+            }
+        });
+        gameWindow.trigger = trigger;
+        gameWindow.on = on;
+        onload();
+    }
+
+    if(target.nodeName === 'IFRAME') {
+        if (target.contentWindow &amp;&amp; target.contentWindow.document &amp;&amp; target.contentWindow.document.readyState === 'complete') {
+            addMessageListener(target.contentWindow);
+        } else {
+            target.addEventListener('load', function() {
+                addMessageListener(target.contentWindow);
+            });
+        }
+    } else {
+        addMessageListener(target);
+    }
+
+    function onMessage(e) {
+        trigger(e.data.method, e.data.params);
+    }
+
+    function sendMessage(method, data) {
+        var message = {
+            jsonrpc: '2.0',
+            method: method
+        };
+
+        if(data) {
+            message.params = data;
+        }
+
+        if(port) {
+            try {
+                port.postMessage(message);
+            } catch(ignored) {
+                port = undefined;
+                unhandledCalls.push(message);
+            }
+        } else {
+            unhandledCalls.push(message);
+        }
+    }
+
+    function registerEvents(events) {
+        sendMessage('register', events);
+    }
+
+    function trigger(event, data) {
+        if(listeners[event]) {
+            listeners[event].forEach(function(callback) {
+                callback(data);
+            });
+        } else {
+            unhandledEvents[name] = unhandledEvents[name] || [];
+            unhandledEvents[name].push(data);
+        }
+    }
+
+    function on(event, callback) {
+        listeners[event] = listeners[event] || [];
+        listeners[event].push(callback);
+        while(unhandledEvents[event] &amp;&amp; unhandledEvents[event].length > 0) {
+            trigger(event, unhandledEvents[event].pop());
+        }
+
+        registerEvents([event]);
+    }
+
+    /**
+     * Connection to the game using MessageChannel
+     * @exports nolimitApi
+     */
+    var nolimitApi = {
+        /**
+         * Add listener for event from the started game
+         *
+         * @function on
+         * @param {String}   event    name of the event
+         * @param {Function} callback callback for the event, see specific event documentation for any parameters
+         *
+         * @example
+         * api.on('deposit', function openDeposit () {
+         *     showDeposit().then(function() {
+         *         // ask the game to refresh balance from server
+         *         api.call('refresh');
+         *     });
+         * });
+         */
+        on: on,
+
+        /**
+         * Call method in the open game
+         *
+         * @function call
+         * @param {String} method name of the method to call
+         * @param {Object} [data] optional data for the method called, if any
+         *
+         * @example
+         * // reload the game
+         * api.call('reload');
+         */
+        call: sendMessage
+    };
+
+    return nolimitApi;
+};
+
+module.exports = nolimitApiFactory;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Oct 18 2019 15:50:31 GMT+0200 (Central European Summer Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

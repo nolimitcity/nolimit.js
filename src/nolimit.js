@@ -1,5 +1,4 @@
 var logHandler = require('./log-handler');
-logHandler.setExtra('test', 'testtest');
 logHandler.setExtra('nolimit.js', '__VERSION__');
 
 var nolimitApiFactory = require('./nolimit-api');
@@ -37,7 +36,6 @@ var nolimit = {
      * @param {String}  [options.language="en"] the language to use for the game
      * @param {String}  [options.device=desktop] type of device: 'desktop' or 'mobile'
      * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or 'production'
-     * @param {String}  [options.currency=EUR] currency to use, if not provided by server
      * @param {Boolean} [options.fullscreen=true] set to false to disable automatic fullscreen on mobile (Android only)
      * @param {Boolean} [options.clock=true] set to false to disable in-game clock
      * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
@@ -51,6 +49,7 @@ var nolimit = {
      * @param {Number}  [options.realityCheck.bets=0] set initial bets if player already has bets in the session.
      * @param {Number}  [options.realityCheck.winnings=0] set initial winnings if player already has winnings in the session.
      * @param {Number}  [options.realityCheck.message] Message to display when dialog is opened. A generic default is provided.
+     * @param {String}  [options.playForFunCurrency=EUR] currency to use when in playing for fun mode. Uses EUR if not specified.
 
      *
      * @example
@@ -101,6 +100,7 @@ var nolimit = {
     load: function(options) {
         options = processOptions(mergeOptions(this.options, options));
         logHandlerOptions(options);
+        startLoadLog();
 
         var target = options.target || window;
 
@@ -114,12 +114,30 @@ var nolimit = {
             var iframe = makeIframe(target);
             target.parentNode.replaceChild(iframe, target);
 
-            return nolimitApiFactory(iframe, function() {
+            var nolimitApi = nolimitApiFactory(iframe, function() {
                 html(iframe.contentWindow, options);
                 iframe.contentWindow.addEventListener('error', function(e) {
                     logHandler.sendError(e);
                 });
             });
+
+            nolimitApi.on('external', function(external) {
+                if(external.name === 'halt') {
+                    var betEvents = logHandler.getEvents('bet');
+                    console.log('nolimit.js halt', betEvents);
+                    if(betEvents.length === 0) {
+                        logHandler.sendLog('NO_BETS_PLACED', {message: 'Game closed with no bets'});
+                    }
+                }
+                if(external.name ==='bet') {
+                    logHandler.storeEvent('bet', external.data);
+                }
+                if(external.name ==='ready') {
+                    logHandler.setExtra('loadTime', Date.now() - startTime);
+                }
+            });
+
+            return nolimitApi;
         } else {
             throw 'Invalid option target: ' + target;
         }
@@ -151,6 +169,7 @@ var nolimit = {
      */
     replace: function(options) {
         logHandlerOptions(options);
+        startLoadLog();
         location.href = this.url(options);
 
         function noop() {
@@ -169,9 +188,10 @@ var nolimit = {
     url: function(options) {
         var gameOptions = processOptions(mergeOptions(this.options, options));
         logHandlerOptions(gameOptions);
-        return REPLACE_URL
+        var gameUrl = REPLACE_URL
             .replace('{CDN}', gameOptions.cdn)
             .replace('{QUERY}', makeQueryString(gameOptions));
+        return gameUrl;
     },
 
     /**
@@ -200,12 +220,17 @@ var nolimit = {
 
 function logHandlerOptions(options) {
     logHandler.setExtras({
+        operator: options.operator,
         device: options.device,
         token: options.token,
         game: options.game,
-        version: options.version,
         environment: options.environment
     });
+}
+
+var startTime;
+function startLoadLog() {
+    startTime = Date.now();
 }
 
 function makeQueryString(options) {
@@ -243,6 +268,7 @@ function makeIframe(element) {
 
 function mergeOptions(globalOptions, gameOptions) {
     delete globalOptions.version;
+    delete globalOptions.replay;
     var options = {}, name;
     for(name in DEFAULT_OPTIONS) {
         options[name] = DEFAULT_OPTIONS[name];
