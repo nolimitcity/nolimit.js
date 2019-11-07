@@ -341,12 +341,6 @@ function html(window, options) {
             }
         });
 
-        if(options.weinre) {
-            var weinre = document.createElement('script');
-            weinre.src = options.weinre;
-            document.body.appendChild(weinre);
-        }
-
         nolimit.info(options, function(info) {
             if(info.error) {
                 window.trigger('error', info.error);
