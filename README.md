@@ -179,6 +179,10 @@ var api = nolimit.load({
     game: gameName
 });
 
+api.on('intro', function onLoad() {
+    // ...
+});
+
 api.on('ready', function onLoad() {
     // ...
 });
@@ -199,7 +203,7 @@ api.on('support', function openHelpChat() {
     // ...
 });
 
-api.on('accountHistory', function openHelpChat() {
+api.on('accountHistory', function openAccountHistory() {
     // ...
 });
 
@@ -212,6 +216,7 @@ api.on('info', function logInfo(info) {
 });
 ```
 
+* intro - fired when the games intro screen is showing (for legacy reasons, it's similar to ready, below, API is also available at this point)
 * ready - fired when the game is loaded and ready, and the API can be used.
 * exit - (mobile only) fired when the player presses the exit button in the game.
 * balance - fired when the game displays a new balance, with that balance as data to the callback. 
