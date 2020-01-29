@@ -50,7 +50,7 @@ var nolimit = {
      * @param {Number}  [options.realityCheck.winnings=0] set initial winnings if player already has winnings in the session.
      * @param {Number}  [options.realityCheck.message] Message to display when dialog is opened. A generic default is provided.
      * @param {String}  [options.playForFunCurrency=EUR] currency to use when in playing for fun mode. Uses EUR if not specified.
-
+     * @param {String}  [options.autoplay=true] set to false to disable and remove the auto play button.
      *
      * @example
      * nolimit.init({
@@ -80,7 +80,7 @@ var nolimit = {
      * <li> If target is undefined, it will default to the current window.
      *
      * @param {Object}              options
-     * @param {String}              options.game case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'
+     * @param {String}              options.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
      * @param {HTMLElement|Window}  [options.target=window] the HTMLElement or Window to load the game in
      * @param {String}              [options.token] the token to use for real money play
      * @param {Boolean}             [options.mute=false] start the game without sound
@@ -91,7 +91,7 @@ var nolimit = {
      *
      * @example
      * var api = nolimit.load({
-     *    game: 'SpaceArcade',
+     *    game: 'DragonTribe',
      *    target: document.getElementById('game'),
      *    token: realMoneyToken,
      *    mute: true
@@ -147,7 +147,7 @@ var nolimit = {
      * Load game in a new, separate page. This offers the best isolation, but no communication with the game is possible.
      *
      * @param {Object}              options
-     * @param {String}              options.game case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'
+     * @param {String}              options.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
      * @param {String}              [options.token] the token to use for real money play
      * @param {Boolean}             [options.mute=false] start the game without sound
      * @param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache
@@ -161,7 +161,7 @@ var nolimit = {
      *
      * @example
      * var api = nolimit.replace({
-     *    game: 'SpaceArcade',
+     *    game: 'DragonTribe',
      *    target: document.getElementById('game'),
      *    token: realMoneyToken,
      *    mute: true
@@ -199,12 +199,12 @@ var nolimit = {
      *
      * @param {Object}      options
      * @param {String}      [options.environment=partner] which environment to use; usually 'partner' or 'production'
-     * @param {String}      options.game case sensitive game code, for example 'CreepyCarnival' or 'SpaceArcade'
+     * @param {String}      options.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
      * @param {String}      [options.version] force specific version of game to load.
      * @param {Function}    callback  called with the info object, if there was an error, the 'error' field will be set
      *
      * @example
-     * nolimit.info({game: 'SpaceArcade'}, function(info) {
+     * nolimit.info({game: 'DragonTribe'}, function(info) {
      *     var target = document.getElementById('game');
      *     target.style.width = info.size.width + 'px';
      *     target.style.height = info.size.height + 'px';
@@ -304,6 +304,7 @@ function processOptions(options) {
     }
     options.cdn = options.cdn || CDN.replace('{ENV}', environment);
     options.staticRoot = options.staticRoot || GAMES_URL.replace('{CDN}', options.cdn);
+    options.playForFunCurrency = options.playForFunCurrency || options.currency;
     return options;
 }
 
