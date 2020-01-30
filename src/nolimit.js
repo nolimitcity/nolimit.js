@@ -3,6 +3,7 @@ logHandler.setExtra('nolimit.js', '__VERSION__');
 
 var nolimitApiFactory = require('./nolimit-api');
 var info = require('./info');
+var iosFullscreen = require('./ios-fullscreen');
 
 var CDN = 'https://{ENV}';
 var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}';
@@ -135,6 +136,10 @@ var nolimit = {
                 if(external.name ==='ready') {
                     logHandler.setExtra('loadTime', Date.now() - startTime);
                 }
+            });
+
+            nolimitApi.on('intro', function() {
+                iosFullscreen.init(options);
             });
 
             return nolimitApi;
