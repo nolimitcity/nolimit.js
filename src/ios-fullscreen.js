@@ -19,7 +19,7 @@ var iosFullscreen = {
     init: function(options) {
         var ua = navigator.userAgent.toLowerCase();
         var isSafari = ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1;
-        var iFramed = window.top !== window;
+        var iFramed = window.top !== window.self;
 
         if(!isSafari || iFramed || options.device !== 'mobile') {
             return;
@@ -48,7 +48,6 @@ var iosFullscreen = {
 
         document.body.appendChild(swipeBlocker);
         document.body.appendChild(swipeOverlay);
-
 
         function enableOverlay() {
             window.focus();
@@ -95,7 +94,7 @@ var iosFullscreen = {
 
         window.addEventListener('resize', onResize);
         window.setInterval(checkScreenState, 10);
-        onResize();
+        window.addEventListener('DOMContentLoaded', onResize);
     }
 };
 
