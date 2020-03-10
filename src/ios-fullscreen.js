@@ -1,4 +1,4 @@
-var BASE_URL = 'https://nolimitjs.nolimitcdn.com/img';
+var BASE_URL = 'https://nolimitjs.nolimitcdn.com/nolimit.js/img';
 var FINGER = BASE_URL + '/finger.svg';
 var ARROW = BASE_URL + '/arrow.svg';
 
