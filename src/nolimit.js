@@ -40,7 +40,7 @@ var nolimit = {
      * @param {Boolean} [options.clock=true] set to false to disable in-game clock
      * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
      * @param {Object}  [options.jurisdiction] force a specific jurisdiction to enforce specific license requirements and set specific options and overrides. See README for jurisdiction-specific details.
-     * @param {Object}  [options.jurisdiction.name] the name of the jurisdiction, for example "UKGC" or "SE".
+     * @param {Object}  [options.jurisdiction.name] the name of the jurisdiction, for example "MT", "DK", "LV", "RO", "UKGC" or "SE".
      * @param {Object}  [options.realityCheck] set options for reality check. See README for more details.
      * @param {Object}  [options.realityCheck.enabled=true] set to false to disable reality-check dialog.
      * @param {Number}  [options.realityCheck.interval=60] Interval in minutes between showing reality-check dialog.
