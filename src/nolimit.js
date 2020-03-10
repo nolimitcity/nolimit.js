@@ -3,6 +3,7 @@ logHandler.setExtra('nolimit.js', '__VERSION__');
 
 var nolimitApiFactory = require('./nolimit-api');
 var info = require('./info');
+var iosFullscreen = require('./ios-fullscreen');
 
 var CDN = 'https://{ENV}';
 var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}';
@@ -135,6 +136,10 @@ var nolimit = {
                 if(external.name ==='ready') {
                     logHandler.setExtra('loadTime', Date.now() - startTime);
                 }
+            });
+
+            nolimitApi.on('intro', function() {
+                iosFullscreen.init(options);
             });
 
             return nolimitApi;
@@ -341,12 +346,6 @@ function html(window, options) {
                 loaderElement.contentWindow.postMessage(JSON.stringify({'error': error}), '*');
             }
         });
-
-        if(options.weinre) {
-            var weinre = document.createElement('script');
-            weinre.src = options.weinre;
-            document.body.appendChild(weinre);
-        }
 
         nolimit.info(options, function(info) {
             if(info.error) {
