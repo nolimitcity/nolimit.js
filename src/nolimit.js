@@ -35,7 +35,7 @@ var nolimit = {
      * @param {Object}  options
      * @param {String}  options.operator the operator code for the operator
      * @param {String}  [options.language="en"] the language to use for the game
-     * @param {String}  [options.device=desktop] type of device: 'desktop' or 'mobile'
+     * @param {String}  [options.device=desktop] type of device: 'desktop' or 'mobile'. Recommended to always set this to make sure the correct device is used.
      * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or 'production'
      * @param {Boolean} [options.fullscreen=true] set to false to disable automatic fullscreen on mobile (Android only)
      * @param {Boolean} [options.clock=true] set to false to disable in-game clock
