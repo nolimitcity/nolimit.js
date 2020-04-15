@@ -139,7 +139,7 @@ var nolimit = {
             });
 
             nolimitApi.on('intro', function() {
-                iosFullscreen.init(options);
+                iosFullscreen.init(options, iframe.contentWindow.document);
             });
 
             return nolimitApi;
