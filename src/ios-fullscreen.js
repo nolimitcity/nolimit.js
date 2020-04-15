@@ -39,8 +39,8 @@ var iosFullscreen = {
         swipeOverlay.appendChild(finger);
 
         var arrow = document.createElement('img');
-        finger.id = 'nolimit-swipe-arrow';
-        finger.src = ARROW;
+        arrow.id = 'nolimit-swipe-arrow';
+        arrow.src = ARROW;
         swipeOverlay.appendChild(arrow);
 
         swipeBlocker.addEventListener('touchmove', preventResize);
