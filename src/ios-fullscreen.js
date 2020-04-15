@@ -15,6 +15,12 @@ function getOrientation() {
     return window.innerHeight > window.innerWidth ? 'portrait' : 'landscape';
 }
 
+function addCss() {
+    var style = document.createElement('style');
+    document.head.appendChild(style);
+    style.appendChild(document.createTextNode(require('./ios-fullscreen.css')));
+}
+
 var iosFullscreen = {
     init: function(options) {
         var ua = navigator.userAgent.toLowerCase();
@@ -24,6 +30,8 @@ var iosFullscreen = {
         if(!isSafari || iFramed || options.device !== 'mobile') {
             return;
         }
+
+        addCss();
 
         // The element that prevents swipes later
         var swipeBlocker = document.createElement('div');
