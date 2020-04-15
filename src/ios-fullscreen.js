@@ -31,6 +31,8 @@ var iosFullscreen = {
             return;
         }
 
+        return; //TODO enable again when the reason why the swipe doesn't work is figured out
+
         addCss();
 
         // The element that prevents swipes later
