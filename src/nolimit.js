@@ -289,8 +289,8 @@ function mergeOptions(globalOptions, gameOptions) {
 
 function insertCss(document) {
     var style = document.createElement('style');
-    style.appendChild(document.createTextNode(require('./nolimit.css')));
     document.head.appendChild(style);
+    style.appendChild(document.createTextNode(require('./nolimit.css')));
 }
 
 function setupViewport(head) {
