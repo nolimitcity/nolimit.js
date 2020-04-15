@@ -26,7 +26,7 @@ var iosFullscreen = {
         var ua = navigator.userAgent.toLowerCase();
         var isSafari = ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1;
         var iFramed = window.top !== window.self;
-        var disabled = true; //XXX remove when swiping is figured out
+        var disabled = true; // remove when swiping is figured out
 
         if(disabled || !isSafari || iFramed || options.device !== 'mobile') {
             return;
