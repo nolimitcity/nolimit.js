@@ -28,9 +28,19 @@ function uuidv4() {
 }
 
 function handleSession() {
-    var session = sessionStorage.getItem(SESSION_KEY) || uuidv4();
-    sessionStorage.setItem(SESSION_KEY, session);
-    return session;
+    var fromStorage = null;
+    try {
+        fromStorage = sessionStorage.getItem(SESSION_KEY);
+    } catch (e) {
+        console.error('Could not read session', e);
+    }
+    var toSave = fromStorage || uuidv4();
+    try {
+        sessionStorage.setItem(SESSION_KEY, toSave);
+    } catch (e) {
+        console.error('Could not save session', e);
+    }
+    return toSave;
 }
 
 function sendLog(event, data) {
