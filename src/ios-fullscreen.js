@@ -24,10 +24,13 @@ function addCss(document) {
 var iosFullscreen = {
     init: function(options, document) {
         var ua = navigator.userAgent.toLowerCase();
-        var isSafari = ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1;
+        var iOS = ua.indexOf('iphone') !== -1 || ua.indexOf('ipad') !== -1;
+        var isChrome = ua.indexOf('crios') !== -1;
+        var standalone = navigator.standalone === true;
         var iFramed = window.top !== window.self;
 
-        if(!isSafari || iFramed || options.device !== 'mobile') {
+
+        if(!iOS || isChrome || standalone || iFramed || options.device !== 'mobile') {
             return;
         }
 
