@@ -274,6 +274,7 @@ function makeIframe(element) {
 function mergeOptions(globalOptions, gameOptions) {
     delete globalOptions.version;
     delete globalOptions.replay;
+    delete globalOptions.token;
     var options = {}, name;
     for(name in DEFAULT_OPTIONS) {
         options[name] = DEFAULT_OPTIONS[name];
