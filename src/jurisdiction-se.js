@@ -10,15 +10,31 @@ var target;
 var events;
 
 function isLinks() {
-    return spelpausUrl && spelgranserUrl && sjalvtestUrl;
+    return !!(spelpausUrl && spelgranserUrl && sjalvtestUrl);
 }
 
 function isEvents() {
     return events === true;
 }
 
+function createListener(element, url, target, event, nolimitApi) {
+    var links = isLinks();
+    var events = isEvents();
+    var urlCopy = '' + url;
+    var targetCopy = '' + target;
+    element.addEventListener('click', function() {
+        if (links) {
+            window.open(urlCopy, targetCopy);
+        }
+        if (events) {
+            nolimitApi.trigger(event);
+        }
+    });
+}
+
 var jurisdictionSE = {
     init: function(options, document, nolimitApi) {
+        console.log('sweden links', options.jurisdiction, isLinks(), isEvents());
         if (options.jurisdiction && options.jurisdiction.name === 'SE' && (isLinks() || isEvents())) {
             var style = document.createElement('style');
             document.head.appendChild(style);
@@ -29,53 +45,43 @@ var jurisdictionSE = {
             var spelpausImg = document.createElement('img');
             spelpausImg.src = SPELPAUS;
             linkHolder.appendChild(spelpausImg);
-            spelpausImg.addEventListener('click', function() {
-                if (isLinks()) {
-                    window.open(spelpausUrl, target);
-                }
-                if (isEvents()) {
-                    nolimitApi.trigger('spelpaus');
-                }
-            });
-
+            createListener(spelpausImg, spelpausUrl, target, 'spelpaus', nolimitApi);
+            
             var spelgranserImg = document.createElement('img');
             spelgranserImg.src = SPELGRANSER;
             linkHolder.appendChild(spelgranserImg);
-            spelgranserImg.addEventListener('click', function() {
-                if (isLinks()) {
-                    window.open(spelgranserUrl, target);
-                }
-                if (isEvents()) {
-                    nolimitApi.trigger('spelgranser');
-                }
-            });
+            createListener(spelgranserImg, spelgranserUrl, target, 'spelgranser', nolimitApi);
 
             var sjalvtestImg = document.createElement('img');
             sjalvtestImg.src = SJALVTEST;
             linkHolder.appendChild(sjalvtestImg);
-            sjalvtestImg.addEventListener('click', function() {
-                if (isLinks()) {
-                    window.open(sjalvtestUrl, target);
-                }
-                if (isEvents()) {
-                    nolimitApi.trigger('sjalvtest');
-                }
-            });
+            createListener(sjalvtestImg, sjalvtestUrl, target, 'sjalvtest', nolimitApi);
 
-            document.appendChild(linkHolder);
+            document.body.appendChild(linkHolder);
+
+            //var container = document.body.querySelector('.nolimit.container');
+            //if (container) {
+            //    container.style.top = '24px';
+            //}
+
+            spelpausUrl = null;
+            spelgranserUrl = null;
+            sjalvtestUrl = null;
+            target = null;
+            events = null;
         }
     },
     takeLinks: function(options) {
         if (options.jurisdiction && options.jurisdiction.name === 'SE') {
-            spelpausUrl = options.jurisdiction.spelpaus;
+            spelpausUrl = spelpausUrl || options.jurisdiction.spelpaus;
             delete options.jurisdiction.spelpaus;
-            spelgranserUrl = options.jurisdiction.spelgranser;
+            spelgranserUrl = spelgranserUrl || options.jurisdiction.spelgranser;
             delete options.jurisdiction.spelgranser;
-            sjalvtestUrl = options.jurisdiction.sjalvtest;
+            sjalvtestUrl = sjalvtestUrl || options.jurisdiction.sjalvtest;
             delete options.jurisdiction.sjalvtest;
-            target = options.jurisdiction.target || '_top';
+            target = target || options.jurisdiction.target || '_top';
             delete options.jurisdiction.target;
-            events = options.jurisdiction.events === true;
+            events = events || options.jurisdiction.events === true;
             delete options.jurisdiction.events;
         }
     }

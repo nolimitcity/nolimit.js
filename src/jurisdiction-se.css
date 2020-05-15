@@ -3,7 +3,7 @@ div.jurisdiction-se-links {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100px;
+    height: 24px;
     text-align: center;
     background-color: white;
 }
@@ -11,5 +11,6 @@ div.jurisdiction-se-links {
 div.jurisdiction-se-links img {
     vertical-align: middle;
     cursor: pointer;
-    height: 90px;
+    height: 20px;
+    margin: 2px;
 }

@@ -124,7 +124,16 @@ var nolimitApiFactory = function(target, onload) {
          * // reload the game
          * api.call('reload');
          */
-        call: sendMessage
+        call: sendMessage,
+
+        /**
+         * Triggers a named event
+         *
+         * @function trigger
+         * @param {String} event  name of the event
+         * @param {Object} [data] optional data for the event, if any
+         */
+        trigger: trigger
     };
 
     return nolimitApi;
