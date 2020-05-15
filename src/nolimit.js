@@ -4,6 +4,7 @@ logHandler.setExtra('nolimit.js', '__VERSION__');
 var nolimitApiFactory = require('./nolimit-api');
 var info = require('./info');
 var iosFullscreen = require('./ios-fullscreen');
+var jurisdictionSE = require('./jurisdiction-se');
 
 var CDN = 'https://{ENV}';
 var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}';
@@ -140,6 +141,10 @@ var nolimit = {
 
             nolimitApi.on('intro', function() {
                 iosFullscreen.init(options, iframe.contentWindow.document);
+            });
+
+            nolimitApi.on('intro', function() {
+                jurisdictionSE.init(options, iframe.contentWindow.document, nolimitApi);
             });
 
             return nolimitApi;
@@ -314,6 +319,7 @@ function processOptions(options) {
     if (options.language === 'pe' || options.language === 'cl') {
         options.language = 'es';
     }
+    jurisdictionSE.takeLinks(options);
     return options;
 }
 
