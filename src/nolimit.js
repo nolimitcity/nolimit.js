@@ -311,6 +311,9 @@ function processOptions(options) {
     options.cdn = options.cdn || CDN.replace('{ENV}', environment);
     options.staticRoot = options.staticRoot || GAMES_URL.replace('{CDN}', options.cdn);
     options.playForFunCurrency = options.playForFunCurrency || options.currency;
+    if (options.language === 'pe' || options.language === 'cl') {
+        options.language = 'es';
+    }
     return options;
 }
 
