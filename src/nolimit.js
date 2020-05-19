@@ -102,6 +102,8 @@ var nolimit = {
     load: function(options) {
         options = processOptions(mergeOptions(this.options, options));
         logHandlerOptions(options);
+        jurisdictionSE.takeOptions(options);
+
         startLoadLog();
 
         var target = options.target || window;
@@ -319,7 +321,6 @@ function processOptions(options) {
     if (options.language === 'pe' || options.language === 'cl') {
         options.language = 'es';
     }
-    jurisdictionSE.takeLinks(options);
     return options;
 }
 

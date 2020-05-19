@@ -63,25 +63,19 @@ var jurisdictionSE = {
             //if (container) {
             //    container.style.top = '24px';
             //}
-
-            spelpausUrl = null;
-            spelgranserUrl = null;
-            sjalvtestUrl = null;
-            target = null;
-            events = null;
         }
     },
-    takeLinks: function(options) {
+    takeOptions: function(options) {
         if (options.jurisdiction && options.jurisdiction.name === 'SE') {
-            spelpausUrl = spelpausUrl || options.jurisdiction.spelpaus;
+            spelpausUrl = options.jurisdiction.spelpaus;
             delete options.jurisdiction.spelpaus;
-            spelgranserUrl = spelgranserUrl || options.jurisdiction.spelgranser;
+            spelgranserUrl = options.jurisdiction.spelgranser;
             delete options.jurisdiction.spelgranser;
-            sjalvtestUrl = sjalvtestUrl || options.jurisdiction.sjalvtest;
+            sjalvtestUrl = options.jurisdiction.sjalvtest;
             delete options.jurisdiction.sjalvtest;
-            target = target || options.jurisdiction.target || '_top';
+            target = options.jurisdiction.target || '_top';
             delete options.jurisdiction.target;
-            events = events || options.jurisdiction.events === true;
+            events = options.jurisdiction.events === true;
             delete options.jurisdiction.events;
         }
     }
