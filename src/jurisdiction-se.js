@@ -79,6 +79,6 @@ var jurisdictionSE = {
             delete options.jurisdiction.events;
         }
     }
-}
+};
 
 module.exports = jurisdictionSE;
