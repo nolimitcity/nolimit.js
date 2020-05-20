@@ -14,3 +14,8 @@ div.jurisdiction-se-links img {
     height: 20px;
     margin: 2px;
 }
+
+div.topbar > div.clock {
+    position: absolute;
+    z-index: 2147483647;
+}
