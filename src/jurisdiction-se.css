@@ -15,7 +15,7 @@ div.jurisdiction-se-links img {
     margin: 2px;
 }
 
-div.topbar > div.clock {
+div.nolimit > div.keypad > div.topbar > div.clock {
     position: absolute;
     z-index: 2147483647;
 }
