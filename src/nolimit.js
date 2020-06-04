@@ -376,6 +376,9 @@ function html(window, options) {
                 document.body.appendChild(gameElement);
             }
         });
+
+        loaderElement.onload = function() {
+        };
     };
 
     document.body.appendChild(loaderElement);
