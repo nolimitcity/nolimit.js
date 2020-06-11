@@ -52,7 +52,7 @@ var nolimit = {
      * @param {Number}  [options.realityCheck.winnings=0] set initial winnings if player already has winnings in the session.
      * @param {Number}  [options.realityCheck.message] Message to display when dialog is opened. A generic default is provided.
      * @param {String}  [options.playForFunCurrency=EUR] currency to use when in playing for fun mode. Uses EUR if not specified.
-     * @param {String}  [options.autoplay=true] set to false to disable and remove the auto play button.
+     * @param {Boolean} [options.autoplay=true] set to false to disable and remove the auto play button.
      *
      * @example
      * nolimit.init({
