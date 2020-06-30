@@ -37,7 +37,7 @@ var nolimit = {
      * @param {String}  options.operator the operator code for the operator
      * @param {String}  [options.language="en"] the language to use for the game
      * @param {String}  [options.device=desktop] type of device: 'desktop' or 'mobile'. Recommended to always set this to make sure the correct device is used.
-     * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or the name of a production environment.
+     * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or the name of a production environment. This overrides the environment part of the hostname.
      * @param {Boolean} [options.fullscreen=true] set to false to disable automatic fullscreen on mobile (Android only)
      * @param {Boolean} [options.clock=true] set to false to disable in-game clock
      * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
@@ -210,7 +210,7 @@ var nolimit = {
      * Load information about the game, such as: current version, preferred width/height etc.
      *
      * @param {Object}      options
-     * @param {String}      [options.environment=partner] which environment to use; usually 'partner' or the name of a production environment.
+     * @param {String}      [options.environment=partner] which environment to use; usually 'partner' or the name of a production environment. This overrides the environment part of the hostname.
      * @param {String}      options.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
      * @param {String}      [options.version] force specific version of game to load.
      * @param {Function}    callback  called with the info object, if there was an error, the 'error' field will be set
