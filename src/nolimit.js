@@ -37,12 +37,12 @@ var nolimit = {
      * @param {String}  options.operator the operator code for the operator
      * @param {String}  [options.language="en"] the language to use for the game
      * @param {String}  [options.device=desktop] type of device: 'desktop' or 'mobile'. Recommended to always set this to make sure the correct device is used.
-     * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or 'production'
+     * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or the name of a production environment.
      * @param {Boolean} [options.fullscreen=true] set to false to disable automatic fullscreen on mobile (Android only)
      * @param {Boolean} [options.clock=true] set to false to disable in-game clock
      * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
      * @param {Object}  [options.jurisdiction] force a specific jurisdiction to enforce specific license requirements and set specific options and overrides. See README for jurisdiction-specific details.
-     * @param {Object}  [options.jurisdiction.name] the name of the jurisdiction, for example "MT", "DK", "LV", "RO", "UKGC" or "SE".
+     * @param {Object}  [options.jurisdiction.name] the name of the jurisdiction, for example "MT", "DK", "LV", "RO", "UKGC", "PT", "ES", "IT" or "SE".
      * @param {Object}  [options.realityCheck] set options for reality check. See README for more details.
      * @param {Object}  [options.realityCheck.enabled=true] set to false to disable reality-check dialog.
      * @param {Number}  [options.realityCheck.interval=60] Interval in minutes between showing reality-check dialog.
@@ -59,7 +59,7 @@ var nolimit = {
      *    operator: 'SMOOTHOPERATOR',
      *    language: 'sv',
      *    device: 'mobile',
-     *    environment: 'production',
+     *    environment: 'partner',
      *    currency: 'SEK',
      *    jurisdiction: {
      *        name: 'SE'
@@ -210,7 +210,7 @@ var nolimit = {
      * Load information about the game, such as: current version, preferred width/height etc.
      *
      * @param {Object}      options
-     * @param {String}      [options.environment=partner] which environment to use; usually 'partner' or 'production'
+     * @param {String}      [options.environment=partner] which environment to use; usually 'partner' or the name of a production environment.
      * @param {String}      options.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
      * @param {String}      [options.version] force specific version of game to load.
      * @param {Function}    callback  called with the info object, if there was an error, the 'error' field will be set

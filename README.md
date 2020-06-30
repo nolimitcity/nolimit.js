@@ -122,8 +122,7 @@ To construct this URL manually:
     * It is highly recommended to URI-escape both keys and values
     * Some games need extra data that's not plain strings, these need to pass through a JSON serialization before being URL encoded
 2. Append the query string to: `https://<environment>.nolimitcdn.com/loader/game-loader.html?`
-    * `<environment>` is either `'partner'` for test environments, or a name such as `'production'` that you have gotten from us.
-    * If you prefer, you can always use `casino` as environment in the hostname, but then you have to specify environment as an option instead.
+    * `<environment>` is either `'partner'` for test environments, or the name for a specific production environment that you have gotten from us.
 
 Note: `nolimit.url(options)` can build this URL for you if you use javascript, and `nolimit.replace(options)` can also redirect there.
 
