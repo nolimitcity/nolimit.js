@@ -302,9 +302,9 @@ api.call('resume');
 
 Use `options.jurisdiction.name=<JURISDICTION CODE>` to override which jurisdiction's license that should be used.
 
-Our supported jurisdictions: "DK", "LV", "RO", "SE", "UKGC", "MT", "LT"
+Our supported jurisdictions: "DE", "DK", "LV", "RO", "SE", "UKGC", "MT", "LT"
 
-Currently there is special behaviour in our games for jurisdictions `"DE", "DK", "LT", "UKGC"` (UK) and `"SE"` (Lotteriinspektionen, Sweden).
+Currently there is special behaviour in our games for jurisdictions `"DK", "LT", "UKGC"` (UK) and `"SE"` (Lotteriinspektionen, Sweden).
 
 ### UKGC, LT, DK, DE
 
