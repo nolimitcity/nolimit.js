@@ -304,9 +304,9 @@ Use `options.jurisdiction.name=<JURISDICTION CODE>` to override which jurisdicti
 
 Our supported jurisdictions: "DK", "LV", "RO", "SE", "UKGC", "MT", "LT"
 
-Currently there is special behaviour in our games for jurisdictions `"DK", "LT", "UKGC"` (UK) and `"SE"` (Lotteriinspektionen, Sweden).
+Currently there is special behaviour in our games for jurisdictions `"DE", "DK", "LT", "UKGC"` (UK) and `"SE"` (Lotteriinspektionen, Sweden).
 
-### UKGC, LT, DK
+### UKGC, LT, DK, DE
 
 No extra configuration needed.
 
