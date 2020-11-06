@@ -302,7 +302,7 @@ api.call('resume');
 
 Use `options.jurisdiction.name=<JURISDICTION CODE>` to override which jurisdiction's license that should be used.
 
-Our supported jurisdictions: "DE", "DK", "LV", "RO", "SE", "UKGC", "MT", "LT"
+Some of our supported jurisdictions are: "DE", "DK", "LV", "RO", "SE", "UKGC", "MT", "LT". Please talk to us and verify which one you should be using. It is very important you use the correct value for your targeted jurisdiction.
 
 ### SE
 
