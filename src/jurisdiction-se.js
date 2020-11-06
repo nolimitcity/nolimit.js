@@ -41,12 +41,12 @@ var jurisdictionSE = {
             style.appendChild(document.createTextNode(require('./jurisdiction-se.css')));
             var linkHolder = document.createElement('div');
             linkHolder.classList.add('jurisdiction-se-links');
-            
+
             var spelpausImg = document.createElement('img');
             spelpausImg.src = SPELPAUS;
             linkHolder.appendChild(spelpausImg);
             createListener(spelpausImg, spelpausUrl, target, 'spelpaus', nolimitApi);
-            
+
             var spelgranserImg = document.createElement('img');
             spelgranserImg.src = SPELGRANSER;
             linkHolder.appendChild(spelgranserImg);
@@ -56,6 +56,11 @@ var jurisdictionSE = {
             sjalvtestImg.src = SJALVTEST;
             linkHolder.appendChild(sjalvtestImg);
             createListener(sjalvtestImg, sjalvtestUrl, target, 'sjalvtest', nolimitApi);
+
+            var plus18 = document.createElement('span');
+            plus18.innerHTML = '+18';
+            plus18.style.fontSize = '12px';
+            linkHolder.appendChild(plus18);
 
             document.body.appendChild(linkHolder);
 
