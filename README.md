@@ -304,12 +304,6 @@ Use `options.jurisdiction.name=<JURISDICTION CODE>` to override which jurisdicti
 
 Our supported jurisdictions: "DE", "DK", "LV", "RO", "SE", "UKGC", "MT", "LT"
 
-Currently there is special behaviour in our games for jurisdictions `"DK", "LT", "UKGC"` (UK) and `"SE"` (Lotteriinspektionen, Sweden).
-
-### UKGC, LT, DK, DE
-
-No extra configuration needed.
-
 ### SE
 
 Lotteriinspektionen has [three mandatory buttons](https://www.lotteriinspektionen.se/press/nyhetsarkiv/enklare-for-spelare-att-ta-kontroll-over-sitt-spelande/) that must be displayed for play in Sweden. Either the operator can show them on their site, but when this is impossible or impractical (say, on mobile) we can display these buttons in-game.
