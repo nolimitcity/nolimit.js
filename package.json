@@ -38,15 +38,15 @@
   ],
   "homepage": "https://github.com/nolimitcity/nolimit.js#readme",
   "devDependencies": {
-    "browserify": "^16.3.0",
-    "derequire": "^2.0.6",
+    "browserify": "^17.0.0",
+    "derequire": "^2.1.1",
     "eslint": "^7.12.1",
     "exorcist": "^1.0.1",
-    "jsdoc": "^3.6.3",
+    "jsdoc": "^3.6.6",
     "minami": "^1.2.3",
     "partialify": "^3.1.6",
-    "replace": "^1.1.0",
-    "uglifyify": "^5.0.1"
+    "replace": "^1.2.0",
+    "uglifyify": "^5.0.2"
   },
   "dependencies": {
     "browserify-versionify": "^1.0.6",
