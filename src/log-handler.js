@@ -13,11 +13,15 @@ var extras = {};
 var storedEvents = [];
 
 function currentScript() {
-    var scripts = document.getElementsByTagName('script');
-    var index = scripts.length - 1;
-    var tag = scripts[index];
+    try {
+        var scripts = document.getElementsByTagName('script');
+        var index = scripts.length - 1;
+        var tag = scripts[index];
 
-    return tag.src;
+        return tag.src;
+    } catch (e) {
+        return '';
+    }
 }
 
 function uuidv4() {
