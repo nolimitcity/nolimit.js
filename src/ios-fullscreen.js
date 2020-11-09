@@ -26,11 +26,13 @@ var iosFullscreen = {
         var ua = navigator.userAgent.toLowerCase();
         var iPhone = ua.indexOf('iphone') !== -1;
         var isChrome = ua.indexOf('crios') !== -1;
+        var isFirefox = ua.indexOf('fxios') !== -1;
+        var isYandex = ua.indexOf('yabrowser') !== -1;
         var standalone = navigator.standalone === true;
         var iFramed = window.top !== window.self;
 
 
-        if(!iPhone || isChrome || standalone || iFramed || options.device !== 'mobile') {
+        if(!iPhone || isChrome || isFirefox || isYandex || standalone || iFramed || options.device !== 'mobile') {
             return;
         }
 
