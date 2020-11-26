@@ -3,7 +3,6 @@ logHandler.setExtra('nolimit.js', '__VERSION__');
 
 var nolimitApiFactory = require('./nolimit-api');
 var info = require('./info');
-var iosFullscreen = require('./ios-fullscreen');
 var jurisdictionSE = require('./jurisdiction-se');
 
 var CDN = 'https://{ENV}';
@@ -139,10 +138,6 @@ var nolimit = {
                 if(external.name ==='ready') {
                     logHandler.setExtra('loadTime', Date.now() - startTime);
                 }
-            });
-
-            nolimitApi.on('intro', function() {
-                iosFullscreen.init(options, iframe.contentWindow.document);
             });
 
             nolimitApi.on('intro', function() {
