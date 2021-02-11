@@ -3,7 +3,6 @@ logHandler.setExtra('nolimit.js', '__VERSION__');
 
 var nolimitApiFactory = require('./nolimit-api');
 var info = require('./info');
-var jurisdictionSE = require('./jurisdiction-se');
 
 var CDN = 'https://{ENV}';
 var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}';
@@ -101,7 +100,6 @@ var nolimit = {
     load: function(options) {
         options = processOptions(mergeOptions(this.options, options));
         logHandlerOptions(options);
-        jurisdictionSE.takeOptions(options);
 
         startLoadLog();
 
@@ -138,10 +136,6 @@ var nolimit = {
                 if(external.name ==='ready') {
                     logHandler.setExtra('loadTime', Date.now() - startTime);
                 }
-            });
-
-            nolimitApi.on('intro', function() {
-                jurisdictionSE.init(options, iframe.contentWindow.document, nolimitApi);
             });
 
             return nolimitApi;

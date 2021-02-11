@@ -306,55 +306,9 @@ Some of our supported jurisdictions are: "DE", "DK", "LV", "RO", "SE", "UKGC", "
 
 ### SE
 
-Lotteriinspektionen has [three mandatory buttons](https://www.lotteriinspektionen.se/press/nyhetsarkiv/enklare-for-spelare-att-ta-kontroll-over-sitt-spelande/) that must be displayed for play in Sweden. Either the operator can show them on their site, but when this is impossible or impractical (say, on mobile) we can display these buttons in-game.
+Lotteriinspektionen has [three mandatory buttons](https://www.lotteriinspektionen.se/press/nyhetsarkiv/enklare-for-spelare-att-ta-kontroll-over-sitt-spelande/) that must be displayed for play in Sweden. The operator will need to show them on their site without covering the game.
 
-It may help the experience to set the option `fullscreen` to `false`; default enabled on Android mobile.  
-
-There are currently two ways to configure these buttons:
-
-#### Configure as regular links:
-
-On top of setting `jurisdiction.name` to `"SE"`, the three buttons each need a URL to corresponding pages maintained by the operator. Add them to the jurisdiction object when setting jurisdiction 'SE'. They are named after the icon names, see the documentation from Lotteriinspektionen.
-
-Optionally, you can also add a [`target` for the links](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#attr-target), default is `"_top"`, replacing the current site. To open in a new tab/window, set it to `"_blank"` or see HTML documentation for more options. 
-
-```javascript
-{
-    options.jurisdiction = {
-        name: 'SE',
-        target: '_top',
-        spelpaus: '<URL>',
-        spelgranser: '<URL>',
-        sjalvtest: '<URL>'
-    }
-}
-```
-
-#### Configure as events:
-
-Use the external API to get callbacks:
-
-```javascript
-api.on('spelgranser', function() {
-    // ...
-});
-
-api.on('spelpaus', function() {
-    // ...
-});
-
-api.on('sjalvtest', function() {
-    // ...
-});
-
-{
-    options.jurisdiction = {
-        name: 'SE',
-        events: true
-    }
-}
-```
-
+It may help the experience to set the option `fullscreen` to `false`; default enabled on Android mobile.
 
 ## Reality Check
 
