@@ -51,6 +51,7 @@ var nolimit = {
      * @param {Number}  [options.realityCheck.message] Message to display when dialog is opened. A generic default is provided.
      * @param {String}  [options.playForFunCurrency=EUR] currency to use when in playing for fun mode. Uses EUR if not specified.
      * @param {Boolean} [options.autoplay=true] set to false to disable and remove the auto play button.
+     * @param {Boolean} [options.hideExitButton=false] set to true to control closing of mobile games from outside of game area.
      *
      * @example
      * nolimit.init({
