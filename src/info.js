@@ -30,11 +30,6 @@ var info = {
                     info.infoJson = url;
 
                     logHandler.setExtra('version', info.version);
-                    var country = request.getResponseHeader('x-country');
-                    if(country) {
-                        info.country = country;
-                        logHandler.setExtra('country', country);
-                    }
                 } catch(e) {
                     callback({
                         error: e.message
