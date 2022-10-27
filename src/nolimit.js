@@ -1,6 +1,3 @@
-var logHandler = require('./log-handler');
-logHandler.setExtra('nolimit.js', '__VERSION__');
-
 var nolimitApiFactory = require('./nolimit-api');
 var info = require('./info');
 
@@ -70,7 +67,6 @@ var nolimit = {
      */
     init: function(options) {
         this.options = options;
-        logHandlerOptions(options);
     },
 
     /**
@@ -100,9 +96,6 @@ var nolimit = {
      */
     load: function(options) {
         options = processOptions(mergeOptions(this.options, options));
-        logHandlerOptions(options);
-
-        startLoadLog();
 
         var target = options.target || window;
 
@@ -118,25 +111,6 @@ var nolimit = {
 
             var nolimitApi = nolimitApiFactory(iframe, function() {
                 html(iframe.contentWindow, options);
-                iframe.contentWindow.addEventListener('error', function(e) {
-                    logHandler.sendError(e);
-                });
-            });
-
-            nolimitApi.on('external', function(external) {
-                if(external.name === 'halt') {
-                    var betEvents = logHandler.getEvents('bet');
-                    console.log('nolimit.js halt', betEvents);
-                    if(betEvents.length === 0) {
-                        logHandler.sendLog('NO_BETS_PLACED', {message: 'Game closed with no bets'});
-                    }
-                }
-                if(external.name ==='bet') {
-                    logHandler.storeEvent('bet', external.data);
-                }
-                if(external.name ==='ready') {
-                    logHandler.setExtra('loadTime', Date.now() - startTime);
-                }
             });
 
             return nolimitApi;
@@ -170,8 +144,6 @@ var nolimit = {
      * });
      */
     replace: function(options) {
-        logHandlerOptions(options);
-        startLoadLog();
         location.href = this.url(options);
 
         function noop() {
@@ -189,7 +161,6 @@ var nolimit = {
      */
     url: function(options) {
         var gameOptions = processOptions(mergeOptions(this.options, options));
-        logHandlerOptions(gameOptions);
         var gameUrl = REPLACE_URL
             .replace('{CDN}', gameOptions.cdn)
             .replace('{QUERY}', makeQueryString(gameOptions));
@@ -215,25 +186,9 @@ var nolimit = {
      */
     info: function(options, callback) {
         options = processOptions(mergeOptions(this.options, options));
-        logHandlerOptions(options);
         info.load(options, callback);
     }
 };
-
-function logHandlerOptions(options) {
-    logHandler.setExtras({
-        operator: options.operator,
-        device: options.device,
-        token: options.token,
-        game: options.game,
-        environment: options.environment
-    });
-}
-
-var startTime;
-function startLoadLog() {
-    startTime = Date.now();
-}
 
 function makeQueryString(options) {
     var query = [];
@@ -342,7 +297,6 @@ function html(window, options) {
 
     loaderElement.onload = function() {
         window.on('error', function(error) {
-            logHandler.sendError(error);
             if(loaderElement && loaderElement.contentWindow) {
                 loaderElement.contentWindow.postMessage(JSON.stringify({'error': error}), '*');
             }

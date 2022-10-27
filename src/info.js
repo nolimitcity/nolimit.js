@@ -1,5 +1,3 @@
-var logHandler = require('./log-handler');
-
 var info = {
     load: function(options, callback) {
         var parts = [options.staticRoot, options.game];
@@ -28,8 +26,6 @@ var info = {
                     info.staticRoot = [options.staticRoot, info.name, info.version].join('/');
                     info.aspectRatio = info.size.width / info.size.height;
                     info.infoJson = url;
-
-                    logHandler.setExtra('version', info.version);
                 } catch(e) {
                     callback({
                         error: e.message
