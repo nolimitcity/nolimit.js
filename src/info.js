@@ -1,16 +1,16 @@
-var info = {
-    load: function(options, callback) {
-        var parts = [options.staticRoot, options.game];
-        if(options.version) {
+const info = {
+    load: (options, callback) => {
+        const parts = [options.staticRoot, options.game.replace(/DX[0-9]+$/, '')];
+        if (options.version) {
             parts.push(options.version);
         }
         parts.push('info.json');
 
-        var url = parts.join('/');
-        var request = new XMLHttpRequest();
+        const url = parts.join('/');
+        const request = new XMLHttpRequest();
 
         function onFail() {
-            var error = request.statusText || 'No error message available; CORS or server missing?';
+            const error = request.statusText || 'No error message available; CORS or server missing?';
             callback({
                 error: error
             });
@@ -18,21 +18,19 @@ var info = {
 
         request.open('GET', url, true);
 
-        request.onload = function() {
-            if(request.status >= 200 && request.status < 400) {
-                var info;
+        request.onload = () => {
+            if (request.status >= 200 && request.status < 400) {
                 try {
-                    info = JSON.parse(request.responseText);
+                    const info = JSON.parse(request.responseText);
                     info.staticRoot = [options.staticRoot, info.name, info.version].join('/');
                     info.aspectRatio = info.size.width / info.size.height;
                     info.infoJson = url;
-                } catch(e) {
+                    callback(info);
+                } catch (e) {
                     callback({
                         error: e.message
                     });
-                    return;
                 }
-                callback(info);
             } else {
                 onFail();
             }
