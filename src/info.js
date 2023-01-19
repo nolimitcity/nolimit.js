@@ -1,6 +1,6 @@
 const info = {
     load: (options, callback) => {
-        const parts = [options.staticRoot, options.game.replace(/([A-Z]{2})?DX[0-9]+$/, '')];
+        const parts = [options.staticRoot, options.game.replace(/DX[0-9]+$/, '').replace(/[A-Z]{2}$/, '')];
         if (options.version) {
             parts.push(options.version);
         }
