@@ -316,6 +316,7 @@ function html(window, options) {
                 window.nolimit = nolimit;
                 window.nolimit.options = options;
                 window.nolimit.options.version = info.version;
+                window.nolimit.options.info = info;
 
                 document.body.appendChild(gameElement);
             }
