@@ -42,8 +42,7 @@
     "derequire": "^2.1.1",
     "eslint": "^7.12.1",
     "exorcist": "^2.0.0",
-    "jsdoc": "^3.6.6",
-    "minami": "^1.2.3",
+    "jsdoc": "^4.0.2",
     "partialify": "^3.1.6",
     "replace": "^1.2.0",
     "uglifyify": "^5.0.2"
