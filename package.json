@@ -40,16 +40,15 @@
   "devDependencies": {
     "browserify": "^17.0.0",
     "derequire": "^2.1.1",
-    "eslint": "^7.12.1",
+    "eslint": "^8.47.0",
     "exorcist": "^2.0.0",
     "jsdoc": "^4.0.2",
     "partialify": "^3.1.6",
-    "replace": "^1.2.0",
+    "replace": "^1.2.2",
     "uglifyify": "^5.0.2"
   },
   "dependencies": {
-    "browserify-versionify": "^1.0.6",
-    "ua-parser-js": "^0.7.20"
+    "browserify-versionify": "1.0.6"
   },
   "browserify": {
     "transform": [
