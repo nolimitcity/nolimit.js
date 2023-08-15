@@ -49,6 +49,7 @@ var nolimit = {
      * @param {String}  [options.playForFunCurrency=EUR] currency to use when in playing for fun mode. Uses EUR if not specified.
      * @param {Boolean} [options.autoplay=true] set to false to disable and remove the auto play button.
      * @param {Boolean} [options.hideExitButton=false] set to true to control closing of mobile games from outside of game area.
+     * @param {Boolean} [options.showExitButtonDesktop=false] set to true to show exit button also in desktop mode.
      *
      * @example
      * nolimit.init({
