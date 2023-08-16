@@ -35,6 +35,9 @@ var nolimit = {
      * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or the name of a production environment. This overrides the environment part of the hostname.
      * @param {Boolean} [options.fullscreen=true] set to false to disable automatic fullscreen on mobile (Android only)
      * @param {Boolean} [options.clock=true] set to false to disable in-game clock
+     * @param {Boolean} [options.autoplay=true] set to false to disable and remove the auto play button.
+     * @param {Boolean} [options.mute=false] start the game without sound
+     * @param {Boolean} [options.hideCurrency] hide currency symbols/codes in the game
      * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
      * @param {Object}  [options.jurisdiction] force a specific jurisdiction to enforce specific license requirements and set specific options and overrides. See README for jurisdiction-specific details.
      * @param {Object}  [options.jurisdiction.name] the name of the jurisdiction, for example "MT", "DK", "LV", "RO", "UKGC", "PT", "ES", "IT" or "SE".
@@ -47,11 +50,16 @@ var nolimit = {
      * @param {Number}  [options.realityCheck.winnings=0] set initial winnings if player already has winnings in the session.
      * @param {Number}  [options.realityCheck.message] Message to display when dialog is opened. A generic default is provided.
      * @param {String}  [options.playForFunCurrency=EUR] currency to use when in playing for fun mode. Uses EUR if not specified.
-     * @param {Boolean} [options.autoplay=true] set to false to disable and remove the auto play button.
      * @param {Boolean} [options.hideExitButton=false] set to true to control closing of mobile games from outside of game area.
      * @param {Boolean} [options.showExitButtonDesktop=false] set to true to show exit button also in desktop mode.
      * @param {Boolean} [options.useReplayLinkPopup=false] set to true to show a popup for loading replays instead of trying to open directly.
      * @param {Boolean} [options.googleAnalytics=true] set to false to completely disable the use of analytics.
+     * @param {String}  [options.lobbyUrl="history:back()"] URL to redirect back to lobby on mobile, if not using a target
+     * @param {String}  [options.depositUrl] URL to deposit page, if not using a target element
+     * @param {String}  [options.supportUrl] URL to support page, if not using a target element
+     * @param {Boolean} [options.depositEvent] instead of using URL, emit "deposit" event (see event documentation)
+     * @param {Boolean} [options.lobbyEvent] instead of using URL, emit "lobby" event (see event documentation) (mobile only)
+     * @param {String}  [options.accountHistoryUrl] URL to support page, if not using a target element
      *
      * @example
      * nolimit.init({
@@ -79,13 +87,12 @@ var nolimit = {
      * <li> If target is a Window element, the game will be loaded directly in that.
      * <li> If target is undefined, it will default to the current window.
      *
-     * @param {Object}              options
+     * @param {Object} options see init for details
+     * @see {@link nolimit.init} for details on more options
      * @param {String}              options.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
      * @param {HTMLElement|Window}  [options.target=window] the HTMLElement or Window to load the game in
      * @param {String}              [options.token] the token to use for real money play
-     * @param {Boolean}             [options.mute=false] start the game without sound
      * @param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache
-     * @param {Boolean}             [options.hideCurrency] hide currency symbols/codes in the game
      *
      * @returns {nolimitApi}        The API connection to the opened game.
      *
@@ -125,18 +132,11 @@ var nolimit = {
     /**
      * Load game in a new, separate page. This offers the best isolation, but no communication with the game is possible.
      *
-     * @param {Object}              options
+     * @param {Object} options see init for details
+     * @see {@link nolimit.init} for details on more options
      * @param {String}              options.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
      * @param {String}              [options.token] the token to use for real money play
-     * @param {Boolean}             [options.mute=false] start the game without sound
      * @param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache
-     * @param {Boolean}             [options.hideCurrency] hide currency symbols/codes in the game
-     * @param {String}              [options.lobbyUrl="history:back()"] URL to redirect back to lobby on mobile, if not using a target
-     * @param {String}              [options.depositUrl] URL to deposit page, if not using a target element
-     * @param {String}              [options.supportUrl] URL to support page, if not using a target element
-     * @param {Boolean}             [options.depositEvent] instead of using URL, emit "deposit" event (see event documentation)
-     * @param {Boolean}             [options.lobbyEvent] instead of using URL, emit "lobby" event (see event documentation) (mobile only)
-     * @param {String}              [options.accountHistoryUrl] URL to support page, if not using a target element
      *
      * @example
      * var api = nolimit.replace({
@@ -158,8 +158,8 @@ var nolimit = {
     /**
      * Constructs a URL for manually loading the game in an iframe or via redirect.
 
-     * @param {Object} options see replace for details
-     * @see {@link nolimit.replace} for details on options
+     * @param {Object} options see init for details
+     * @see {@link nolimit.init} for details on options
      * @return {string}
      */
     url: function(options) {
