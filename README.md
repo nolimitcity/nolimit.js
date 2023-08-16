@@ -146,7 +146,7 @@ The only required options are the **operator** code for init, the **game** code 
 
 Option **language** defaults to `'en'`.
 
-Currently supported values are `'en', 'da', 'de', 'es', 'fi', 'fr', 'is', 'ja', 'ko', 'lv', 'nl', 'no', 'pl', 'ru', 'sv', 'th', 'tr', 'vi', 'zh'`.
+Some of our supported languages are `'en', 'da', 'de', 'es', 'fi', 'fr', 'is', 'ja', 'ko', 'lv', 'nl', 'no', 'pl', 'ru', 'sv', 'th', 'tr', 'vi', 'zh'`. We support many languages so please talk to us if loading a game in a language you expect to work ends up loading in the default language instead since then either the language code may be wrong or we may not have the language yet.
 
 ### Real money or play money
 
