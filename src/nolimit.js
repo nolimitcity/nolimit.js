@@ -50,6 +50,8 @@ var nolimit = {
      * @param {Boolean} [options.autoplay=true] set to false to disable and remove the auto play button.
      * @param {Boolean} [options.hideExitButton=false] set to true to control closing of mobile games from outside of game area.
      * @param {Boolean} [options.showExitButtonDesktop=false] set to true to show exit button also in desktop mode.
+     * @param {Boolean} [options.useReplayLinkPopup=false] set to true to show a popup for loading replays instead of trying to open directly.
+     * @param {Boolean} [options.googleAnalytics=true] set to false to completely disable the use of analytics.
      *
      * @example
      * nolimit.init({
