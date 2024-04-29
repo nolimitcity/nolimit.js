@@ -40,7 +40,7 @@
   "devDependencies": {
     "browserify": "^17.0.0",
     "derequire": "^2.1.1",
-    "eslint": "^8.47.0",
+    "eslint": "^9.1.1",
     "exorcist": "^2.0.0",
     "jsdoc": "^4.0.2",
     "partialify": "^3.1.6",
