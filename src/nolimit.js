@@ -298,33 +298,41 @@ function html(window, options) {
 
     document.body.innerHTML = '';
 
-    loaderElement.onload = function() {
-        window.on('error', function(error) {
-            if(loaderElement && loaderElement.contentWindow) {
-                loaderElement.contentWindow.postMessage(JSON.stringify({'error': error}), '*');
-            }
-        });
+    window.on('error', function(error) {
+        if(loaderElement && loaderElement.contentWindow) {
+            loaderElement.contentWindow.postMessage(JSON.stringify({'error': error}), '*');
+        }
+    });
 
+    var infoPromise = new Promise((resolve, reject) => {
         nolimit.info(options, function(info) {
             if(info.error) {
-                window.trigger('error', info.error);
-                loaderElement.contentWindow.postMessage(JSON.stringify(info), '*');
+                reject(info);
             } else {
-                window.trigger('info', info);
-
-                var gameElement = document.createElement('script');
-                gameElement.src = info.staticRoot + '/game.js';
-
-                options.loadStart = Date.now();
-                window.nolimit = nolimit;
-                window.nolimit.options = options;
-                window.nolimit.options.version = info.version;
-                window.nolimit.options.info = info;
-
-                document.body.appendChild(gameElement);
+                resolve(info);
             }
-        });
+        });    
+    });
 
+    loaderElement.onload = function() {
+        infoPromise.then(info => {
+            window.trigger('info', info);
+            loaderElement.contentWindow.postMessage(JSON.stringify(info), '*');
+
+            var gameElement = document.createElement('script');
+            gameElement.src = info.staticRoot + '/game.js';
+
+            options.loadStart = Date.now();
+            window.nolimit = nolimit;
+            window.nolimit.options = options;
+            window.nolimit.options.version = info.version;
+            window.nolimit.options.info = info;
+
+            document.body.appendChild(gameElement);
+        }).catch(info => {
+            window.trigger('error', info.error);
+            loaderElement.contentWindow.postMessage(JSON.stringify(info), '*');
+        });
         loaderElement.onload = function() {
         };
     };
