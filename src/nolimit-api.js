@@ -1,38 +1,34 @@
-/**
- * @exports nolimitApiFactory
- * @private
- */
-var nolimitApiFactory = function(target, onload) {
+export function nolimitApiFactory(target, onload) {
 
-    var listeners = {};
-    var unhandledEvents = {};
-    var unhandledCalls = [];
-    var port;
+    const listeners = {};
+    const unhandledEvents = {};
+    const unhandledCalls = [];
+    let port;
 
     function handleUnhandledCalls(port) {
-        while(unhandledCalls.length > 0) {
+        while (unhandledCalls.length > 0) {
             port.postMessage(unhandledCalls.shift());
         }
     }
 
-    function addMessageListener(gameWindow) {
-        gameWindow.addEventListener('message', function(e) {
-            if(e.ports && e.ports.length > 0) {
+    function addMessageListener(contentWindow) {
+        contentWindow.addEventListener('message', function (e) {
+            if (e.ports && e.ports.length > 0) {
                 port = e.ports[0];
                 port.onmessage = onMessage;
                 handleUnhandledCalls(port);
             }
         });
-        gameWindow.trigger = trigger;
-        gameWindow.on = on;
+        contentWindow.trigger = trigger;
+        contentWindow.on = on;
         onload();
     }
 
-    if(target.nodeName === 'IFRAME') {
+    if (target.nodeName === 'IFRAME') {
         if (target.contentWindow && target.contentWindow.document && target.contentWindow.document.readyState === 'complete') {
             addMessageListener(target.contentWindow);
         } else {
-            target.addEventListener('load', function() {
+            target.addEventListener('load', function () {
                 addMessageListener(target.contentWindow);
             });
         }
@@ -45,19 +41,19 @@ var nolimitApiFactory = function(target, onload) {
     }
 
     function sendMessage(method, data) {
-        var message = {
+        const message = {
             jsonrpc: '2.0',
             method: method
         };
 
-        if(data) {
+        if (data) {
             message.params = data;
         }
 
-        if(port) {
+        if (port) {
             try {
                 port.postMessage(message);
-            } catch(ignored) {
+            } catch (ignored) {
                 port = undefined;
                 unhandledCalls.push(message);
             }
@@ -71,8 +67,8 @@ var nolimitApiFactory = function(target, onload) {
     }
 
     function trigger(event, data) {
-        if(listeners[event]) {
-            listeners[event].forEach(function(callback) {
+        if (listeners[event]) {
+            listeners[event].forEach(function (callback) {
                 callback(data);
             });
         } else {
@@ -84,18 +80,14 @@ var nolimitApiFactory = function(target, onload) {
     function on(event, callback) {
         listeners[event] = listeners[event] || [];
         listeners[event].push(callback);
-        while(unhandledEvents[event] && unhandledEvents[event].length > 0) {
+        while (unhandledEvents[event] && unhandledEvents[event].length > 0) {
             trigger(event, unhandledEvents[event].pop());
         }
 
         registerEvents([event]);
     }
 
-    /**
-     * Connection to the game using MessageChannel
-     * @exports nolimitApi
-     */
-    var nolimitApi = {
+    return {
         /**
          * Add listener for event from the started game
          *
@@ -135,8 +127,4 @@ var nolimitApiFactory = function(target, onload) {
          */
         trigger: trigger
     };
-
-    return nolimitApi;
-};
-
-module.exports = nolimitApiFactory;
+}

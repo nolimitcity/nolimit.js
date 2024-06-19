@@ -1,209 +1,199 @@
-var nolimitApiFactory = require('./nolimit-api');
-var info = require('./info');
+import {nolimitApiFactory} from './nolimit-api';
+import {loadInfo} from './info';
+import nolimitCss from './nolimit.css';
 
-var CDN = 'https://{ENV}';
-var LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}';
-var REPLACE_URL = '{CDN}/loader/game-loader.html?{QUERY}';
-var GAMES_URL = '{CDN}/games';
+const CDN = 'https://{ENV}';
+const LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}';
+const REPLACE_URL = '{CDN}/loader/game-loader.html?{QUERY}';
+const GAMES_URL = '{CDN}/games';
 
-var DEFAULT_OPTIONS = {
+const DEFAULT_OPTIONS = {
     device: 'desktop',
     environment: 'partner',
     language: 'en',
-    'nolimit.js': '__VERSION__'
+    'nolimit.js': __VERSION__
 };
 
 /**
- * @exports nolimit
+ * @property {String} version current version of nolimit.js
  */
-var nolimit = {
+export const version = __VERSION__;
 
-    /**
-     * @property {String} version current version of nolimit.js
-     */
-    version: '__VERSION__',
+let options = {};
 
-    options: {},
+/**
+ * Initialize loader with default parameters. Can be skipped if the parameters are included in the call to load instead.
+ *
+ * @param {Object}  initOptions
+ * @param {String}  initOptions.operator the operator code for the operator
+ * @param {String}  [initOptions.language="en"] the language to use for the game
+ * @param {String}  [initOptions.device=desktop] type of device: 'desktop' or 'mobile'. Recommended to always set this to make sure the correct device is used.
+ * @param {String}  [initOptions.environment=partner] which environment to use; usually 'partner' or the name of a production environment. This overrides the environment part of the hostname.
+ * @param {Boolean} [initOptions.fullscreen=true] set to false to disable automatic fullscreen on mobile (Android only)
+ * @param {Boolean} [initOptions.clock=true] set to false to disable in-game clock
+ * @param {Boolean} [initOptions.autoplay=true] set to false to disable and remove the auto play button.
+ * @param {Boolean} [initOptions.mute=false] start the game without sound
+ * @param {Boolean} [initOptions.hideCurrency] hide currency symbols/codes in the game
+ * @param {String}  [initOptions.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
+ * @param {Object}  [initOptions.jurisdiction] force a specific jurisdiction to enforce specific license requirements and set specific options and overrides. See README for jurisdiction-specific details.
+ * @param {Object}  [initOptions.jurisdiction.name] the name of the jurisdiction, for example "MT", "DK", "LV", "RO", "UKGC", "PT", "ES", "IT" or "SE".
+ * @param {Object}  [initOptions.realityCheck] set options for reality check. See README for more details.
+ * @param {Object}  [initOptions.realityCheck.enabled=true] set to false to disable reality-check dialog.
+ * @param {Number}  [initOptions.realityCheck.interval=60] Interval in minutes between showing reality-check dialog.
+ * @param {Number}  [initOptions.realityCheck.sessionStart=Date.now()] override session start, default is Date.now().
+ * @param {Number}  [initOptions.realityCheck.nextTime] next time to show dialog, defaults to Date.now() + interval.
+ * @param {Number}  [initOptions.realityCheck.bets=0] set initial bets if player already has bets in the session.
+ * @param {Number}  [initOptions.realityCheck.winnings=0] set initial winnings if player already has winnings in the session.
+ * @param {Number}  [initOptions.realityCheck.message] Message to display when dialog is opened. A generic default is provided.
+ * @param {String}  [initOptions.playForFunCurrency=EUR] currency to use when in playing for fun mode. Uses EUR if not specified.
+ * @param {Boolean} [initOptions.hideExitButton=false] set to true to control closing of mobile games from outside of game area.
+ * @param {Boolean} [initOptions.showExitButtonDesktop=false] set to true to show exit button also in desktop mode.
+ * @param {Boolean} [initOptions.useReplayLinkPopup=false] set to true to show a popup for loading replays instead of trying to open directly.
+ * @param {Boolean} [initOptions.googleAnalytics=true] set to false to completely disable the use of analytics.
+ * @param {String}  [initOptions.lobbyUrl="history:back()"] URL to redirect back to lobby on mobile, if not using a target
+ * @param {String}  [initOptions.depositUrl] URL to deposit page, if not using a target element
+ * @param {String}  [initOptions.supportUrl] URL to support page, if not using a target element
+ * @param {Boolean} [initOptions.depositEvent] instead of using URL, emit "deposit" event (see event documentation)
+ * @param {Boolean} [initOptions.lobbyEvent] instead of using URL, emit "lobby" event (see event documentation) (mobile only)
+ * @param {String}  [initOptions.accountHistoryUrl] URL to support page, if not using a target element
+ *
+ * @example
+ * nolimit.init({
+ *    operator: 'SMOOTHOPERATOR',
+ *    language: 'sv',
+ *    device: 'mobile',
+ *    environment: 'partner',
+ *    currency: 'SEK',
+ *    jurisdiction: {
+ *        name: 'SE'
+ *    },
+ *    realityCheck: {
+ *        interval: 30
+ *    }
+ * });
+ */
+export function init(initOptions) {
+    window.nolimit.options = initOptions;
+}
 
-    /**
-     * Initialize loader with default parameters. Can be skipped if the parameters are included in the call to load instead.
-     *
-     * @param {Object}  options
-     * @param {String}  options.operator the operator code for the operator
-     * @param {String}  [options.language="en"] the language to use for the game
-     * @param {String}  [options.device=desktop] type of device: 'desktop' or 'mobile'. Recommended to always set this to make sure the correct device is used.
-     * @param {String}  [options.environment=partner] which environment to use; usually 'partner' or the name of a production environment. This overrides the environment part of the hostname.
-     * @param {Boolean} [options.fullscreen=true] set to false to disable automatic fullscreen on mobile (Android only)
-     * @param {Boolean} [options.clock=true] set to false to disable in-game clock
-     * @param {Boolean} [options.autoplay=true] set to false to disable and remove the auto play button.
-     * @param {Boolean} [options.mute=false] start the game without sound
-     * @param {Boolean} [options.hideCurrency] hide currency symbols/codes in the game
-     * @param {String}  [options.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
-     * @param {Object}  [options.jurisdiction] force a specific jurisdiction to enforce specific license requirements and set specific options and overrides. See README for jurisdiction-specific details.
-     * @param {Object}  [options.jurisdiction.name] the name of the jurisdiction, for example "MT", "DK", "LV", "RO", "UKGC", "PT", "ES", "IT" or "SE".
-     * @param {Object}  [options.realityCheck] set options for reality check. See README for more details.
-     * @param {Object}  [options.realityCheck.enabled=true] set to false to disable reality-check dialog.
-     * @param {Number}  [options.realityCheck.interval=60] Interval in minutes between showing reality-check dialog.
-     * @param {Number}  [options.realityCheck.sessionStart=Date.now()] override session start, default is Date.now().
-     * @param {Number}  [options.realityCheck.nextTime] next time to show dialog, defaults to Date.now() + interval.
-     * @param {Number}  [options.realityCheck.bets=0] set initial bets if player already has bets in the session.
-     * @param {Number}  [options.realityCheck.winnings=0] set initial winnings if player already has winnings in the session.
-     * @param {Number}  [options.realityCheck.message] Message to display when dialog is opened. A generic default is provided.
-     * @param {String}  [options.playForFunCurrency=EUR] currency to use when in playing for fun mode. Uses EUR if not specified.
-     * @param {Boolean} [options.hideExitButton=false] set to true to control closing of mobile games from outside of game area.
-     * @param {Boolean} [options.showExitButtonDesktop=false] set to true to show exit button also in desktop mode.
-     * @param {Boolean} [options.useReplayLinkPopup=false] set to true to show a popup for loading replays instead of trying to open directly.
-     * @param {Boolean} [options.googleAnalytics=true] set to false to completely disable the use of analytics.
-     * @param {String}  [options.lobbyUrl="history:back()"] URL to redirect back to lobby on mobile, if not using a target
-     * @param {String}  [options.depositUrl] URL to deposit page, if not using a target element
-     * @param {String}  [options.supportUrl] URL to support page, if not using a target element
-     * @param {Boolean} [options.depositEvent] instead of using URL, emit "deposit" event (see event documentation)
-     * @param {Boolean} [options.lobbyEvent] instead of using URL, emit "lobby" event (see event documentation) (mobile only)
-     * @param {String}  [options.accountHistoryUrl] URL to support page, if not using a target element
-     *
-     * @example
-     * nolimit.init({
-     *    operator: 'SMOOTHOPERATOR',
-     *    language: 'sv',
-     *    device: 'mobile',
-     *    environment: 'partner',
-     *    currency: 'SEK',
-     *    jurisdiction: {
-     *        name: 'SE'
-     *    },
-     *    realityCheck: {
-     *        interval: 30
-     *    }
-     * });
-     */
-    init: function(options) {
-        this.options = options;
-    },
+/**
+ * Load game, replacing target with the game.
+ *
+ * <li> If target is a HTML element, it will be replaced with an iframe, keeping all the attributes of the original element, so those can be used to set id, classes, styles and more.
+ * <li> If target is a Window element, the game will be loaded directly in that.
+ * <li> If target is undefined, it will default to the current window.
+ *
+ * @param {Object} loadOptions see init for details
+ * @see {@link init} for details on more options
+ * @param {String}              loadOptions.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
+ * @param {HTMLElement|Window}  [loadOptions.target=window] the HTMLElement or Window to load the game in
+ * @param {String}              [loadOptions.token] the token to use for real money play
+ * @param {String}              [loadOptions.version] force specific game version such as '1.2.3', or 'development' to disable cache
+ *
+ * @returns {nolimitApi}        The API connection to the opened game.
+ *
+ * @example
+ * var api = nolimit.load({
+ *    game: 'DragonTribe',
+ *    target: document.getElementById('game'),
+ *    token: realMoneyToken,
+ *    mute: true
+ * });
+ */
+export function load(loadOptions) {
+    loadOptions = processOptions(mergeOptions(options, loadOptions));
 
-    /**
-     * Load game, replacing target with the game.
-     *
-     * <li> If target is a HTML element, it will be replaced with an iframe, keeping all the attributes of the original element, so those can be used to set id, classes, styles and more.
-     * <li> If target is a Window element, the game will be loaded directly in that.
-     * <li> If target is undefined, it will default to the current window.
-     *
-     * @param {Object} options see init for details
-     * @see {@link nolimit.init} for details on more options
-     * @param {String}              options.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
-     * @param {HTMLElement|Window}  [options.target=window] the HTMLElement or Window to load the game in
-     * @param {String}              [options.token] the token to use for real money play
-     * @param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache
-     *
-     * @returns {nolimitApi}        The API connection to the opened game.
-     *
-     * @example
-     * var api = nolimit.load({
-     *    game: 'DragonTribe',
-     *    target: document.getElementById('game'),
-     *    token: realMoneyToken,
-     *    mute: true
-     * });
-     */
-    load: function(options) {
-        options = processOptions(mergeOptions(this.options, options));
+    let target = loadOptions.target || window;
 
-        var target = options.target || window;
-
-        if(target.Window && target instanceof target.Window) {
-            target = document.createElement('div');
-            target.setAttribute('style', 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;');
-            document.body.appendChild(target);
-        }
-
-        if(target.ownerDocument && target instanceof target.ownerDocument.defaultView.HTMLElement) {
-            var iframe = makeIframe(target);
-            target.parentNode.replaceChild(iframe, target);
-
-            var nolimitApi = nolimitApiFactory(iframe, function() {
-                html(iframe.contentWindow, options);
-            });
-
-            return nolimitApi;
-        } else {
-            throw 'Invalid option target: ' + target;
-        }
-    },
-
-    /**
-     * Load game in a new, separate page. This offers the best isolation, but no communication with the game is possible.
-     *
-     * @param {Object} options see init for details
-     * @see {@link nolimit.init} for details on more options
-     * @param {String}              options.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
-     * @param {String}              [options.token] the token to use for real money play
-     * @param {String}              [options.version] force specific game version such as '1.2.3', or 'development' to disable cache
-     *
-     * @example
-     * var api = nolimit.replace({
-     *    game: 'DragonTribe',
-     *    target: document.getElementById('game'),
-     *    token: realMoneyToken,
-     *    mute: true
-     * });
-     */
-    replace: function(options) {
-        location.href = this.url(options);
-
-        function noop() {
-        }
-
-        return {on: noop, call: noop};
-    },
-
-    /**
-     * Constructs a URL for manually loading the game in an iframe or via redirect.
-
-     * @param {Object} options see init for details
-     * @see {@link nolimit.init} for details on options
-     * @return {string}
-     */
-    url: function(options) {
-        var gameOptions = processOptions(mergeOptions(this.options, options));
-        var gameUrl = REPLACE_URL
-            .replace('{CDN}', gameOptions.cdn)
-            .replace('{QUERY}', makeQueryString(gameOptions));
-        return gameUrl;
-    },
-
-    /**
-     * Load information about the game, such as: current version, preferred width/height etc.
-     *
-     * @param {Object}      options
-     * @param {String}      [options.environment=partner] which environment to use; usually 'partner' or the name of a production environment. This overrides the environment part of the hostname.
-     * @param {String}      options.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
-     * @param {String}      [options.version] force specific version of game to load.
-     * @param {Function}    callback  called with the info object, if there was an error, the 'error' field will be set
-     *
-     * @example
-     * nolimit.info({game: 'DragonTribe'}, function(info) {
-     *     var target = document.getElementById('game');
-     *     target.style.width = info.size.width + 'px';
-     *     target.style.height = info.size.height + 'px';
-     *     console.log(info.name, info.version);
-     * });
-     */
-    info: function(options, callback) {
-        options = processOptions(mergeOptions(this.options, options));
-        info.load(options, callback);
+    if (target.Window && target instanceof target.Window) {
+        target = document.createElement('div');
+        target.setAttribute('style', 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;');
+        document.body.appendChild(target);
     }
-};
 
-function makeQueryString(options) {
-    var query = [];
-    for(var key in options) {
-        var value = options[key];
-        if(typeof value === 'undefined') {
+    if (target.ownerDocument && target instanceof target.ownerDocument.defaultView.HTMLElement) {
+        const iframe = makeIframe(target);
+        target.parentNode.replaceChild(iframe, target);
+
+        return nolimitApiFactory(iframe, () => html(iframe.contentWindow, loadOptions));
+    } else {
+        throw 'Invalid option target: ' + target;
+    }
+}
+
+/**
+ * Load game in a new, separate page. This offers the best isolation, but no communication with the game is possible.
+ *
+ * @param {Object} replaceOptions see init for details
+ * @see {@link init} for details on more options
+ * @param {String}              replaceOptions.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
+ * @param {String}              [replaceOptions.token] the token to use for real money play
+ * @param {String}              [replaceOptions.version] force specific game version such as '1.2.3', or 'development' to disable cache
+ *
+ * @example
+ * var api = nolimit.replace({
+ *    game: 'DragonTribe',
+ *    target: document.getElementById('game'),
+ *    token: realMoneyToken,
+ *    mute: true
+ * });
+ */
+export function replace(replaceOptions) {
+    location.href = url(replaceOptions);
+
+    function noop() {
+    }
+
+    return {on: noop, call: noop};
+}
+
+/**
+ * Constructs a URL for manually loading the game in an iframe or via redirect.
+
+ * @param {Object} urlOptions see init for details
+ * @see {@link init} for details on options
+ * @return {string}
+ */
+export function url(urlOptions) {
+    const gameOptions = processOptions(mergeOptions(options, urlOptions));
+    return REPLACE_URL
+        .replace('{CDN}', gameOptions.cdn)
+        .replace('{QUERY}', makeQueryString(gameOptions));
+}
+
+/**
+ * Load information about the game, such as: current version, preferred width/height etc.
+ *
+ * @param {Object}      infoOptions
+ * @param {String}      [infoOptions.environment=partner] which environment to use; usually 'partner' or the name of a production environment. This overrides the environment part of the hostname.
+ * @param {String}      infoOptions.game case sensitive game code, for example 'DragonTribe' or 'Wixx'
+ * @param {String}      [infoOptions.version] force specific version of game to load.
+ * @param {Function}    callback  called with the info object, if there was an error, the 'error' field will be set
+ *
+ * @example
+ * nolimit.info({game: 'DragonTribe'}, function(info) {
+ *     var target = document.getElementById('game');
+ *     target.style.width = info.size.width + 'px';
+ *     target.style.height = info.size.height + 'px';
+ *     console.log(info.name, info.version);
+ * });
+ */
+export function info(infoOptions, callback) {
+    infoOptions = processOptions(mergeOptions(options, infoOptions));
+    loadInfo(infoOptions, callback);
+}
+
+function makeQueryString(makeQueryStringOptions) {
+    const query = [];
+    for (let key in makeQueryStringOptions) {
+        let value = makeQueryStringOptions[key];
+        if (typeof value === 'undefined') {
             continue;
         }
-        if(value instanceof HTMLElement) {
+        if (value instanceof HTMLElement) {
             continue;
         }
-        if(typeof value === 'object') {
+        if (typeof value === 'object') {
             value = JSON.stringify(value);
         }
         query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
@@ -212,7 +202,7 @@ function makeQueryString(options) {
 }
 
 function makeIframe(element) {
-    var iframe = document.createElement('iframe');
+    const iframe = document.createElement('iframe');
     copyAttributes(element, iframe);
 
     iframe.setAttribute('frameBorder', '0');
@@ -220,7 +210,7 @@ function makeIframe(element) {
     iframe.setAttribute('allow', 'autoplay; fullscreen');
     iframe.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin allow-top-navigation allow-popups');
 
-    var name = generateName(iframe.getAttribute('name') || iframe.id);
+    const name = generateName(iframe.getAttribute('name') || iframe.id);
     iframe.setAttribute('name', name);
 
     return iframe;
@@ -230,57 +220,57 @@ function mergeOptions(globalOptions, gameOptions) {
     delete globalOptions.version;
     delete globalOptions.replay;
     delete globalOptions.token;
-    var options = {}, name;
-    for(name in DEFAULT_OPTIONS) {
-        options[name] = DEFAULT_OPTIONS[name];
+    const result = {};
+    for (let name in DEFAULT_OPTIONS) {
+        result[name] = DEFAULT_OPTIONS[name];
     }
-    for(name in globalOptions) {
-        options[name] = globalOptions[name];
+    for (let name in globalOptions) {
+        result[name] = globalOptions[name];
     }
-    for(name in gameOptions) {
-        options[name] = gameOptions[name];
+    for (let name in gameOptions) {
+        result[name] = gameOptions[name];
     }
-    return options;
+    return result;
 }
 
 function insertCss(document) {
-    var style = document.createElement('style');
+    const style = document.createElement('style');
     document.head.appendChild(style);
-    style.appendChild(document.createTextNode(require('./nolimit.css')));
+    style.appendChild(document.createTextNode(nolimitCss));
 }
 
 function setupViewport(head) {
-    var viewport = head.querySelector('meta[name="viewport"]');
-    if(!viewport) {
+    const viewport = head.querySelector('meta[name="viewport"]');
+    if (!viewport) {
         head.insertAdjacentHTML('beforeend', '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">');
     }
 }
 
-function processOptions(options) {
-    options.device = options.device.toLowerCase();
-    options.mute = options.mute || false;
-    var environment = options.environment.toLowerCase();
-    if(environment.indexOf('.') === -1) {
+function processOptions(optionsToProcess) {
+    optionsToProcess.device = optionsToProcess.device.toLowerCase();
+    optionsToProcess.mute = optionsToProcess.mute || false;
+    let environment = optionsToProcess.environment.toLowerCase();
+    if (environment.indexOf('.') === -1) {
         environment += '.nolimitcdn.com';
     }
-    options.cdn = options.cdn || CDN.replace('{ENV}', environment);
-    options.staticRoot = options.staticRoot || GAMES_URL.replace('{CDN}', options.cdn);
-    options.playForFunCurrency = options.playForFunCurrency || options.currency;
-    if (options.language === 'pe' || options.language === 'cl') {
-        options.language = 'es';
+    optionsToProcess.cdn = optionsToProcess.cdn || CDN.replace('{ENV}', environment);
+    optionsToProcess.staticRoot = optionsToProcess.staticRoot || GAMES_URL.replace('{CDN}', optionsToProcess.cdn);
+    optionsToProcess.playForFunCurrency = optionsToProcess.playForFunCurrency || optionsToProcess.currency;
+    if (optionsToProcess.language === 'pe' || optionsToProcess.language === 'cl') {
+        optionsToProcess.language = 'es';
     }
-    return options;
+    return optionsToProcess;
 }
 
-function html(window, options) {
-    var document = window.document;
+function html(contentWindow, htmlOptions) {
+    const document = contentWindow.document;
 
-    window.focus();
+    contentWindow.focus();
 
     insertCss(document);
     setupViewport(document.head);
 
-    var loaderElement = document.createElement('iframe');
+    const loaderElement = document.createElement('iframe');
     loaderElement.setAttribute('frameBorder', '0');
     loaderElement.style.backgroundColor = 'black';
     loaderElement.style.width = '100vw';
@@ -290,50 +280,47 @@ function html(window, options) {
     loaderElement.classList.add('loader');
 
     loaderElement.src = LOADER_URL
-        .replace('{CDN}', options.cdn)
-        .replace('{DEVICE}', options.device)
-        .replace('{OPERATOR}', options.operator)
-        .replace('{GAME}', options.game)
-        .replace('{LANGUAGE}', options.language);
+        .replace('{CDN}', htmlOptions.cdn)
+        .replace('{DEVICE}', htmlOptions.device)
+        .replace('{OPERATOR}', htmlOptions.operator)
+        .replace('{GAME}', htmlOptions.game)
+        .replace('{LANGUAGE}', htmlOptions.language);
 
     document.body.innerHTML = '';
 
-    window.on('error', function(error) {
-        if(loaderElement && loaderElement.contentWindow) {
+    contentWindow.on('error', function (error) {
+        if (loaderElement && loaderElement.contentWindow) {
             loaderElement.contentWindow.postMessage(JSON.stringify({'error': error}), '*');
         }
     });
 
-    var infoPromise = new Promise((resolve, reject) => {
-        nolimit.info(options, function(info) {
-            if(info.error) {
+    const infoPromise = new Promise((resolve, reject) => {
+        window.nolimit.info(htmlOptions, function (info) {
+            if (info.error) {
                 reject(info);
             } else {
                 resolve(info);
             }
-        });    
+        });
     });
 
-    loaderElement.onload = function() {
+    loaderElement.onload = function () {
         infoPromise.then(info => {
-            window.trigger('info', info);
+            contentWindow.trigger('info', info);
             loaderElement.contentWindow.postMessage(JSON.stringify(info), '*');
-
-            var gameElement = document.createElement('script');
+            const gameElement = document.createElement('script');
             gameElement.src = info.staticRoot + '/game.js';
-
-            options.loadStart = Date.now();
-            window.nolimit = nolimit;
-            window.nolimit.options = options;
-            window.nolimit.options.version = info.version;
-            window.nolimit.options.info = info;
-
+            contentWindow.nolimit = window.nolimit;
+            contentWindow.nolimit.options = htmlOptions;
+            contentWindow.nolimit.options.loadStart = Date.now();
+            contentWindow.nolimit.options.version = info.version;
+            contentWindow.nolimit.options.info = info;
             document.body.appendChild(gameElement);
         }).catch(info => {
-            window.trigger('error', info.error);
+            contentWindow.trigger('error', info.error);
             loaderElement.contentWindow.postMessage(JSON.stringify(info), '*');
         });
-        loaderElement.onload = function() {
+        loaderElement.onload = function () {
         };
     };
 
@@ -341,18 +328,17 @@ function html(window, options) {
 }
 
 function copyAttributes(from, to) {
-    var attributes = from.attributes;
-    for(var i = 0; i < attributes.length; i++) {
-        var attr = attributes[i];
+    const attributes = from.attributes;
+    for (let i = 0; i < attributes.length; i++) {
+        let attr = attributes[i];
         to.setAttribute(attr.name, attr.value);
     }
 }
 
-var generateName = (function() {
-    var generatedIndex = 1;
-    return function(name) {
+const generateName = (function () {
+    let generatedIndex = 1;
+    return function (name) {
         return name || 'Nolimit-' + generatedIndex++;
     };
 })();
 
-module.exports = nolimit;

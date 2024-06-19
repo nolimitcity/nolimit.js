@@ -6,7 +6,7 @@ export = nolimit;
 declare namespace nolimit {
 
     export const version: string;
-    
+
     export type DeviceType = 'desktop' | 'mobile';
 
     export interface InitOptions {
@@ -74,9 +74,9 @@ declare namespace nolimit {
         call: (method: string, data: object) => void;
     }
 
-    function init(options: InitOptions): void;
-    function load(options: LoadOptions): NolimitApi;
-    function replace(options: ReplaceOptions): void;
-    function url(options: ReplaceOptions): string;
-    function info(options: InfoOptions, callback: (info: GameInfo) => void): void;
+    function init(initOptions: InitOptions): void;
+    function load(loadOptions: LoadOptions): NolimitApi;
+    function replace(replaceOptions: ReplaceOptions): void;
+    function url(urlOptions: ReplaceOptions): string;
+    function info(infoOptions: InfoOptions, callback: (info: GameInfo) => void): void;
 }

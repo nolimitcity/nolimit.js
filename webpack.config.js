@@ -3,9 +3,10 @@ const webpack = require('webpack');
 
 function createConfig(filename, minimized) {
     return {
-        mode: "production",
-        entry: "./src/nolimit.js",
+        mode: 'production',
+        entry: './src/nolimit.js',
         output: {
+            library: 'nolimit',
             path: path.resolve(__dirname, 'dist'),
             filename: filename
         },
