@@ -1,7 +1,7 @@
-.idea/
-node_modules/
-npm/
-dist/
+/.idea/
+/node_modules/
+/npm/
+/dist/
 *.iml
 npm-debug.log
 .npmrc*
