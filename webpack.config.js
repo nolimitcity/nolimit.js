@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 
-function createConfig(filename, minimized) {
+function createConfig(filename) {
     return {
         mode: 'production',
         entry: './src/nolimit.js',
@@ -10,12 +10,9 @@ function createConfig(filename, minimized) {
             path: path.resolve(__dirname, 'dist'),
             filename: filename
         },
-        devtool: !minimized ? 'source-map' : undefined,
+        devtool: 'source-map',
         module: {
             rules: [{test: /\.css$/, use: 'raw-loader'}],
-        },
-        optimization: {
-            minimize: minimized
         },
         plugins: [
             new webpack.DefinePlugin({
@@ -26,8 +23,8 @@ function createConfig(filename, minimized) {
 }
 
 module.exports = [
-    createConfig('nolimit-latest.js', false),
-    createConfig('nolimit-latest.min.js', true),
-    createConfig(`nolimit-${process.env.npm_package_version}.js`, false),
-    createConfig(`nolimit-${process.env.npm_package_version}.min.js`, true)
+    createConfig('nolimit-latest.js'),
+    createConfig('nolimit-latest.min.js'),
+    createConfig(`nolimit-${process.env.npm_package_version}.js`),
+    createConfig(`nolimit-${process.env.npm_package_version}.min.js`)
 ];
