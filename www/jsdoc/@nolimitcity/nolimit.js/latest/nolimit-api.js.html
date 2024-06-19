@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: nolimit-api.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: nolimit-api.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>export function nolimitApiFactory(target, onload) {
+
+    const listeners = {};
+    const unhandledEvents = {};
+    const unhandledCalls = [];
+    let port;
+
+    function handleUnhandledCalls(port) {
+        while (unhandledCalls.length > 0) {
+            port.postMessage(unhandledCalls.shift());
+        }
+    }
+
+    function addMessageListener(contentWindow) {
+        contentWindow.addEventListener('message', function (e) {
+            if (e.ports &amp;&amp; e.ports.length > 0) {
+                port = e.ports[0];
+                port.onmessage = onMessage;
+                handleUnhandledCalls(port);
+            }
+        });
+        contentWindow.trigger = trigger;
+        contentWindow.on = on;
+        onload();
+    }
+
+    if (target.nodeName === 'IFRAME') {
+        if (target.contentWindow &amp;&amp; target.contentWindow.document &amp;&amp; target.contentWindow.document.readyState === 'complete') {
+            addMessageListener(target.contentWindow);
+        } else {
+            target.addEventListener('load', function () {
+                addMessageListener(target.contentWindow);
+            });
+        }
+    } else {
+        addMessageListener(target);
+    }
+
+    function onMessage(e) {
+        trigger(e.data.method, e.data.params);
+    }
+
+    function sendMessage(method, data) {
+        const message = {
+            jsonrpc: '2.0',
+            method: method
+        };
+
+        if (data) {
+            message.params = data;
+        }
+
+        if (port) {
+            try {
+                port.postMessage(message);
+            } catch (ignored) {
+                port = undefined;
+                unhandledCalls.push(message);
+            }
+        } else {
+            unhandledCalls.push(message);
+        }
+    }
+
+    function registerEvents(events) {
+        sendMessage('register', events);
+    }
+
+    function trigger(event, data) {
+        if (listeners[event]) {
+            listeners[event].forEach(function (callback) {
+                callback(data);
+            });
+        } else {
+            unhandledEvents[name] = unhandledEvents[name] || [];
+            unhandledEvents[name].push(data);
+        }
+    }
+
+    function on(event, callback) {
+        listeners[event] = listeners[event] || [];
+        listeners[event].push(callback);
+        while (unhandledEvents[event] &amp;&amp; unhandledEvents[event].length > 0) {
+            trigger(event, unhandledEvents[event].pop());
+        }
+
+        registerEvents([event]);
+    }
+
+    return {
+        /**
+         * Add listener for event from the started game
+         *
+         * @function on
+         * @param {String}   event    name of the event
+         * @param {Function} callback callback for the event, see specific event documentation for any parameters
+         *
+         * @example
+         * api.on('deposit', function openDeposit () {
+         *     showDeposit().then(function() {
+         *         // ask the game to refresh balance from server
+         *         api.call('refresh');
+         *     });
+         * });
+         */
+        on: on,
+
+        /**
+         * Call method in the open game
+         *
+         * @function call
+         * @param {String} method name of the method to call
+         * @param {Object} [data] optional data for the method called, if any
+         *
+         * @example
+         * // reload the game
+         * api.call('reload');
+         */
+        call: sendMessage,
+
+        /**
+         * Triggers a named event
+         *
+         * @function trigger
+         * @param {String} event  name of the event
+         * @param {Object} [data] optional data for the event, if any
+         */
+        trigger: trigger
+    };
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#call">call</a></li><li><a href="global.html#info">info</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#on">on</a></li><li><a href="global.html#replace">replace</a></li><li><a href="global.html#trigger">trigger</a></li><li><a href="global.html#url">url</a></li><li><a href="global.html#version">version</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Jun 19 2024 22:36:48 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
