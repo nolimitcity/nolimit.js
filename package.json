@@ -3,10 +3,10 @@
   "version": "1.2.85",
   "description": "Javascript game loader and API for operators",
   "scripts": {
-    "dist": "npm run dist-dev && npm run dist-min && npm run dist-latest",
-    "dist-dev": "browserify src/nolimit.js -s nolimit -d -t partialify -o www/dist/nolimit-$npm_package_version.js",
-    "dist-min": "browserify src/nolimit.js -s nolimit -d -t partialify -g uglifyify | exorcist www/dist/nolimit-$npm_package_version.min.js.map > www/dist/nolimit-$npm_package_version.min.js",
-    "dist-latest": "cp www/dist/nolimit-$npm_package_version.js www/dist/nolimit-latest.js && cp www/dist/nolimit-$npm_package_version.min.js www/dist/nolimit-latest.min.js",
+    "build": "webpack",
+    "dist": "npm run clean && npm run build && npm run dist-copy",
+    "clean": "rm -rf dist",
+    "dist-copy": "cp -v dist/* www/dist",
     "postdist": "npm run jsdoc",
     "jsdoc": "jsdoc -q title=nolimit.js -c .jsdoc.json",
     "postjsdoc": "rm -rf www/jsdoc/@nolimitcity/nolimit.js/latest && cp -r www/jsdoc/@nolimitcity/nolimit.js/$npm_package_version www/jsdoc/@nolimitcity/nolimit.js/latest",
@@ -16,9 +16,6 @@
     "version": "npm run dist && git add www/dist/* && npm run version-www && npm run add-jsdoc",
     "version-www": "replace '\\d+\\.\\d+\\.\\d+' $npm_package_version www/index.html && git add www/index.html",
     "prepublishOnly": "npm run module",
-    "premodule": "mkdir -p npm && cp src/nolimit.d.ts npm/",
-    "module": "browserify src/nolimit.js -s nolimit -d -t partialify | derequire | exorcist npm/nolimit.js.map > npm/nolimit.js",
-    "postmodule": "node bin/check-size npm/nolimit.js 10000",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prewww": "node bin/check-size.js www/dist/nolimit-latest.min.js 5000",
     "www": "git subtree push --prefix www origin gh-pages"
@@ -31,28 +28,17 @@
   "bugs": {
     "url": "https://github.com/nolimitcity/nolimit.js/issues"
   },
-  "main": "npm/nolimit.js",
+  "private": true,
   "types": "npm/nolimit.d.ts",
   "files": [
     "npm"
   ],
   "homepage": "https://github.com/nolimitcity/nolimit.js#readme",
   "devDependencies": {
-    "browserify": "^17.0.0",
-    "derequire": "^2.1.1",
+    "webpack": "^5.92.0",
+    "webpack-cli": "^5.1.4",
+    "raw-loader": "^4.0.2",
     "eslint": "^9.1.1",
-    "exorcist": "^2.0.0",
-    "jsdoc": "^4.0.2",
-    "partialify": "^3.1.6",
-    "replace": "^1.2.2",
-    "uglifyify": "^5.0.2"
-  },
-  "dependencies": {
-    "browserify-versionify": "1.0.6"
-  },
-  "browserify": {
-    "transform": [
-      "browserify-versionify"
-    ]
+    "jsdoc": "^4.0.2"
   }
 }
