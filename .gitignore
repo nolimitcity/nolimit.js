@@ -1,7 +1,8 @@
-.idea
+.idea/
+node_modules/
+npm/
+dist/
 *.iml
-node_modules
 npm-debug.log
-.npmrc
-npm
+.npmrc*
 *.tgz
