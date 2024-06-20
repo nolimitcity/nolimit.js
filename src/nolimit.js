@@ -1,3 +1,6 @@
+/**
+ * @module nolimit
+ */
 import {nolimitApiFactory} from './nolimit-api';
 import {loadInfo} from './info';
 import nolimitCss from './nolimit.css';
@@ -19,6 +22,9 @@ const DEFAULT_OPTIONS = {
  */
 export const version = __VERSION__;
 
+/**
+ * @property {Object} options current options used
+ */
 let options = {};
 
 /**
@@ -149,7 +155,7 @@ export function replace(replaceOptions) {
 
 /**
  * Constructs a URL for manually loading the game in an iframe or via redirect.
-
+ *
  * @param {Object} urlOptions see init for details
  * @see {@link init} for details on options
  * @return {string}

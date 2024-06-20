@@ -6,7 +6,10 @@ function createConfig(filename) {
         mode: 'production',
         entry: './src/nolimit.js',
         output: {
-            library: 'nolimit',
+            library: {
+                name: 'nolimit',
+                type: 'umd',
+            },
             path: path.resolve(__dirname, 'dist'),
             filename: filename
         },

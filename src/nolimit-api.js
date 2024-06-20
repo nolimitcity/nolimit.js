@@ -87,11 +87,15 @@ export function nolimitApiFactory(target, onload) {
         registerEvents([event]);
     }
 
+    /**
+     * The api object returned when loading a game with methods for interacting with the loaded game
+     *
+     * @module nolimitApi
+     */
     return {
         /**
          * Add listener for event from the started game
          *
-         * @function on
          * @param {String}   event    name of the event
          * @param {Function} callback callback for the event, see specific event documentation for any parameters
          *
@@ -108,7 +112,6 @@ export function nolimitApiFactory(target, onload) {
         /**
          * Call method in the open game
          *
-         * @function call
          * @param {String} method name of the method to call
          * @param {Object} [data] optional data for the method called, if any
          *
@@ -121,7 +124,6 @@ export function nolimitApiFactory(target, onload) {
         /**
          * Triggers a named event
          *
-         * @function trigger
          * @param {String} event  name of the event
          * @param {Object} [data] optional data for the event, if any
          */
