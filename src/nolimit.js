@@ -79,7 +79,7 @@ let options = {};
  * });
  */
 export function init(initOptions) {
-    window.nolimit.options = initOptions;
+    options = window.nolimit.options = initOptions;
 }
 
 /**
