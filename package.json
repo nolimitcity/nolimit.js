@@ -35,7 +35,7 @@
   ],
   "homepage": "https://github.com/nolimitcity/nolimit.js#readme",
   "devDependencies": {
-    "webpack": "^5.92.0",
+    "webpack": "^5.93.0",
     "webpack-cli": "^5.1.4",
     "raw-loader": "^4.0.2",
     "replace": "^1.2.2",
