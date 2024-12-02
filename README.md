@@ -14,7 +14,7 @@ The operator makes all the design and layout, and will only need to provide a ta
 
 It can also be installed using NPM:
 
-    npm install --save @nolimit/nolimit.js
+    npm install --save @nolimitcity/nolimit.js
 
 **nolimit.js** files are packaged as [UMD](https://github.com/umdjs/umd), meaning it can be loaded using [CommonJS](http://wiki.commonjs.org/wiki/CommonJS) such as [Browserify](http://browserify.org/), [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) such as [RequireJS](http://requirejs.org/) or just standalone with a regular `<script>` tag.
 
@@ -23,7 +23,7 @@ When loaded standalone, it will add a global variable `window.nolimit` which is 
 ### Using CommonJS
 
 ```javascript
-var nolimit = require('@nolimit/nolimit.js');
+var nolimit = require('@nolimitcity/nolimit.js');
 nolimit.init({
     operator: 'SMOOTHOPERATOR'
 });
@@ -53,7 +53,7 @@ nolimit.init({
 ### Using typescript
 
 ```typescript
-import * as nolimit from '@nolimit/nolimit.js';
+import * as nolimit from '@nolimitcity/nolimit.js';
 nolimit.init({
     operator: 'SMOOTHOPERATOR'
 });
