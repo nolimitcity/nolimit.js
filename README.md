@@ -12,34 +12,7 @@ The operator makes all the design and layout, and will only need to provide a ta
 
 **nolimit.js** is available with sourcemap and some logging as `nolimit-VERSION.js` or as minified as `nolimit-VERSION.min.js` at http://nolimitjs.nolimitcdn.com/.
 
-It can also be installed using NPM:
-
-    npm install --save @nolimitcity/nolimit.js
-
-**nolimit.js** files are packaged as [UMD](https://github.com/umdjs/umd), meaning it can be loaded using [CommonJS](http://wiki.commonjs.org/wiki/CommonJS) such as [Browserify](http://browserify.org/), [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) such as [RequireJS](http://requirejs.org/) or just standalone with a regular `<script>` tag.
-
-When loaded standalone, it will add a global variable `window.nolimit` which is used to load the games. See examples below.
-
-### Using CommonJS
-
-```javascript
-var nolimit = require('@nolimitcity/nolimit.js');
-nolimit.init({
-    operator: 'SMOOTHOPERATOR'
-});
-```
-
-### Using AMD
-
-```javascript
-define(['nolimit'], function(nolimit) {
-    nolimit.init({
-        operator: 'SMOOTHOPERATOR'
-    });
-});
-```
-
-### As a global variable
+It will add a global variable `window.nolimit` which is used to load the games. See examples below.
 
 ```html
 <script src="https://nolimitjs.nolimitcdn.com/dist/nolimit-latest.min.js"></script>
@@ -50,14 +23,7 @@ nolimit.init({
 </script>
 ```
 
-### Using typescript
-
-```typescript
-import * as nolimit from '@nolimitcity/nolimit.js';
-nolimit.init({
-    operator: 'SMOOTHOPERATOR'
-});
-```
+> Note: Loading as a module from npmjs.com has been deprecated and the last published version is 1.2.86
 
 ## API documentation
 
