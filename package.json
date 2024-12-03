@@ -15,7 +15,6 @@
     "preversion": "npm run lint",
     "version": "npm run dist && git add www/dist/* && npm run version-www && npm run add-jsdoc",
     "version-www": "replace '\\d+\\.\\d+\\.\\d+' $npm_package_version www/index.html && git add www/index.html",
-    "prepublishOnly": "mkdir -p npm && cp src/nolimit.d.ts npm/ && npm run build && cp dist/nolimit-latest.js npm/nolimit.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prewww": "node bin/check-size.js www/dist/nolimit-latest.min.js 5000",
     "www": "git subtree push --prefix www origin gh-pages"
@@ -28,11 +27,7 @@
   "bugs": {
     "url": "https://github.com/nolimitcity/nolimit.js/issues"
   },
-  "private": false,
-  "types": "npm/nolimit.d.ts",
-  "files": [
-    "npm"
-  ],
+  "private": true,
   "homepage": "https://github.com/nolimitcity/nolimit.js#readme",
   "devDependencies": {
     "webpack": "^5.95.0",

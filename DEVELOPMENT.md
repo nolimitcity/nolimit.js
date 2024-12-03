@@ -22,14 +22,6 @@ Publish new version to <https://nolimitjs.nolimitcdn.com>:
    
     npm run www
 
-Publish to <https://www.npmjs.com/~nolimit>:
-
-    npm --userconfig=.npmrc login
-    npm --userconfig=.npmrc publish --access public
-    
-* Login as `nolimit` and use email <buildbot@nolimitcity.com> (ask for password if you don't have it).
-* `--userconfig=.npmrc` makes sure you don't pollute your regular `.npmrc`.
-
 ## Build locally
 
     npm run dist
