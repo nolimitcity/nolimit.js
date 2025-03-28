@@ -1,97 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Iframe Example - Smooth Operator</title>
-        <link type="image/x-icon" rel="shortcut icon" href="../../favicon.ico">
 
-        <style>
-            html, body {
-                width: 100%;
-                height: 100%;
+<head>
+    <meta charset="UTF-8">
+    <title>Iframe Example - Smooth Operator</title>
+    <link type="image/x-icon" rel="shortcut icon" href="../../favicon.ico">
+
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body,
+        #container {
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -ms-flex-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+        }
+
+        #game {
+            width: 800px;
+            height: 600px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="container">
+        <button data-device="desktop" type="button" class="pre-load">Start Desktop Game in Iframe</button>
+        &nbsp;
+        <button data-device="mobile" type="button" class="pre-load">Start Mobile Game in Iframe</button>
+    </div>
+
+    <script src="../../dist/nolimit-latest.min.js"></script>
+
+    <script>
+        console.log('nolimit.js', nolimit.version);
+        sessionStorage.setItem('nolimit.development', true);
+
+        let gameName = 'Deadwood';
+        let container = document.getElementById('container');
+
+        nolimit.init({
+            operator: 'FAKE1',
+            environment: 'partner'
+        });
+
+        function openGame(e) {
+            let clicked = e.target;
+            let device = clicked.getAttribute('data-device');
+
+            let gameElement = document.createElement('div');
+            gameElement.id = 'game';
+
+            container.appendChild(gameElement);
+
+            let buttons = document.querySelectorAll('button.pre-load');
+            for (let i = 0; i < buttons.length; i++) {
+                let button = buttons[i];
+                button.style.display = 'none'
             }
 
-            body, #container {
-                display: -ms-flexbox;
-                display: -webkit-flex;
-                display: flex;
-                -ms-flex-align: center;
-                -webkit-align-items: center;
-                align-items: center;
-                -ms-flex-pack: center;
-                -webkit-justify-content: center;
-                justify-content: center;
-            }
+            let game = nolimit.load({
+                target: gameElement,
+                game: gameName,
+                device: device
+            });
+            let pingButton = document.getElementById("ping");
+            pingButton.style.display = '';
+            pingButton.onclick = pingOverlay(game);
 
-            #game {
-                width: 800px;
-                height: 600px;
-            }
-        </style>
+            let echoButton = document.getElementById("echo");
+            echoButton.style.display = '';
+            echoButton.onclick = echoOverlay(game);
 
-    </head>
-    <body>
-        <div id="container">
-            <button data-device="desktop" type="button">Start Desktop Game in Iframe</button>
-            &nbsp;
-            <button data-device="mobile" type="button">Start Mobile Game in Iframe</button>
-        </div>
-
-        <script src="../../dist/nolimit-latest.min.js"></script>
-
-        <script>
-            console.log('nolimit.js', nolimit.version);
-
-            var gameName = 'SpaceArcade';
-            var container = document.getElementById('container');
-
-            nolimit.init({
-                operator: 'FAKE1',
-                environment: 'partner'
+            game.on('exit', function () {
+                let gameFrame = document.getElementById('game');
+                gameFrame.parentNode.removeChild(gameFrame);
+                let buttons = document.querySelectorAll('button.pre-load');
+                for (let i = 0; i < buttons.length; i++) {
+                    let button = buttons[i];
+                    button.style.display = ''
+                }
+                document.getElementById("ping").style.display = 'none';
+                document.getElementById("echo").style.display = 'none';
             });
 
-            function openGame(e) {
-                var clicked = e.target;
-                var device = clicked.getAttribute('data-device');
+            game.on('ready', function () {
+                console.log(gameName, 'is loaded');
+            });
 
-                var gameElement = document.createElement('div');
-                gameElement.id = 'game';
+            game.on('overlay.echo', d => {
+                console.log("overlay.echo", d);
+            });
+        }
 
-                container.appendChild(gameElement);
+        let buttons = document.querySelectorAll('button');
+        for (let i = 0; i < buttons.length; i++) {
+            let button = buttons[i];
+            button.addEventListener('click', openGame);
+        }
 
-                var buttons = document.querySelectorAll('button');
-                for(var i = 0; i < buttons.length; i++) {
-                    var button = buttons[i];
-                    button.style.display = 'none'
-                }
+        function pingOverlay(api) {
+            return e => {
+                api.trigger("overlay.ping", [], "*");
+            };
+        }
 
-                var game = nolimit.load({
-                    target: gameElement,
-                    game: gameName,
-                    device: device
-                });
+        function echoOverlay(api) {
+            return e => {
+                api.trigger("overlay.echo", ["moo", "bar"], "*");
+            };
+        }
 
-                game.on('exit', function() {
-                    var gameFrame = document.getElementById('game');
-                    gameFrame.parentNode.removeChild(gameFrame);
-                    var buttons = document.querySelectorAll('button');
-                    for(var i = 0; i < buttons.length; i++) {
-                        var button = buttons[i];
-                        button.style.display = ''
-                    }
-                });
-
-                game.on('ready', function() {
-                    console.log(gameName, 'is loaded');
-                });
+        window.addEventListener('message', ev => {
+            if (ev.data) {
+                console.log(JSON.parse(ev.data));
             }
+        });
+    </script>
+    <div style="display: block;">
+        <button id="ping" style="display: none">Ping overlay</button>
+        <button id="echo" style="display: none">Echo overlay</button>
+    </div>
+</body>
 
-            var buttons = document.querySelectorAll('button');
-            for(var i = 0; i < buttons.length; i++) {
-                var button = buttons[i];
-                button.addEventListener('click', openGame);
-            }
-
-        </script>
-    </body>
 </html>

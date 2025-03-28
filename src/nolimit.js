@@ -1,14 +1,17 @@
 /**
  * @module nolimit
  */
-import {nolimitApiFactory} from './nolimit-api';
-import {loadInfo} from './info';
+import { nolimitApiFactory } from './nolimit-api';
+import { loadInfo } from './info';
+import { loadOverlay } from './overlay';
 import nolimitCss from './nolimit.css';
 
 const CDN = 'https://{ENV}';
 const LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}';
 const REPLACE_URL = '{CDN}/loader/game-loader.html?{QUERY}';
 const GAMES_URL = '{CDN}/games';
+const OVERLAY_URL = '{CDN}/overlay/overlay.js';
+//const OVERLAY_CSS_URL = '{CDN}/overlay/default.css';
 
 const DEFAULT_OPTIONS = {
     device: 'desktop',
@@ -119,9 +122,15 @@ export function load(loadOptions) {
 
     if (target.ownerDocument && target instanceof target.ownerDocument.defaultView.HTMLElement) {
         const iframe = makeIframe(target);
+        const overlay = makeIframe(undefined);
+
         target.parentNode.replaceChild(iframe, target);
 
-        return nolimitApiFactory(iframe, () => html(iframe.contentWindow, loadOptions));
+        return nolimitApiFactory(iframe, () => {
+            html(iframe.contentWindow, loadOptions);
+            iframe.contentWindow.document.body.appendChild(overlay);
+            overlayHtml(iframe.contentWindow, overlay.contentWindow, loadOptions);
+        });
     } else {
         throw 'Invalid option target: ' + target;
     }
@@ -150,7 +159,7 @@ export function replace(replaceOptions) {
     function noop() {
     }
 
-    return {on: noop, call: noop};
+    return { on: noop, call: noop };
 }
 
 /**
@@ -187,6 +196,19 @@ export function url(urlOptions) {
 export function info(infoOptions, callback) {
     infoOptions = processOptions(mergeOptions(options, infoOptions));
     loadInfo(infoOptions, callback);
+}
+
+
+/**
+ * Load overlay
+ *
+ */
+export function overlay(overlayOptions, callback) {
+    //loadOverlay(overlayOptions, callback);
+    callback({
+        "version": "0.0.1", "css": "https://localhost.nolimitcdn.com/overlay/overlay.css", "script": "https://localhost.nolimitcdn.com/overlay/overlay.js",
+        "events": ["ping", "version", "echo"]
+    });
 }
 
 function makeQueryString(makeQueryStringOptions) {
@@ -296,7 +318,7 @@ function html(contentWindow, htmlOptions) {
 
     contentWindow.on('error', function (error) {
         if (loaderElement && loaderElement.contentWindow) {
-            loaderElement.contentWindow.postMessage(JSON.stringify({'error': error}), '*');
+            loaderElement.contentWindow.postMessage(JSON.stringify({ 'error': error }), '*');
         }
     });
 
@@ -333,7 +355,95 @@ function html(contentWindow, htmlOptions) {
     document.body.appendChild(loaderElement);
 }
 
+function overlayHtml(parentWindow, contentWindow, htmlOptions) {
+    const document = contentWindow.document;
+
+    contentWindow.focus();
+
+    insertCss(document);
+    setupViewport(document.head);
+
+    document.body.innerHTML = '';
+
+    if (contentWindow && contentWindow.document && contentWindow.document.readyState === 'complete') {
+        contentWindow.addEventListener('message', function (event) {
+            console.log("Message from overlay: ", event.data);
+            let m = JSON.parse(event.data);
+            if (m.type && m.type.startsWith("overlay")) {
+                console.log("Message from overlay: ", m.type);
+                parentWindow.postMessage(JSON.stringify({ "type": m.type, "data": m.data }), '*');
+            }
+        });
+    }
+
+    new Promise((resolve, reject) => {
+        window.nolimit.overlay(htmlOptions, function (overlay) {
+            if (overlay.error) {
+                console.log("Failed to load overlay.json");
+                reject(overlay);
+            } else {
+                resolve(overlay);
+            }
+        });
+    }).then(overlay => {
+        console.log(overlay);
+        const overlayElement = document.createElement('script');
+        overlayElement.src = overlay.script;
+
+        const style = document.createElement('link');
+        style.rel = 'stylesheet';
+        style.href = overlay.css;
+
+        document.body.appendChild(overlayElement);
+        document.head.appendChild(style);
+
+        let overlayEvents = overlay.events.map(e => "overlay." + e);
+        console.log(overlayEvents);
+
+        overlayEvents.forEach(ev => {
+            console.log("Hooking up " + ev);
+            parentWindow.on(ev, d => {
+                console.log("Event: ", d);
+                switch (ev) {
+                    case "overlay.ping":
+                        contentWindow.postMessage(JSON.stringify({ "type": "pong", "data": [] }), '*');
+                        break;
+                    case "overlay.echo":
+                        let div = document.createElement('div')
+                        div.appendChild(document.createTextNode(JSON.stringify(d)));
+                        document.body.appendChild(div);
+                        contentWindow.postMessage(JSON.stringify({ "type": "echo", "data": d }), '*');
+                        break;
+                }
+            });
+        });
+        /*window.nolimit.on('overlay.ping', d => {
+            let m = JSON.parse(d);
+            // TODO filter valid messages
+            console.log("Message from parent: ", m);
+        });
+    
+        parentWindow.addEventListener('message', function (event) {
+            let m = JSON.parse(event.data);
+    
+            console.log("Message from parent: ", m.type);
+    
+    
+            console.log("Supported overlay events:", overlayEvents);
+    
+            if (overlayEvents.includes(m.type)) {
+                contentWindow.postMessage(JSON.stringify({ "type": m.type.replace("overlay.", ""), "data": m.data }), '*');
+            }
+        });*/
+    }).catch(overlay => {
+        parentWindow.postMessage(JSON.stringify({ 'error': "Overlay failed to load: " + overlay.error }), '*');
+    });
+}
+
 function copyAttributes(from, to) {
+    if (!from) {
+        return;
+    }
     const attributes = from.attributes;
     for (let i = 0; i < attributes.length; i++) {
         let attr = attributes[i];
