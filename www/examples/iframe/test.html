@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Load Flobby from CDN</title>
+    <style>
+        #flobby-root {
+            max-width: 200px;
+            max-height: 200px;
+            overflow: hidden;
+        }
+
+    </style>
+</head>
+<body>
+<div id="container">
+    <button data-device="desktop" type="button" class="pre-load">Start Desktop Game in Iframe</button>
+    &nbsp;
+    <button data-device="mobile" type="button" class="pre-load">Start Mobile Game in Iframe</button>
+</div>
+<div id="flobby-root" style="width:200px;height:200px;border:1px solid black;"></div>
+
+<!-- Load Flobby from CDN -->
+<link rel="stylesheet" href="https://ccsqmvifdmwllajsrihc.supabase.co/storage/v1/object/public/flobby/nlc/flobby.css" />
+
+<script>
+    const script = document.createElement('script');
+    script.src = 'https://ccsqmvifdmwllajsrihc.supabase.co/storage/v1/object/public/flobby/nlc/flobby.js';
+    script.onload = () => {
+        console.log('Flobby loaded:', window.Flobby);
+        if (window.Flobby && typeof window.Flobby.init === 'function') {
+            const el = document.getElementById('flobby-root');
+            window.Flobby.init(el);
+        } else {
+            console.error('Flobby not available on window (after script load)');
+        }
+    };
+    script.onerror = () => {
+        console.error('Failed to load Flobby script');
+    };
+    document.head.appendChild(script);
+
+</script>
+
+</body>
+</html>
+
