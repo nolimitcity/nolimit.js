@@ -37,17 +37,17 @@
             <button data-device="mobile" type="button">Start Mobile Game in Iframe</button>
         </div>
 
-        <script src="../../dist/nolimit-latest.min.js"></script>
+        <script src="../../../dist/nolimit-latest.min.js"></script>
 
         <script>
             console.log('nolimit.js', nolimit.version);
 
-            var gameName = 'SpaceArcade';
+            var gameName = 'Mental';
             var container = document.getElementById('container');
 
             nolimit.init({
                 operator: 'FAKE1',
-                environment: 'partner'
+                environment: 'test'
             });
 
             function openGame(e) {
