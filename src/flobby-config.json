@@ -1,0 +1,12 @@
+{
+    "version": "0.0.2",
+    "enabled": true,
+    "script": "http://localhost:3000/dist/flobby.js",
+    "css": null,
+    "features": {
+        "dashboard": true,
+        "replay": true
+    }
+}
+
+
