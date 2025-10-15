@@ -1,6 +1,7 @@
 /**
  * @module nolimit
  */
+import { getFlobbyConfig } from './flobby';
 import { nolimitApiFactory } from './nolimit-api';
 import { loadInfo } from './info';
 import nolimitCss from './nolimit.css';
@@ -113,6 +114,10 @@ export function init(initOptions) {
  */
 export function load(loadOptions) {
     loadOptions = processOptions(mergeOptions(options, loadOptions));
+
+    getFlobbyConfig().then(() => {
+        console.log("1111 Flobby Config Loaded");
+    })
 
     let target = loadOptions.target || window;
 

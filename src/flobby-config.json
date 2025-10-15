@@ -1,0 +1,11 @@
+{
+    "version": "0.0.1",
+    "enabled": true,
+    "css": "https://localhost.nolimitcdn.com/overlay/overlay.css",
+    "script": "https://localhost.nolimitcdn.com/overlay/overlay.js",
+    "events": [
+        "ping",
+        "version",
+        "echo"
+    ]
+}
