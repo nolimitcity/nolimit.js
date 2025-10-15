@@ -19,7 +19,7 @@ export default [...compat.extends("eslint:recommended"), {
             ...globals.browser,
         },
 
-        ecmaVersion: 2017,
+        ecmaVersion: 6,
         sourceType: "module",
     },
     rules: {

@@ -4,7 +4,7 @@
   "description": "Javascript game loader and API for operators",
   "scripts": {
     "build": "webpack",
-    "dev": "webpack --watch",
+    "dev": "webpack --mode development --watch",
     "dist": "npm run clean && npm run build && npm run dist-copy",
     "clean": "rm -rf dist",
     "dist-copy": "cp -v dist/* www/dist",
