@@ -12,7 +12,6 @@
             }
 
             body, #container {
-                display: -ms-flexbox;
                 display: -webkit-flex;
                 display: flex;
                 -ms-flex-align: center;
@@ -24,8 +23,8 @@
             }
 
             #game {
-                width: 800px;
-                height: 600px;
+                width: 1280px;
+                height: 720px;
             }
         </style>
 
@@ -42,11 +41,12 @@
         <script>
             console.log('nolimit.js', nolimit.version);
 
-            var gameName = 'Mental';
+            var gameName = 'Mental2';
             var container = document.getElementById('container');
 
             nolimit.init({
                 operator: 'FAKE1',
+                mute: true,
                 environment: 'test'
             });
 

@@ -1,90 +1,98 @@
-export function nolimitApiFactory(target, onload) {
+import { getFlobbyInstance } from "./flobby"
 
-    const listeners = {};
-    const unhandledEvents = {};
-    const unhandledCalls = [];
-    let port;
+export function nolimitApiFactory(target, onload) {
+    const listeners = {}
+    const unhandledEvents = {}
+    const unhandledCalls = []
+    let port
 
     function handleUnhandledCalls(port) {
         while (unhandledCalls.length > 0) {
-            port.postMessage(unhandledCalls.shift());
+            port.postMessage(unhandledCalls.shift())
         }
     }
 
     function addMessageListener(contentWindow) {
-        contentWindow.addEventListener('message', function (e) {
+        contentWindow.addEventListener("message", (e) => {
             if (e.ports && e.ports.length > 0) {
-                port = e.ports[0];
-                port.onmessage = onMessage;
-                handleUnhandledCalls(port);
+                port = e.ports[0]
+                port.onmessage = onMessage
+                handleUnhandledCalls(port)
             }
-        });
-        contentWindow.trigger = trigger;
-        contentWindow.on = on;
-        onload();
+        })
+        contentWindow.trigger = trigger
+        contentWindow.on = on
+        onload()
     }
 
-    if (target.nodeName === 'IFRAME') {
-        if (target.contentWindow && target.contentWindow.document && target.contentWindow.document.readyState === 'complete') {
-            addMessageListener(target.contentWindow);
+    if (target.nodeName === "IFRAME") {
+        if (
+            target.contentWindow?.document &&
+            target.contentWindow.document.readyState === "complete"
+        ) {
+            addMessageListener(target.contentWindow)
         } else {
-            target.addEventListener('load', function () {
-                addMessageListener(target.contentWindow);
-            });
+            target.addEventListener("load", () => {
+                addMessageListener(target.contentWindow)
+            })
         }
     } else {
-        addMessageListener(target);
+        addMessageListener(target)
     }
 
     function onMessage(e) {
-        trigger(e.data.method, e.data.params);
+        trigger(e.data.method, e.data.params)
     }
 
     function sendMessage(method, data) {
         const message = {
-            jsonrpc: '2.0',
-            method: method
-        };
+            jsonrpc: "2.0",
+            method: method,
+        }
 
         if (data) {
-            message.params = data;
+            message.params = data
         }
 
         if (port) {
             try {
-                port.postMessage(message);
-            } catch (ignored) {
-                port = undefined;
-                unhandledCalls.push(message);
+                port.postMessage(message)
+            } catch (_ignored) {
+                port = undefined
+                unhandledCalls.push(message)
             }
         } else {
-            unhandledCalls.push(message);
+            unhandledCalls.push(message)
         }
     }
 
     function registerEvents(events) {
-        sendMessage('register', events);
+        sendMessage("register", events)
     }
 
     function trigger(event, data) {
         if (listeners[event]) {
-            listeners[event].forEach(function (callback) {
-                callback(data);
-            });
+            // biome-ignore lint/complexity/noForEach: <explanation>
+            listeners[event].forEach((callback) => {
+                callback(data)
+            })
         } else {
-            unhandledEvents[name] = unhandledEvents[name] || [];
-            unhandledEvents[name].push(data);
+            unhandledEvents[event] = unhandledEvents[event] || []
+            unhandledEvents[event].push(data)
         }
+
+        const flobby = getFlobbyInstance()
+        flobby?.forwardEvent(event, data)
     }
 
     function on(event, callback) {
-        listeners[event] = listeners[event] || [];
-        listeners[event].push(callback);
+        listeners[event] = listeners[event] || []
+        listeners[event].push(callback)
         while (unhandledEvents[event] && unhandledEvents[event].length > 0) {
-            trigger(event, unhandledEvents[event].pop());
+            trigger(event, unhandledEvents[event].pop())
         }
 
-        registerEvents([event]);
+        registerEvents([event])
     }
 
     /**
@@ -127,6 +135,6 @@ export function nolimitApiFactory(target, onload) {
          * @param {String} event  name of the event
          * @param {Object} [data] optional data for the event, if any
          */
-        trigger: trigger
-    };
+        trigger: trigger,
+    }
 }
