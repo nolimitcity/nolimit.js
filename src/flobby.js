@@ -34,6 +34,7 @@ function mountFlobbyApp(flobbyIframe, flobbyConfig) {
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
                 <link rel="stylesheet" href="${flobbyCss}">
+                
                 <style>
                     *,*::before,*::after {
                         box-sizing:border-box
@@ -51,6 +52,31 @@ function mountFlobbyApp(flobbyIframe, flobbyConfig) {
                         height:100%;
                         overflow:visible;
                     }
+                    
+                    #flobby-close {
+                        position: fixed;
+                        top: 8px;
+                        right: 8px;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 9999px;
+                        border: 2px solid #111;
+                        background: rgba(0,0,0,.2);
+                        backdrop-filter: saturate(120%) blur(4px);
+                        cursor: pointer;
+                        user-select: none;
+                        font: 600 16px/1 system-ui;
+                        color: #fff;
+                        z-index: 2147483647;
+                        pointer-events: auto;
+                    }
+                    
+                    #flobby-close:active { 
+                        transform: scale(.98) 
+                    }
                 </style>
                 <script>
                     console.log('[Flobby Iframe] Document created, waiting for script load...');
@@ -61,6 +87,7 @@ function mountFlobbyApp(flobbyIframe, flobbyConfig) {
             </head>
             <body>
                 <div id="flobby-root"></div>
+                <button id="flobby-close" title="Close Flobby">✕</button>
             </body>
         </html>`)
 
@@ -73,32 +100,38 @@ function mountFlobbyApp(flobbyIframe, flobbyConfig) {
     script.crossOrigin = "anonymous"
 
     script.onload = () => {
-        console.log("[Parent] Flobby script loaded from:", flobbyScript)
         const win = flobbyIframe.contentWindow
         const root = flobbyDoc.getElementById("flobby-root")
 
-        setTimeout(() => {
-            console.log("[Parent] Checking for Flobby in iframe window:", {
-                hasWindow: !!win,
-                hasFlobby: !!(win && win.Flobby),
-                flobbyType: win && typeof win.Flobby,
-                hasInit: !!(win && win.Flobby && win.Flobby.init),
-                initType: win && win.Flobby && typeof win.Flobby.init,
-                windowKeys: win ? Object.keys(win).filter(k => k.toLowerCase().includes("flob")) : [],
-                allWindowKeys: win ? Object.keys(win).slice(0, 50) : []
-            })
-
-            if (win && win.Flobby && typeof win.Flobby.init === "function") {
-                console.log("[Parent] Initializing Flobby...")
+        const closeButton = flobbyDoc.getElementById("flobby-close")
+        if (closeButton) {
+            closeButton.addEventListener("click", () => {
                 try {
-                    const instance = win.Flobby.init(root)
-                    console.log("[Parent] Flobby initialized successfully", instance)
+                    flobbyDoc.open()
+                    flobbyDoc.write("")
+                    flobbyDoc.close()
+                } catch {
+                    console.log("[Flobby Iframe error] Close Flobby")
+                }
+
+                handleResizeElement(flobbyIframe, {
+                    position: "absolute", top: "8px", left: "8px", width: "48px", height: "48px", inset: ""
+                })
+                createFlobbyLauncher(flobbyIframe, flobbyConfig)
+            })
+        }
+
+        setTimeout(() => {
+            if (win && win.Flobby && typeof win.Flobby.init === "function") {
+                try {
+                    win.Flobby.init(root)
                 } catch (err) {
                     console.error("[Parent] Error initializing Flobby:", err)
                 }
             } else {
-                fetch(flobbyScript)
-                    .catch(e => console.error("[Parent] Could not fetch script:", e))
+                fetch(flobbyScript).catch(e => {
+                    console.error("[Parent] Could not fetch script:", e)
+                })
             }
         }, 100)
     }
@@ -106,8 +139,6 @@ function mountFlobbyApp(flobbyIframe, flobbyConfig) {
     script.onerror = (e) => {
         console.error("[Parent] Failed to load Flobby script:", flobbyScript, e)
     }
-
-    console.log("[Parent] Appending Flobby script:", flobbyScript)
     flobbyDoc.body.appendChild(script)
 }
 
@@ -139,7 +170,7 @@ function createFlobbyLauncher(flobbyIframe, flobbyConfig) {
                     pointer-events: auto;
                 }
                 
-                .nlc-flobby-launcher {
+                .flobby-launcher {
                     display:inline-flex;
                     align-items:center;
                     justify-content:center;
@@ -156,11 +187,11 @@ function createFlobbyLauncher(flobbyIframe, flobbyConfig) {
                     pointer-events: auto;
                 }
                 
-                .nlc-flobby-launcher:active {
+                .flobby-launcher:active {
                     transform:scale(.98)
                 }
 
-                .nlc-flobby-close {
+                .flobby-close {
                     position: absolute;
                     top: 8px;
                     right: 8px;
@@ -180,23 +211,16 @@ function createFlobbyLauncher(flobbyIframe, flobbyConfig) {
                     pointer-events: auto;
                     z-index: 10;
                 }
-
-                .nlc-flobby-close:active {
-                    transform: scale(.98);
-                }
             </style>
         </head>
         <body>
-            <button id="nlc-flobby-launcher" class="nlc-flobby-launcher" title="Open Flobby">▶</button>
-            <button id="nlc-flobby-close" class="nlc-flobby-close" title="Close Flobby" style="display:none;">✕</button>
+            <button id="flobby-launcher" class="flobby-launcher" title="Open Flobby">▶</button>
         </body>
     </html>`)
 
     flobbyDoc.close()
 
-    const launcherButton = flobbyDoc.getElementById("nlc-flobby-launcher")
-    const closeButton = flobbyDoc.getElementById("nlc-flobby-close")
-    let isFlobbyOpen = false
+    const launcherButton = flobbyDoc.getElementById("flobby-launcher")
 
     const sizeToButton = () => {
         const r = launcherButton.getBoundingClientRect()
@@ -209,20 +233,7 @@ function createFlobbyLauncher(flobbyIframe, flobbyConfig) {
         handleResizeElement(flobbyIframe, {
             position: "absolute", inset: "0", width: "59%", height: "59%", top: "0", left: "0",
         })
-
         mountFlobbyApp(flobbyIframe, flobbyConfig)
-        launcherButton.style.display = "none"
-        closeButton.style.display = "inline-flex"
-        closeButton.style.zIndex = "9999999999"
-        isFlobbyOpen = true
-    })
-
-    closeButton.addEventListener("click", () => {
-        if (isFlobbyOpen) {
-            // Restore launcher view
-            createFlobbyLauncher(flobbyIframe, flobbyConfig)
-            isFlobbyOpen = false
-        }
     })
 }
 
@@ -261,7 +272,7 @@ function mountFlobbyInsideGame(gameIframe, flobbyConfig) {
         flobbyIframe.style.left = "8px"
         flobbyIframe.style.width = "1px"
         flobbyIframe.allowTransparency = true
-        flobbyIframe.style.background = "red"
+        flobbyIframe.style.background = "transparent"
         flobbyIframe.style.backgroundColor = "blue"
         flobbyIframe.setAttribute("allowTransparency", "true")
         flobbyIframe.style.pointerEvents = "auto"
