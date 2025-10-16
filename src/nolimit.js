@@ -1,19 +1,15 @@
 /**
  * @module nolimit
  */
-import { getFlobbyConfig, initFlobby } from "./flobby"
-import { nolimitApiFactory } from "./nolimit-api"
+import { initFlobby } from "./flobby"
 import { loadInfo } from "./info"
+import { nolimitApiFactory } from "./nolimit-api"
 import nolimitCss from "./nolimit.css"
 
 const CDN = "https://{ENV}"
 const LOADER_URL = "{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}"
 const REPLACE_URL = "{CDN}/loader/game-loader.html?{QUERY}"
 const GAMES_URL = "{CDN}/games"
-
-// Flobby assets (IIFE exposes window.Flobby.init)
-const FLOBBY_CSS_URL = "https://ccsqmvifdmwllajsrihc.supabase.co/storage/v1/object/public/flobby/v0.0.6/flobby.css"
-const FLOBBY_JS_URL = "https://ccsqmvifdmwllajsrihc.supabase.co/storage/v1/object/public/flobby/v0.0.6/flobby.js"
 
 const DEFAULT_OPTIONS = {
     device: "desktop",
