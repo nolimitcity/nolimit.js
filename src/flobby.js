@@ -1,298 +1,319 @@
+import { getAppWrapperDocString, getLaunchButtonDocString } from "./flobby-doc-strings"
 import { fetchRetry } from "./utils/fetchRetry"
+import { styleElement } from "./utils/styleElement"
+import { waitForBody } from "./utils/waitForElement"
+
+
+// 1. initFlobby
+// 2. getFlobbyConfig
+// 3. fetchRetry
+// 4. mountFlobbyInsideGame
+// 5. waitForBody
+// 6. waitForElement
+// 7. new FlobbyManager
+// 8. FlobbyContext.setInstance(flobbyManager)
+// 9. flobbyManager.showLauncher()
+
 
 const FLOBBY_CONFIG_URL = "https://ccsqmvifdmwllajsrihc.supabase.co/storage/v1/object/public/flobby/config/flobby-config-v0.0.1.json"
 
-function styleElement(element, resizeObject) {
-    if (!element || !resizeObject) {
-        return
-    }
+const FlobbyContext = {
+    instance: null,
 
-    Object.keys(resizeObject).forEach(property => {
-        element.style[property] = resizeObject[property]
-    })
+    setInstance(manager) {
+        this.instance = manager
+        // Also expose on window for debugging and external access
+        if (typeof window !== "undefined") {
+            window.FlobbyManager = manager
+        }
+    },
+
+    getInstance() {
+        return this.instance
+    },
+
+    hasInstance() {
+        return this.instance !== null
+    }
 }
 
-
-function mountFlobbyApp(flobbyIframe, flobbyConfig) {
-    const flobbyIframeDoc = flobbyIframe.contentDocument || flobbyIframe.contentWindow?.document
-
-    if (!flobbyIframeDoc) {
-        console.error("Cannot access iframe document")
-        return
+class FlobbyManager {
+    constructor(flobbyIframe, flobbyConfig) {
+        this.iframe = flobbyIframe
+        this.config = flobbyConfig
+        this.isAppMounted = false
+        this.doc = null
+        this.window = null
     }
 
-    const { css: flobbyCss, script: flobbyScript } = flobbyConfig
+    showLauncher() {
+        this.isAppMounted = false
+        this.doc = this.iframe.contentDocument || this.iframe.contentWindow?.document
+        this.window = this.iframe.contentWindow
 
-    if (!flobbyCss || !flobbyScript) {
-        return
+        if (!this.doc) {
+            return
+        }
+
+        this.doc.open()
+        this.doc.write(getLaunchButtonDocString())
+
+        this.doc.close()
+
+        // Size iframe to button
+        const launchButton = this.doc.getElementById("flobby-launch-button")
+        const rect = launchButton.getBoundingClientRect()
+        styleElement(this.iframe, {
+            position: "absolute",
+            top: "8px",
+            left: "8px",
+            width: Math.ceil(rect.width) + "px",
+            height: Math.ceil(rect.height) + "px",
+            borderRadius: "9999px",
+            overflow: "hidden",
+            inset: ""
+        })
+
+        // Attach launch handler
+        launchButton.addEventListener("click", () => {
+            this.mountApp()
+        })
     }
 
-    flobbyIframeDoc.open()
-    flobbyIframeDoc.write(`<!doctype html>
-        <html>
-            <head>
-                <meta charset="utf-8"/>
-                <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                <link rel="stylesheet" href="${flobbyCss}">
-                
-                <style>
-                    *,*::before,*::after {
-                        box-sizing:border-box
-                    }
-                    html,body {
-                        margin:0;
-                        width:100%;
-                        height:100%;
-                        background:transparent !important;
-                        color-scheme: light only; /* prevents UA dark backgrounds */
-                    }
-                    #flobby-root {
-                        position:relative;
-                        width:100%;
-                        height:100%;
-                        overflow:visible;
-                    }
-                    
-                    #flobby-close {
-                        position: fixed;
-                        top: 8px;
-                        right: 8px;
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                        width: 36px;
-                        height: 36px;
-                        border-radius: 9999px;
-                        border: 2px solid #111;
-                        background: rgba(0,0,0,.2);
-                        backdrop-filter: saturate(120%) blur(4px);
-                        cursor: pointer;
-                        user-select: none;
-                        font: 600 16px/1 system-ui;
-                        color: #fff;
-                        z-index: 2147483647;
-                        pointer-events: auto;
-                    }
-                    
-                    #flobby-close:active { 
-                        transform: scale(.98) 
-                    }
-                </style>
-                <script>
-                    console.log('[Flobby Iframe] Document created, waiting for script load...');
-                    window.addEventListener('error', function(e) {
-                        console.error('[Flobby Iframe] Script error:', e.error || e.message, e.filename, e.lineno);
-                    });
-                </script>
-            </head>
-            <body>
-                <div id="flobby-root"></div>
-                <button id="flobby-close" title="Close Flobby">✕</button>
-            </body>
-        </html>`)
+    /**
+     * Mounts the full Flobby app
+     */
+    mountApp() {
+        this.isAppMounted = true
+        this.doc = this.iframe.contentDocument || this.iframe.contentWindow?.document
+        this.window = this.iframe.contentWindow
 
-    flobbyIframeDoc.close()
+        if (!this.doc) {
+            console.error("[Flobby] Cannot access iframe document")
+            return
+        }
 
-    const script = flobbyIframeDoc.createElement("script")
-    script.src = flobbyScript
-    script.async = false
-    script.type = "text/javascript"
-    script.crossOrigin = "anonymous"
+        const { css: flobbyCss, script: flobbyScript } = this.config
 
-    script.onload = () => {
-        const win = flobbyIframe.contentWindow
-        const root = flobbyIframeDoc.getElementById("flobby-root")
+        if (!flobbyCss || !flobbyScript) {
+            return
+        }
 
-        const closeButton = flobbyIframeDoc.getElementById("flobby-close")
+        // Expand iframe to full size
+        styleElement(this.iframe, {
+            position: "absolute",
+            inset: "0",
+            width: "100%",
+            height: "100%",
+            top: "0",
+            left: "0",
+            borderRadius: "0",
+            overflow: "visible",
+        })
+
+        this.doc.open()
+        this.doc.write(getAppWrapperDocString(flobbyCss))
+
+        this.doc.close()
+
+        // Add close button handler
+        const closeButton = this.doc.getElementById("flobby-close-button")
         if (closeButton) {
             closeButton.addEventListener("click", () => {
-                try {
-                    flobbyIframeDoc.open()
-                    flobbyIframeDoc.write("")
-                    flobbyIframeDoc.close()
-                } catch {
-                    console.log("[Flobby Iframe error] Close Flobby")
-                }
-
-                styleElement(flobbyIframe, {
-                    position: "absolute", top: "8px", left: "8px", width: "48px", height: "48px", inset: ""
-                })
-                createFlobbyLauncher(flobbyIframe, flobbyConfig)
+                this.unmountApp()
             })
         }
 
-        setTimeout(() => {
-            if (win && win.Flobby && typeof win.Flobby.init === "function") {
-                try {
-                    win.Flobby.init(root)
-                } catch (err) {
-                    console.error("[Parent] Error initializing Flobby:", err)
+        // Load Flobby script
+        const script = this.doc.createElement("script")
+        script.src = flobbyScript
+        script.async = false
+        script.type = "text/javascript"
+        script.crossOrigin = "anonymous"
+
+        script.onload = () => {
+            const win = this.window
+            const root = this.doc.getElementById("flobby-root")
+
+            const MAX_ATTEMPTS = 10
+            let attempts = 0
+
+            const initFlobby = () => {
+                if (win && win.Flobby && typeof win.Flobby.init === "function") {
+                    try {
+                        win.Flobby.init(root)
+                        console.log("[Flobby] Initialized successfully")
+                    } catch (err) {
+                        console.error("[Flobby] Error initializing:", err)
+                    }
+                    return
                 }
-            } else {
-                fetch(flobbyScript).catch(e => {
-                    console.error("[Parent] Could not fetch script:", e)
-                })
+
+                attempts += 1
+                if (attempts >= MAX_ATTEMPTS) {
+                    console.error("[Flobby] Timeout: Flobby.init not found after script load")
+                    return
+                }
+
+                setTimeout(initFlobby, 100)
             }
-        }, 100)
+
+            initFlobby()
+        }
+
+        script.onerror = (e) => {
+            console.error("[Flobby] Failed to load Flobby script:", flobbyScript, e)
+        }
+
+        this.doc.body.appendChild(script)
     }
 
-    script.onerror = (e) => {
-        console.error("[Parent] Failed to load Flobby script:", flobbyScript, e)
-    }
-    flobbyIframeDoc.body.appendChild(script)
-}
+    unmountApp() {
+        if (!this.isAppMounted) {
+            return
+        }
 
+        // Clear the iframe content
+        if (this.doc) {
+            try {
+                this.doc.open()
+                this.doc.write("")
+                this.doc.close()
+            } catch (err) {
+                console.error("[Flobby] Error clearing document:", err)
+            }
+        }
 
-/**
- * Creates and writes the HTML document content for the Flobby launcher iframe
- *
- * @param {HTMLIFrameElement} flobbyIframe - The iframe element that will contain the launcher
- * @param {Object} flobbyConfig - Configuration object containing Flobby settings
- * @param {string} flobbyConfig.css - URL to the Flobby CSS file
- * @param {string} flobbyConfig.script - URL to the Flobby JavaScript file
- * @returns {void}
- */
-function createFlobbyLauncher(flobbyIframe, flobbyConfig) {
-    const flobbyIframeDoc = flobbyIframe.contentDocument || flobbyIframe.contentWindow?.document
-    if (!flobbyIframeDoc) {
-        return
+        // Return to launcher state
+        this.showLauncher()
     }
 
-    flobbyIframeDoc.open()
-    flobbyIframeDoc.write(`<!doctype html>
-        <html>
-        <head>
-            <meta charset="utf-8"/>
-            <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <style>
-                html,body { 
-                    margin:0;
-                    pointer-events: auto;
-                }
-                
-                .flobby-launcher {
-                    display:inline-flex;
-                    align-items:center;
-                    justify-content:center;
-                    width:48px;
-                    height:48px;
-                    border-radius:9999px;
-                    border:2px solid #111;
-                    background:rgba(0,0,0,.2);
-                    backdrop-filter:saturate(120%) blur(4px);
-                    cursor:pointer;
-                    user-select:none;
-                    font:600 12px/1 system-ui;
-                    color:#fff;
-                    pointer-events: auto;
-                }
-                
-                .flobby-launcher:active {
-                    transform:scale(.98)
-                }
+    /**
+     * Gets the iframe window reference
+     */
+    getWindow() {
+        return this.window
+    }
 
-            </style>
-        </head>
-        <body>
-            <button id="flobby-launcher" class="flobby-launcher" title="Open Flobby">▶</button>
-        </body>
-    </html>`)
-
-    flobbyIframeDoc.close()
-
-    const launcherButton = flobbyIframeDoc.getElementById("flobby-launcher")
-    const r = launcherButton.getBoundingClientRect()
-    styleElement(flobbyIframe, {
-        width: Math.ceil(r.width) + "px",
-        height: Math.ceil(r.height) + "px"
-    })
-
-    launcherButton.addEventListener("click", () => {
-        styleElement(flobbyIframe, {
-            position: "absolute", inset: "0", width: "59%", height: "59%", top: "0", left: "0",
-        })
-        mountFlobbyApp(flobbyIframe, flobbyConfig)
-    })
+    /**
+     * Gets the iframe document reference
+     */
+    getDocument() {
+        return this.doc
+    }
 }
 
 /**
- * Mounts a launcher iframe inside a game iFrame to enable Flobby functionality
- *
- * @param {HTMLIFrameElement} gameIframe - The game's iframe element where launcher will be mounted
- * @param {Object} flobbyConfig - Configuration object containing CSS and JS URLs
- * @param {string} flobbyConfig.css - URL to the Flobby CSS file
- * @param {string} flobbyConfig.script - URL to the Flobby JavaScript file
- * @returns {void}
+ * Mounts a launcher iframe inside the game iframe
  */
-function mountFlobbyInsideGame(gameIframe, flobbyConfig) {
+async function mountFlobbyInsideGame(gameIframe, flobbyConfig) {
     const gameDoc = gameIframe.contentDocument || gameIframe.contentWindow?.document
     if (!gameDoc) {
+        console.error("[Flobby] Cannot access game iframe document")
         return
     }
 
-    const ensureMount = () => {
-        console.count("ensureMount")
-        if (!gameDoc.body) {
-            return setTimeout(ensureMount, 10)
-        }
-        if (!gameDoc.body.style.position) {
-            gameDoc.body.style.position = "relative"
-        }
+    const body = await waitForBody(gameDoc, 5000)
 
-        // Small launcher iframe
-        const flobbyIframe = gameDoc.createElement("iframe")
-        flobbyIframe.title = "Flobby Launcher"
-        flobbyIframe.setAttribute("frameBorder", "0")
-        flobbyIframe.setAttribute("allow", "autoplay")
-        flobbyIframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms")
-        flobbyIframe.style.position = "absolute"
-        flobbyIframe.style.top = "8px"
-        flobbyIframe.style.left = "8px"
-        flobbyIframe.style.width = "0px"
-        flobbyIframe.style.height = "0px"
-        flobbyIframe.allowTransparency = true
-        flobbyIframe.style.background = "transparent"
-        flobbyIframe.style.backgroundColor = "blue"
-        flobbyIframe.setAttribute("allowTransparency", "true")
-        flobbyIframe.style.pointerEvents = "auto"
-        flobbyIframe.style.zIndex = "2147483648"
-
-        gameDoc.body.appendChild(flobbyIframe)
-        createFlobbyLauncher(flobbyIframe, flobbyConfig)
+    if (!body) {
+        console.error("[Flobby] Timeout waiting for game body to load")
+        return
     }
-    ensureMount()
+
+    if (!body.style.position) {
+        body.style.position = "relative"
+    }
+
+    const flobbyIframe = gameDoc.createElement("iframe")
+    flobbyIframe.title = "Flobby"
+    flobbyIframe.setAttribute("frameBorder", "0")
+    flobbyIframe.setAttribute("allow", "autoplay")
+    flobbyIframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms")
+    flobbyIframe.setAttribute("allowTransparency", "true")
+    flobbyIframe.allowTransparency = true
+
+    styleElement(flobbyIframe, {
+        position: "absolute",
+        top: "8px",
+        left: "8px",
+        width: "0px",
+        height: "0px",
+        background: "transparent",
+        pointerEvents: "auto",
+        zIndex: "2147483648"
+    })
+
+    body.appendChild(flobbyIframe)
+
+    const flobbyManager = new FlobbyManager(flobbyIframe, flobbyConfig)
+    FlobbyContext.setInstance(flobbyManager)
+    flobbyManager.showLauncher()
 }
 
-
+/**
+ * Fetches Flobby config
+ * @returns {Promise<Object|null>} Config object or null if failed
+ */
 async function getFlobbyConfig() {
     try {
         const response = await fetchRetry(FLOBBY_CONFIG_URL)
         if (!response.ok) {
-            throw new Error(`Failed to fetch Flobby config. Response status: ${response.status}`)
+            console.error(`[Flobby] Failed to fetch config. Status: ${response.status}`)
+            return null
         }
-
         return await response.json()
     } catch (error) {
-        console.error("Error loading Flobby config:", error.message)
+        console.error(`[Flobby] Error loading config:`, error.message)
         return null
     }
 }
 
+/**
+ * Gets the current Flobby instance from context
+ * @returns {FlobbyManager|null}
+ */
+export function getFlobbyInstance() {
+    return FlobbyContext.getInstance()
+}
 
+/**
+ * Checks if Flobby is currently mounted
+ * @returns {boolean}
+ */
+export function isFlobbyMounted() {
+    const instance = FlobbyContext.getInstance()
+    return instance ? instance.isAppMounted : false
+}
+
+/**
+ * Initializes Flobby inside the game iframe
+ * @param {HTMLIFrameElement} gameIframe - The game iframe element
+ * @returns {Promise<boolean>} True if successfully initialized, false otherwise
+ */
 export async function initFlobby(gameIframe) {
+    if (!gameIframe) {
+        console.error("[Flobby] Invalid game iframe")
+        return false
+    }
+
     const config = await getFlobbyConfig()
-    console.log("config: ", config)
+
     if (!config) {
-        return
+        console.warn("[Flobby] Could not load config, initialization aborted")
+        return false
     }
 
-    if (!config.enabled || config.enabled === false) {
-        console.log("Flobby is disabled in config")
-        return
+    if (!config.enabled) {
+        console.info("[Flobby] Disabled in config")
+        return false
     }
 
-    mountFlobbyInsideGame(gameIframe, config)
-
-
-    console.log("initFlobby 555")
+    try {
+        await mountFlobbyInsideGame(gameIframe, config)
+        console.info("[Flobby] Initialized successfully")
+        return true
+    } catch (error) {
+        console.error("[Flobby] Failed to mount: ", error.message)
+        return false
+    }
 }
