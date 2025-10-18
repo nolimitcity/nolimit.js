@@ -2,7 +2,7 @@ import { fetchRetry } from "./utils/fetchRetry"
 
 const FLOBBY_CONFIG_URL = "https://ccsqmvifdmwllajsrihc.supabase.co/storage/v1/object/public/flobby/config/flobby-config-v0.0.1.json"
 
-function handleResizeElement(element, resizeObject) {
+function styleElement(element, resizeObject) {
     if (!element || !resizeObject) {
         return
     }
@@ -14,9 +14,9 @@ function handleResizeElement(element, resizeObject) {
 
 
 function mountFlobbyApp(flobbyIframe, flobbyConfig) {
-    const flobbyDoc = flobbyIframe.contentDocument || flobbyIframe.contentWindow?.document
+    const flobbyIframeDoc = flobbyIframe.contentDocument || flobbyIframe.contentWindow?.document
 
-    if (!flobbyDoc) {
+    if (!flobbyIframeDoc) {
         console.error("Cannot access iframe document")
         return
     }
@@ -27,8 +27,8 @@ function mountFlobbyApp(flobbyIframe, flobbyConfig) {
         return
     }
 
-    flobbyDoc.open()
-    flobbyDoc.write(`<!doctype html>
+    flobbyIframeDoc.open()
+    flobbyIframeDoc.write(`<!doctype html>
         <html>
             <head>
                 <meta charset="utf-8"/>
@@ -91,9 +91,9 @@ function mountFlobbyApp(flobbyIframe, flobbyConfig) {
             </body>
         </html>`)
 
-    flobbyDoc.close()
+    flobbyIframeDoc.close()
 
-    const script = flobbyDoc.createElement("script")
+    const script = flobbyIframeDoc.createElement("script")
     script.src = flobbyScript
     script.async = false
     script.type = "text/javascript"
@@ -101,20 +101,20 @@ function mountFlobbyApp(flobbyIframe, flobbyConfig) {
 
     script.onload = () => {
         const win = flobbyIframe.contentWindow
-        const root = flobbyDoc.getElementById("flobby-root")
+        const root = flobbyIframeDoc.getElementById("flobby-root")
 
-        const closeButton = flobbyDoc.getElementById("flobby-close")
+        const closeButton = flobbyIframeDoc.getElementById("flobby-close")
         if (closeButton) {
             closeButton.addEventListener("click", () => {
                 try {
-                    flobbyDoc.open()
-                    flobbyDoc.write("")
-                    flobbyDoc.close()
+                    flobbyIframeDoc.open()
+                    flobbyIframeDoc.write("")
+                    flobbyIframeDoc.close()
                 } catch {
                     console.log("[Flobby Iframe error] Close Flobby")
                 }
 
-                handleResizeElement(flobbyIframe, {
+                styleElement(flobbyIframe, {
                     position: "absolute", top: "8px", left: "8px", width: "48px", height: "48px", inset: ""
                 })
                 createFlobbyLauncher(flobbyIframe, flobbyConfig)
@@ -139,7 +139,7 @@ function mountFlobbyApp(flobbyIframe, flobbyConfig) {
     script.onerror = (e) => {
         console.error("[Parent] Failed to load Flobby script:", flobbyScript, e)
     }
-    flobbyDoc.body.appendChild(script)
+    flobbyIframeDoc.body.appendChild(script)
 }
 
 
@@ -153,13 +153,13 @@ function mountFlobbyApp(flobbyIframe, flobbyConfig) {
  * @returns {void}
  */
 function createFlobbyLauncher(flobbyIframe, flobbyConfig) {
-    const flobbyDoc = flobbyIframe.contentDocument || flobbyIframe.contentWindow?.document
-    if (!flobbyDoc) {
+    const flobbyIframeDoc = flobbyIframe.contentDocument || flobbyIframe.contentWindow?.document
+    if (!flobbyIframeDoc) {
         return
     }
 
-    flobbyDoc.open()
-    flobbyDoc.write(`<!doctype html>
+    flobbyIframeDoc.open()
+    flobbyIframeDoc.write(`<!doctype html>
         <html>
         <head>
             <meta charset="utf-8"/>
@@ -191,26 +191,6 @@ function createFlobbyLauncher(flobbyIframe, flobbyConfig) {
                     transform:scale(.98)
                 }
 
-                .flobby-close {
-                    position: absolute;
-                    top: 8px;
-                    right: 8px;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 36px;
-                    height: 36px;
-                    border-radius: 9999px;
-                    border: 2px solid #111;
-                    background: rgba(0,0,0,.2);
-                    backdrop-filter: saturate(120%) blur(4px);
-                    cursor: pointer;
-                    user-select: none;
-                    font: 600 16px/1 system-ui;
-                    color: #fff;
-                    pointer-events: auto;
-                    z-index: 10;
-                }
             </style>
         </head>
         <body>
@@ -218,19 +198,17 @@ function createFlobbyLauncher(flobbyIframe, flobbyConfig) {
         </body>
     </html>`)
 
-    flobbyDoc.close()
+    flobbyIframeDoc.close()
 
-    const launcherButton = flobbyDoc.getElementById("flobby-launcher")
-
-    const sizeToButton = () => {
-        const r = launcherButton.getBoundingClientRect()
-        flobbyIframe.style.width = Math.ceil(r.width) + "px"
-        flobbyIframe.style.height = Math.ceil(r.height) + "px"
-    }
-    sizeToButton()
+    const launcherButton = flobbyIframeDoc.getElementById("flobby-launcher")
+    const r = launcherButton.getBoundingClientRect()
+    styleElement(flobbyIframe, {
+        width: Math.ceil(r.width) + "px",
+        height: Math.ceil(r.height) + "px"
+    })
 
     launcherButton.addEventListener("click", () => {
-        handleResizeElement(flobbyIframe, {
+        styleElement(flobbyIframe, {
             position: "absolute", inset: "0", width: "59%", height: "59%", top: "0", left: "0",
         })
         mountFlobbyApp(flobbyIframe, flobbyConfig)
@@ -255,7 +233,7 @@ function mountFlobbyInsideGame(gameIframe, flobbyConfig) {
     const ensureMount = () => {
         console.count("ensureMount")
         if (!gameDoc.body) {
-            return void setTimeout(ensureMount, 10)
+            return setTimeout(ensureMount, 10)
         }
         if (!gameDoc.body.style.position) {
             gameDoc.body.style.position = "relative"
@@ -270,7 +248,8 @@ function mountFlobbyInsideGame(gameIframe, flobbyConfig) {
         flobbyIframe.style.position = "absolute"
         flobbyIframe.style.top = "8px"
         flobbyIframe.style.left = "8px"
-        flobbyIframe.style.width = "1px"
+        flobbyIframe.style.width = "0px"
+        flobbyIframe.style.height = "0px"
         flobbyIframe.allowTransparency = true
         flobbyIframe.style.background = "transparent"
         flobbyIframe.style.backgroundColor = "blue"
