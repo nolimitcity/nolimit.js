@@ -2,6 +2,7 @@ import { getAppWrapperDocString, getLaunchButtonDocString } from "./flobby-doc-s
 import { fetchRetry } from "./utils/fetchRetry"
 import { styleElement } from "./utils/styleElement"
 import { waitForBody } from "./utils/waitForElement"
+import json from "./flobby-config.json"
 
 
 // 1. initFlobby
@@ -257,6 +258,7 @@ async function mountFlobbyInsideGame(gameIframe, flobbyConfig) {
 async function getFlobbyConfig() {
     try {
         const response = await fetchRetry(FLOBBY_CONFIG_URL)
+        console.log("[FLOBBY_CONFIG_URL]", response)
         if (!response.ok) {
             console.error(`[Flobby] Failed to fetch config. Status: ${response.status}`)
             return null
@@ -296,7 +298,8 @@ export async function initFlobby(gameIframe) {
         return false
     }
 
-    const config = await getFlobbyConfig()
+    // const config = await getFlobbyConfig()
+    const config = json
 
     if (!config) {
         console.warn("[Flobby] Could not load config, initialization aborted")

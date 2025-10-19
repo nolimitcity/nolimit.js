@@ -30,10 +30,21 @@ export function getLaunchButtonDocString() {
                 .flobby-launch-button:active {
                     transform: scale(.98);
                 }
+                
+                .flobby-launch-button svg {
+                    fill: #fff;
+                }
             </style>
         </head>
         <body>
-            <button id="flobby-launch-button" class="flobby-launch-button" title="Open Flobby">▶</button>
+            <button id="flobby-launch-button" class="flobby-launch-button" title="Open Flobby">
+                <svg xmlns="http://www.w3.org/2000/svg" height="12" width="12" viewBox="0 0 99 111">
+                    <g>
+                        <path d="M17.8881 3.75972C15.4501 0.763694 12.5716 0 10.2805 0C8.66499 0 7.34321 0.381847 6.69701 0.61683C5.11087 1.17491 0 3.52474 0 10.1043V100.866C0 107.475 5.14025 109.796 6.69701 110.354C8.28314 110.912 13.7171 112.351 17.8881 107.211L45.6747 73.0503L54.7803 61.8298C57.7764 58.1582 57.7764 52.8124 54.7803 49.1114L17.8881 3.73035V3.75972Z"/>
+                        <path d="M88.0304 0H78.8367C72.7272 0 67.7631 4.96401 67.7631 11.0736V62.1823C66.9701 64.7378 65.707 67.1463 63.9447 69.3199L54.8391 80.5404L53.3117 82.4202L68.3212 104.42C68.7031 104.949 69.1143 105.449 69.5549 105.918C71.5229 108.973 74.9595 111 78.8367 111H88.0304C94.1399 111 99.104 106.036 99.104 99.9264V11.0736C99.104 4.96401 94.1399 0 88.0304 0Z"/>
+                    </g>
+                </svg>
+            </button>
         </body>
     </html>`
 }

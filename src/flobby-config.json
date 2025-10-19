@@ -1,8 +1,8 @@
 {
     "version": "0.0.1",
     "enabled": true,
-    "css": "https://localhost.nolimitcdn.com/overlay/overlay.css",
-    "script": "https://localhost.nolimitcdn.com/overlay/overlay.js",
+    "css": " http://localhost:5173/flobby.css",
+    "script": " http://localhost:5173/flobby.js",
     "events": [
         "ping",
         "version",
