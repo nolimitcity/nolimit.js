@@ -11,11 +11,16 @@ const LOADER_URL = "{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={
 const REPLACE_URL = "{CDN}/loader/game-loader.html?{QUERY}"
 const GAMES_URL = "{CDN}/games"
 
+const FLOBBY_CONFIG_URL_TEMPLATE = '{FLOBBY_CDN}/storage/v1/object/public/flobby/config/{FLOBBY_VERSION}/{FLOBBY_ENV}/flobby-config-{FLOBBY_VERSION}.json';
+
 const DEFAULT_OPTIONS = {
     device: "desktop",
     environment: "partner",
     language: "en",
     "nolimit.js": __VERSION__,
+    flobbyCdn: "https://ccsqmvifdmwllajsrihc.supabase.co",
+    flobbyVersion: "latest",
+    flobbyEnv: "prod",
 }
 
 /**
@@ -27,7 +32,6 @@ export const version = __VERSION__
  * @property {Object} options current options used
  */
 let options = {}
-
 
 /**
  * Initialize loader with default parameters. Can be skipped if the parameters are included in the call to load instead.
@@ -84,6 +88,13 @@ export function init(initOptions) {
     options = window.nolimit.options = initOptions
 }
 
+function getFlobbyConfigUrl(loadOptions) {
+    return FLOBBY_CONFIG_URL_TEMPLATE
+        .replace("{FLOBBY_CDN}", loadOptions.flobbyCdn)
+        .replace("{FLOBBY_VERSION}", loadOptions.flobbyVersion)
+        .replace("{FLOBBY_ENV}", loadOptions.flobbyEnv)
+}
+
 /**
  * Load game, replacing target with the game.
  *
@@ -110,6 +121,10 @@ export function init(initOptions) {
  */
 export async function load(loadOptions) {
     loadOptions = processOptions(mergeOptions(options, loadOptions))
+
+    const flobbyConfigUrl = getFlobbyConfigUrl(loadOptions);
+    console.log("loadOptions: ", loadOptions);
+    console.log("flobbyConfigUrl: ", flobbyConfigUrl);
 
     let target = loadOptions.target || window
 
