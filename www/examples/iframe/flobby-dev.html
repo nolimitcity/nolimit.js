@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flobby Dev – nolimit.js integration</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+        }
+
+        /* Left: Game area */
+        #game-area {
+            position: relative;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #game-area iframe, #game-target {
+            width: 100%;
+            height: 100%;
+        }
+        /* Phone frame — invisible pass-through in desktop mode */
+        #phone-frame { display: contents; }
+
+        /* Mobile mode */
+        #game-area.mobile { padding: 24px; }
+
+        #game-area.mobile #phone-frame {
+            display: block;
+            position: relative;
+            height: 100%;
+            aspect-ratio: 9 / 19.5;
+            max-width: 100%;
+            background: #000;
+            border: 3px solid #2a2a2a;
+            border-radius: 44px;
+            padding: 14px 10px;
+            box-shadow:
+                0 0 0 1px #000,
+                0 8px 40px rgba(0,0,0,0.6),
+                inset 0 0 1px rgba(255,255,255,0.05);
+            overflow: hidden;
+        }
+
+        /* Dynamic Island notch */
+        #game-area.mobile #phone-frame::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 26px;
+            background: #1a1a1a;
+            border-radius: 14px;
+            z-index: 10;
+        }
+
+        /* Game iframe inside phone frame */
+        #game-area.mobile #phone-frame iframe,
+        #game-area.mobile #phone-frame #game-target {
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+        }
+
+        /* Landscape rotation */
+        #game-area.mobile.landscape #phone-frame {
+            height: auto;
+            width: 100%;
+            max-height: 100%;
+            aspect-ratio: 19.5 / 9;
+        }
+        #game-area.mobile.landscape #phone-frame::before {
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%) rotate(0deg);
+            width: 26px;
+            height: 90px;
+        }
+
+        /* Right: Control panel */
+        #panel {
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #334155;
+            overflow: hidden;
+        }
+        .panel-header {
+            font-size: 14px;
+            padding: 12px 16px;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #ef4444;
+            flex-shrink: 0;
+        }
+        .dot.ready { background: #22c55e; }
+        .section {
+            padding: 10px 16px;
+            border-bottom: 1px solid #334155;
+        }
+        .section h3 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        .btn-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        button.rpc {
+            padding: 6px 12px;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            background: #334155;
+            color: #e2e8f0;
+            font-size: 12px;
+            font-family: monospace;
+            cursor: pointer;
+        }
+        button.rpc:hover { background: #475569; }
+        button.rpc:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Log */
+        #log-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid #334155;
+        }
+        #log-header h3 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+        }
+        #log-header button {
+            padding: 2px 8px;
+            font-size: 11px;
+            background: #334155;
+            color: #94a3b8;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #log {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 16px;
+            font-family: "SF Mono", monospace;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+        .log-entry { display: flex; gap: 6px; border-bottom: 1px solid #1e293b; padding: 2px 0; }
+        .log-time { color: #64748b; flex-shrink: 0; }
+        .log-sys { color: #fbbf24; font-style: italic; }
+        .log-dir { flex-shrink: 0; width: 14px; text-align: center; font-weight: bold; }
+        .log-dir.s { color: #38bdf8; }
+        .log-dir.r { color: #a78bfa; }
+        .log-lbl { font-weight: 600; flex-shrink: 0; }
+        .log-lbl.s { color: #38bdf8; }
+        .log-lbl.r { color: #a78bfa; }
+        .log-data { color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .hint { font-size: 11px; color: #64748b; line-height: 1.5; }
+    </style>
+</head>
+<body>
+    <!-- Left: Game + Flobby rendered by nolimit.js -->
+    <div id="game-area">
+        <div id="phone-frame">
+            <div id="game-target"></div>
+        </div>
+    </div>
+
+    <!-- Right: Control panel -->
+    <div id="panel">
+        <div class="panel-header">
+            <span class="dot" id="dot-game"></span>
+            <span id="status-game">Game not started</span>
+        </div>
+        <div class="panel-header">
+            <span class="dot" id="dot-flobby"></span>
+            <span id="status-flobby">Flobby not loaded</span>
+        </div>
+
+        <div class="section">
+            <h3>Actions</h3>
+            <div class="btn-grid">
+                <button class="rpc" id="btn-desktop">Desktop</button>
+                <button class="rpc" id="btn-rotate">Rotate</button>
+                <button class="rpc" id="btn-open" disabled>Open Flobby</button>
+                <button class="rpc" id="btn-preload" disabled>Preload Flobby</button>
+                <button class="rpc" id="btn-logger" disabled>logger()</button>
+                <button class="rpc" id="btn-start-logger" disabled>startLogger()</button>
+                <button class="rpc" id="btn-stop-logger" disabled>stopLogger()</button>
+            </div>
+            <p class="hint" style="margin-top:8px;">
+                Also available in console:<br>
+                <code>FlobbyManager.logger()</code>
+                <code>FlobbyManager.startLogger(10000)</code>
+                <code>FlobbyManager.stopLogger()</code>
+            </p>
+        </div>
+
+        <div class="section">
+            <h3>JSON-RPC 2.0 &rarr; Flobby</h3>
+            <div class="btn-grid">
+                <button class="rpc" id="btn-version" disabled>sendVersion()</button>
+                <button class="rpc" id="btn-echo" disabled>sendEcho()</button>
+            </div>
+            <p class="hint" style="margin-top:8px;">
+                Also available in console:<br>
+                <code>FlobbyManager.sendVersion()</code><br>
+                <code>FlobbyManager.sendEcho()</code>
+            </p>
+        </div>
+
+        <div id="log-wrap">
+            <div id="log-header">
+                <h3>Console Log</h3>
+                <button id="btn-clear">Clear</button>
+            </div>
+            <div id="log"></div>
+        </div>
+    </div>
+
+    <!-- Load nolimit.js from root dist (built by npm run dev / npm run build) -->
+    <script src="../../../dist/nolimit-latest.js"></script>
+
+    <script>
+        const logEl = document.getElementById("log");
+        const dotGame = document.getElementById("dot-game");
+        const dotFlobby = document.getElementById("dot-flobby");
+        const statusGame = document.getElementById("status-game");
+        const statusFlobby = document.getElementById("status-flobby");
+
+        // ---- Logging ----
+        function ts() { return new Date().toLocaleTimeString("en-GB", { hour12: false }); }
+
+        function sysLog(text) {
+            const el = document.createElement("div");
+            el.className = "log-entry";
+            el.innerHTML = `<span class="log-time">${ts()}</span><span class="log-sys">${text}</span>`;
+            logEl.appendChild(el);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function msgLog(dir, msg) {
+            const cls = dir === "s" ? "s" : "r";
+            const arrow = dir === "s" ? "\u2192" : "\u2190";
+            let label, data;
+            if (msg.jsonrpc === "2.0") {
+                if ("method" in msg) {
+                    label = msg.method;
+                    data = msg.params ? JSON.stringify(msg.params) : "";
+                } else {
+                    label = "resp #" + msg.id;
+                    data = JSON.stringify(msg.result || msg.error || {});
+                }
+            } else {
+                label = msg.type || "?";
+                data = msg.payload ? JSON.stringify(msg.payload) : "";
+            }
+            const el = document.createElement("div");
+            el.className = "log-entry";
+            el.innerHTML = `<span class="log-time">${ts()}</span><span class="log-dir ${cls}">${arrow}</span><span class="log-lbl ${cls}">${label}</span><span class="log-data">${data}</span>`;
+            logEl.appendChild(el);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        document.getElementById("btn-clear").addEventListener("click", () => { logEl.innerHTML = ""; });
+
+        // ---- Intercept [Flobby] console.logs ----
+        const origLog = console.log;
+        console.log = function(...args) {
+            origLog.apply(console, args);
+            if (typeof args[0] === "string" && args[0].startsWith("[Flobby]")) {
+                sysLog(args.map(a => typeof a === "object" ? JSON.stringify(a) : String(a)).join(" "));
+            }
+        };
+
+        // ---- nolimit.js setup ----
+        sysLog("nolimit.js v" + nolimit.version + " loaded");
+
+        nolimit.init({
+            operator: "FAKE1",
+            mute: true,
+            environment: "test",
+        });
+
+        // ---- Auto-start game (read device from URL, default mobile) ----
+        const params = new URLSearchParams(location.search);
+        const currentDevice = params.get("device") || "mobile";
+        const gameArea = document.getElementById("game-area");
+
+        if (currentDevice === "mobile") {
+            gameArea.classList.add("mobile");
+        }
+
+        sysLog("Starting game (" + currentDevice + ")...");
+
+        const api = nolimit.load({
+            target: document.getElementById("game-target"),
+            game: "Seamen",
+            device: currentDevice,
+        });
+
+        dotGame.classList.add("ready");
+        statusGame.textContent = "Game iframe created";
+        sysLog("nolimit.load() called — game iframe created");
+
+        api.on("ready", () => {
+            sysLog("Game is ready");
+        });
+
+        // Poll for FlobbyManager
+        const flobbyPoll = setInterval(() => {
+            if (window.FlobbyManager) {
+                clearInterval(flobbyPoll);
+                onFlobbyManagerReady();
+            }
+        }, 200);
+
+        // ---- Once FlobbyManager exists ----
+        function onFlobbyManagerReady() {
+            sysLog("FlobbyManager available on window");
+            document.getElementById("btn-preload").disabled = false;
+            document.getElementById("btn-open").disabled = false;
+            document.getElementById("btn-logger").disabled = false;
+            document.getElementById("btn-start-logger").disabled = false;
+            document.getElementById("btn-stop-logger").disabled = false;
+
+            // Patch the message port listener to also log to our panel
+            const orig_handleJsonRpc = window.FlobbyManager._handleJsonRpc.bind(window.FlobbyManager);
+            window.FlobbyManager._handleJsonRpc = function(message) {
+                if ("result" in message || "error" in message) {
+                    msgLog("r", message);
+                } else {
+                    msgLog("r", message);
+                }
+                return orig_handleJsonRpc(message);
+            };
+
+            // Poll for flobby ready
+            const readyPoll = setInterval(() => {
+                if (window.FlobbyManager.isFlobbyReady) {
+                    clearInterval(readyPoll);
+                    onFlobbyReady();
+                }
+            }, 200);
+        }
+
+        function onFlobbyReady() {
+            dotFlobby.classList.add("ready");
+            statusFlobby.textContent = "Flobby connected";
+            document.getElementById("btn-version").disabled = false;
+            document.getElementById("btn-echo").disabled = false;
+            sysLog("Flobby is ready — JSON-RPC enabled");
+        }
+
+        // ---- Buttons ----
+        const btnDesktop = document.getElementById("btn-desktop");
+        const btnRotate = document.getElementById("btn-rotate");
+
+        // Set initial button labels based on current mode
+        btnDesktop.textContent = currentDevice === "mobile" ? "Desktop" : "Mobile";
+        if (currentDevice !== "mobile") btnRotate.disabled = true;
+
+        btnDesktop.addEventListener("click", () => {
+            const next = currentDevice === "mobile" ? "desktop" : "mobile";
+            const url = new URL(location.href);
+            url.searchParams.set("device", next);
+            location.href = url.toString();
+        });
+
+        btnRotate.addEventListener("click", () => {
+            gameArea.classList.toggle("landscape");
+            const isLandscape = gameArea.classList.contains("landscape");
+            sysLog("Rotated to " + (isLandscape ? "landscape" : "portrait"));
+        });
+
+        document.getElementById("btn-preload").addEventListener("click", () => {
+            if (!window.FlobbyManager) return;
+            sysLog("Preloading Flobby assets...");
+            window.FlobbyManager.preload();
+        });
+
+        document.getElementById("btn-open").addEventListener("click", () => {
+            if (!window.FlobbyManager) return;
+            if (window.FlobbyManager.preloadState === "ready") {
+                window.FlobbyManager.showApp();
+                sysLog("Flobby opened");
+            } else {
+                sysLog("Preloading first, then opening...");
+                window.FlobbyManager.preload().then(() => {
+                    window.FlobbyManager.showApp();
+                    sysLog("Flobby opened");
+                });
+            }
+        });
+
+        document.getElementById("btn-logger").addEventListener("click", () => {
+            if (!window.FlobbyManager) return;
+            sysLog("Run Flobby logger once.");
+            window.FlobbyManager.logger();
+        });
+
+        document.getElementById("btn-start-logger").addEventListener("click", () => {
+            if (!window.FlobbyManager) return;
+            sysLog("Start Flobby logger...");
+            window.FlobbyManager.startLogger(5000);
+        });
+
+        document.getElementById("btn-stop-logger").addEventListener("click", () => {
+            if (!window.FlobbyManager) return;
+            sysLog("Stop Flobby logger...");
+            window.FlobbyManager.stopLogger();
+        });
+
+        document.getElementById("btn-version").addEventListener("click", () => {
+            if (!window.FlobbyManager) return;
+            window.FlobbyManager.sendVersion();
+            // Log the sent message
+            msgLog("s", {
+                jsonrpc: "2.0", method: "version",
+                params: { version: window.FlobbyManager.config.version },
+            });
+        });
+
+        document.getElementById("btn-echo").addEventListener("click", () => {
+            if (!window.FlobbyManager) return;
+            window.FlobbyManager.sendEcho();
+            msgLog("s", {
+                jsonrpc: "2.0", method: "echo",
+                params: { message: "Hello from nolimit.js!" },
+            });
+        });
+    </script>
+</body>
+</html>

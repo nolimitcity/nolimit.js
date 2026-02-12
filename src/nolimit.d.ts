@@ -25,6 +25,7 @@ declare namespace nolimit {
         depositUrl?: string;
         supportUrl?: string;
         accountHistoryUrl?: string;
+
     }
 
     export interface LoadOptions {
