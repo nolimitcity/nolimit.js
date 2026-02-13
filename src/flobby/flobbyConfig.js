@@ -3,7 +3,7 @@ import { isDev } from "../utils/constants"
 import { fetchRetry } from "../utils/fetchRetry"
 
 const FLOBBY_CONFIG_URL_TEMPLATE =
-    "{FLOBBY_CDN}/storage/v1/object/public/flobby/config/{FLOBBY_VERSION}/{FLOBBY_ENV}/flobby-config-{FLOBBY_VERSION}.json"
+    "{FLOBBY_CDN}/storage/v1/object/public/flobby/{FLOBBY_ENV}/config/{FLOBBY_VERSION}/flobby-config-{FLOBBY_VERSION}.json"
 
 /**
  * Constructs the Flobby configuration URL by replacing template placeholders
