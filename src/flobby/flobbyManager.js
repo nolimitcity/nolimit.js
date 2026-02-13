@@ -5,7 +5,7 @@ import { GameStateTracker } from "./gameStateTracker"
 import { RpcTransport } from "./rpcTransport"
 
 export class FlobbyManager {
-    constructor(flobbyIframe, flobbyConfig, gameWindow) {
+    constructor(flobbyIframe, flobbyConfig, gameWindow, { operator, game } = {}) {
         this.iframe = flobbyIframe
         this.config = flobbyConfig
         this.gameWindow = gameWindow
@@ -26,6 +26,7 @@ export class FlobbyManager {
         this._gameState = new GameStateTracker(
             (msg) => this.sendToFlobby(msg),
             () => this.preload(),
+            { operator, game },
         )
     }
 
@@ -58,6 +59,7 @@ export class FlobbyManager {
     }
 
     snapshot() {
+        const pending = this._gameState._pendingRound
         return {
             isAppMounted: this.isAppMounted,
             isAppVisible: this.isAppVisible,
@@ -69,8 +71,8 @@ export class FlobbyManager {
             currentRoundId: this._gameState._currentRoundId,
             currency: this._gameState._currency,
             lastBalance: this._gameState._lastBalance,
-            currentBet: this._gameState._currentBet,
-            lastGameWin: this._gameState._lastGameWin,
+            currentBet: pending?.betAmount ?? null,
+            currentWin: pending?.winAmount ?? null,
             roundInProgress: this._gameState._roundInProgress,
             roundsCount: this._gameState._rounds.length,
         }
@@ -240,13 +242,13 @@ export class FlobbyManager {
 
         styleElement(this.iframe, {
             position: "absolute",
-            top: "8px",
+            inset: "",
+            top: "40px",
             left: "8px",
             width: `${Math.ceil(rect.width)}px`,
             height: `${Math.ceil(rect.height)}px`,
             borderRadius: "9999px",
             overflow: "hidden",
-            inset: "",
         })
 
         // Update button state based on preload state
