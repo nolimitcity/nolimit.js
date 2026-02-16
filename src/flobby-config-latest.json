@@ -1,7 +1,7 @@
 {
 	"version": "0.0.1",
 	"enabled": true,
-	"script": "https://ccsqmvifdmwllajsrihc.supabase.co/storage/v1/object/public/flobby/prod/app/latest/nolimit.js",
+	"script": "https://ccsqmvifdmwllajsrihc.supabase.co/storage/v1/object/public/flobby/prod/app/latest/flobby.js",
 	"css": null,
 	"features": {
 		"dashboard": true,
