@@ -17,7 +17,7 @@ const DEFAULT_OPTIONS = {
     environment: "partner",
     language: "en",
     "nolimit.js": __VERSION__,
-    flobbyCdn: "flobby-cdn.playin.com",
+    flobbyCdn: "https://ccsqmvifdmwllajsrihc.supabase.co",
     flobbyVersion: "latest",
     flobbyEnv: "prod",
     flobbyEnabled: true,
