@@ -20,7 +20,7 @@ const DEFAULT_OPTIONS = {
     flobbyCdn: "https://ccsqmvifdmwllajsrihc.supabase.co",
     flobbyVersion: "latest",
     flobbyEnv: "prod",
-    flobbyEnabled: false,
+    flobbyEnabled: true,
 }
 
 /**

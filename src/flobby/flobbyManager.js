@@ -164,6 +164,15 @@ export class FlobbyManager {
             flobbySize: () => {
                 console.log("[Flobby] Size update:", message.params)
             },
+            logger: () => {
+                this.logger()
+            },
+            startLogger: () => {
+                this.startLogger(message.params?.interval)
+            },
+            stopLogger: () => {
+                this.stopLogger()
+            },
         }
 
         handlers[message.method]?.()
