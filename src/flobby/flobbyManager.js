@@ -9,7 +9,7 @@ export class FlobbyManager {
         flobbyIframe,
         flobbyConfig,
         gameWindow,
-        { operator, game } = {},
+        { operator, game, device } = {},
     ) {
         this.iframe = flobbyIframe
         this.config = flobbyConfig
@@ -40,7 +40,7 @@ export class FlobbyManager {
                         this.showLauncher()
                     }
                 }),
-            { operator, game },
+            { operator, game, device },
         )
     }
 
