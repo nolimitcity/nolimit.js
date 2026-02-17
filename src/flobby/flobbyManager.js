@@ -5,7 +5,12 @@ import { GameStateTracker } from "./gameStateTracker"
 import { RpcTransport } from "./rpcTransport"
 
 export class FlobbyManager {
-    constructor(flobbyIframe, flobbyConfig, gameWindow, { operator, game } = {}) {
+    constructor(
+        flobbyIframe,
+        flobbyConfig,
+        gameWindow,
+        { operator, game } = {},
+    ) {
         this.iframe = flobbyIframe
         this.config = flobbyConfig
         this.gameWindow = gameWindow
@@ -84,8 +89,6 @@ export class FlobbyManager {
         this._preloader.css = null
     }
 
-    // Logger
-
     logger() {
         console.table({
             isAppMounted: this.isAppMounted,
@@ -101,8 +104,6 @@ export class FlobbyManager {
             currentRoundId: this._gameState._currentRoundId,
             currency: this._gameState._currency,
             lastBalance: this._gameState._lastBalance,
-            currentBet: this._gameState._currentBet,
-            lastGameWin: this._gameState._lastGameWin,
             roundInProgress: this._gameState._roundInProgress,
         })
         console.table(this._gameState._rounds)
@@ -172,6 +173,55 @@ export class FlobbyManager {
             },
             stopLogger: () => {
                 this.stopLogger()
+            },
+            setAppMode: () => {
+                const params = message.params || {}
+                const closeBtn = this.doc?.getElementById("flobby-close-button")
+                const iframeDoc = this.doc
+                if (params.mode === "mini") {
+                    styleElement(this.iframe, {
+                        inset: "",
+                        position: "absolute",
+                        top: `${params.top}px`,
+                        right: `${params.right}px`,
+                        left: "",
+                        bottom: "",
+                        width: `${params.width}px`,
+                        height: `${params.height}px`,
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                        background: "transparent",
+                    })
+                    this.iframe.setAttribute("allowtransparency", "true")
+                    if (iframeDoc) {
+                        iframeDoc.documentElement.style.background =
+                            "transparent"
+                        iframeDoc.body.style.background = "transparent"
+                    }
+                    if (closeBtn) {
+                        closeBtn.style.display = "none"
+                    }
+                } else if (params.mode === "full") {
+                    styleElement(this.iframe, {
+                        inset: "0",
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        top: "0",
+                        left: "0",
+                        borderRadius: "0",
+                        overflow: "visible",
+                        background: "",
+                    })
+                    this.iframe.removeAttribute("allowtransparency")
+                    if (iframeDoc) {
+                        iframeDoc.documentElement.style.background = ""
+                        iframeDoc.body.style.background = ""
+                    }
+                    if (closeBtn) {
+                        closeBtn.style.display = ""
+                    }
+                }
             },
         }
 
