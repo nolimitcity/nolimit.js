@@ -77,6 +77,7 @@ export async function initFlobby(gameIframe, options) {
         const flobbyManager = new FlobbyManager(iframe, config, gameWindow, {
             operator: options.operator,
             game: options.game,
+            device: options.device,
         })
         FlobbyContext.setInstance(flobbyManager)
 

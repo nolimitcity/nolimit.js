@@ -3,9 +3,10 @@ export class GameStateTracker {
      * @param {Function} sendFn - Called to send a JSON-RPC message to Flobby
      * @param {Function} onExternalLoaded - Called when the "loaded" external event fires
      */
-    constructor(sendFn, onExternalLoaded, { operator, game } = {}) {
+    constructor(sendFn, onExternalLoaded, { operator, game, device } = {}) {
         this._sendFn = sendFn
         this._onExternalLoaded = onExternalLoaded
+        this._device = device || "mobile"
         this._storageKey = `${operator || "unknown"}.${game || "unknown"}.flobby_game_state`
         this.gameInfo = null
         this._sessionStartTime = null
@@ -21,14 +22,17 @@ export class GameStateTracker {
 
     _persist() {
         try {
-            localStorage.setItem(this._storageKey, JSON.stringify({
-                gameInfo: this.gameInfo,
-                _currentRoundId: this._currentRoundId,
-                _currency: this._currency,
-                _lastBalance: this._lastBalance,
-                _lastTotalCost: this._lastTotalCost,
-                _rounds: this._rounds,
-            }))
+            localStorage.setItem(
+                this._storageKey,
+                JSON.stringify({
+                    gameInfo: this.gameInfo,
+                    _currentRoundId: this._currentRoundId,
+                    _currency: this._currency,
+                    _lastBalance: this._lastBalance,
+                    _lastTotalCost: this._lastTotalCost,
+                    _rounds: this._rounds,
+                }),
+            )
         } catch (_) {}
     }
 
@@ -50,7 +54,7 @@ export class GameStateTracker {
         console.log("[Game Event]", event, data)
         const handlers = {
             info: () => {
-                this.gameInfo = data
+                this.gameInfo = { ...data, device: this._device }
                 if (!this._sessionStartTime) {
                     this._sessionStartTime = Date.now()
                 }
@@ -103,6 +107,7 @@ export class GameStateTracker {
                     mode: pending.mode,
                     featureName: pending.featureName,
                     freespinsPlayed: pending.freespinsPlayed,
+                    replayCode: pending.replayCode || null,
                 }
 
                 this._rounds.push(round)
@@ -134,6 +139,13 @@ export class GameStateTracker {
                     return
                 }
 
+                if (data.name === "replayCode") {
+                    if (this._pendingRound) {
+                        this._pendingRound.replayCode = data.data || null
+                    }
+                    return
+                }
+
                 if (data.name === "currency") {
                     this._currency = data.data
                     this._persist()
@@ -159,8 +171,7 @@ export class GameStateTracker {
                         const betData = data.data || {}
                         this._roundInProgress = true
                         this._pendingRound = {
-                            betAmount:
-                                Number.parseFloat(betData.bet) || 0,
+                            betAmount: Number.parseFloat(betData.bet) || 0,
                             totalCost: this._lastTotalCost,
                             betType: betData.type || "normalBet",
                             featureName: betData.featureName || null,
@@ -173,6 +184,7 @@ export class GameStateTracker {
                             freespinsPlayed: 0,
                             balanceStart: this._lastBalance,
                             startedAt: Date.now(),
+                            replayCode: null,
                         }
                     }
                     return
