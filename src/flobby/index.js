@@ -62,6 +62,11 @@ export async function initFlobby(gameIframe, options) {
         return false
     }
 
+    if (!config.enabled) {
+        console.info("[Flobby] Disabled by config")
+        return false
+    }
+
     try {
         const result = await createFlobbyIframe(gameIframe)
         if (!result) {
@@ -74,7 +79,6 @@ export async function initFlobby(gameIframe, options) {
             game: options.game,
         })
         FlobbyContext.setInstance(flobbyManager)
-        flobbyManager.showLauncher()
 
         console.info("[Flobby] Initialized successfully")
         return true

@@ -34,7 +34,12 @@ export class FlobbyManager {
 
         this._gameState = new GameStateTracker(
             (msg) => this.sendToFlobby(msg),
-            () => this.preload(),
+            () =>
+                this.preload().then(() => {
+                    if (this._preloader.state === PreloadState.READY) {
+                        this.showLauncher()
+                    }
+                }),
             { operator, game },
         )
     }
@@ -342,6 +347,24 @@ export class FlobbyManager {
 
     forwardEvent(event, data) {
         this._gameState.forwardEvent(event, data)
+
+        if (event === "idle") {
+            this._setIframeVisible(true)
+        } else if (event === "external" && data?.name === "bet") {
+            this._setIframeVisible(false)
+        }
+    }
+
+    _setIframeVisible(visible) {
+        if (!this.iframe.style.transition) {
+            styleElement(this.iframe, {
+                transition: "opacity 0.2s ease",
+            })
+        }
+        styleElement(this.iframe, {
+            opacity: visible ? "1" : "0",
+            pointerEvents: visible ? "auto" : "none",
+        })
     }
 
     async preload() {
