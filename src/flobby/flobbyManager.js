@@ -5,7 +5,12 @@ import { GameStateTracker } from "./gameStateTracker"
 import { RpcTransport } from "./rpcTransport"
 
 export class FlobbyManager {
-    constructor(flobbyIframe, flobbyConfig, gameWindow, { operator, game } = {}) {
+    constructor(
+        flobbyIframe,
+        flobbyConfig,
+        gameWindow,
+        { operator, game } = {},
+    ) {
         this.iframe = flobbyIframe
         this.config = flobbyConfig
         this.gameWindow = gameWindow
@@ -13,6 +18,10 @@ export class FlobbyManager {
         this.isAppVisible = false
         this.doc = null
         this.window = null
+
+        this._iframePos = null // { left, top } — tracked to avoid getBoundingClientRect on every drag
+        this._pendingDelta = null // accumulated deltas waiting for rAF
+        this._moveRafId = null
 
         this._preloader = new AssetPreloader(flobbyConfig, () =>
             this._updateButtonState(),
@@ -84,8 +93,6 @@ export class FlobbyManager {
         this._preloader.css = null
     }
 
-    // Logger
-
     logger() {
         console.table({
             isAppMounted: this.isAppMounted,
@@ -101,8 +108,6 @@ export class FlobbyManager {
             currentRoundId: this._gameState._currentRoundId,
             currency: this._gameState._currency,
             lastBalance: this._gameState._lastBalance,
-            currentBet: this._gameState._currentBet,
-            lastGameWin: this._gameState._lastGameWin,
             roundInProgress: this._gameState._roundInProgress,
         })
         console.table(this._gameState._rounds)
@@ -127,7 +132,9 @@ export class FlobbyManager {
         }
 
         // Request/notification from Flobby
-        console.log("[Flobby] JSON-RPC:", message.method, message.params)
+        if (message.method !== "moveApp") {
+            console.log("[Flobby] JSON-RPC:", message.method, message.params)
+        }
 
         const handlers = {
             ready: () => {
@@ -163,6 +170,130 @@ export class FlobbyManager {
             },
             flobbySize: () => {
                 console.log("[Flobby] Size update:", message.params)
+            },
+            logger: () => {
+                this.logger()
+            },
+            startLogger: () => {
+                this.startLogger(message.params?.interval)
+            },
+            stopLogger: () => {
+                this.stopLogger()
+            },
+            moveApp: () => {
+                const params = message.params || {}
+
+                // Accumulate deltas — multiple messages between frames get batched
+                if (!this._pendingDelta) {
+                    this._pendingDelta = { deltaX: 0, deltaY: 0 }
+                }
+                this._pendingDelta.deltaX += params.deltaX || 0
+                this._pendingDelta.deltaY += params.deltaY || 0
+
+                if (this._moveRafId) return // rAF already scheduled
+
+                this._moveRafId = requestAnimationFrame(() => {
+                    this._moveRafId = null
+                    const delta = this._pendingDelta
+                    this._pendingDelta = null
+                    if (!delta) return
+
+                    const parent = this.iframe.parentElement
+                    if (!parent) return
+
+                    // Lazily initialise tracked position (one-time DOM read)
+                    if (!this._iframePos) {
+                        const parentRect = parent.getBoundingClientRect()
+                        const iframeRect =
+                            this.iframe.getBoundingClientRect()
+                        this._iframePos = {
+                            left: iframeRect.left - parentRect.left,
+                            top: iframeRect.top - parentRect.top,
+                            parentW: parentRect.width,
+                            parentH: parentRect.height,
+                            iframeW: iframeRect.width,
+                            iframeH: iframeRect.height,
+                        }
+                    }
+
+                    const pos = this._iframePos
+                    pos.left = Math.max(
+                        0,
+                        Math.min(
+                            pos.left + delta.deltaX,
+                            pos.parentW - pos.iframeW,
+                        ),
+                    )
+                    pos.top = Math.max(
+                        0,
+                        Math.min(
+                            pos.top + delta.deltaY,
+                            pos.parentH - pos.iframeH,
+                        ),
+                    )
+
+                    styleElement(this.iframe, {
+                        right: "",
+                        left: `${pos.left}px`,
+                        top: `${pos.top}px`,
+                    })
+                })
+            },
+            setAppMode: () => {
+                // Reset drag state
+                this._iframePos = null
+                this._pendingDelta = null
+                if (this._moveRafId) {
+                    cancelAnimationFrame(this._moveRafId)
+                    this._moveRafId = null
+                }
+                const params = message.params || {}
+                const closeBtn = this.doc?.getElementById("flobby-close-button")
+                const iframeDoc = this.doc
+                if (params.mode === "mini") {
+                    styleElement(this.iframe, {
+                        inset: "",
+                        position: "absolute",
+                        top: `${params.top}px`,
+                        right: `${params.right}px`,
+                        left: "",
+                        bottom: "",
+                        width: `${params.width}px`,
+                        height: `${params.height}px`,
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                        background: "transparent",
+                    })
+                    this.iframe.setAttribute("allowtransparency", "true")
+                    if (iframeDoc) {
+                        iframeDoc.documentElement.style.background =
+                            "transparent"
+                        iframeDoc.body.style.background = "transparent"
+                    }
+                    if (closeBtn) {
+                        closeBtn.style.display = "none"
+                    }
+                } else if (params.mode === "full") {
+                    styleElement(this.iframe, {
+                        inset: "0",
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        top: "0",
+                        left: "0",
+                        borderRadius: "0",
+                        overflow: "visible",
+                        background: "",
+                    })
+                    this.iframe.removeAttribute("allowtransparency")
+                    if (iframeDoc) {
+                        iframeDoc.documentElement.style.background = ""
+                        iframeDoc.body.style.background = ""
+                    }
+                    if (closeBtn) {
+                        closeBtn.style.display = ""
+                    }
+                }
             },
         }
 
