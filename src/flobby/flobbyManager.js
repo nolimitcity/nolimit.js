@@ -152,12 +152,6 @@ export class FlobbyManager {
             closeFlobby: () => {
                 this.hideApp()
             },
-            openUrl: () => {
-                const url = message.params?.url
-                if (url) {
-                    window.open(url, "_blank", "noopener")
-                }
-            },
             requestRefresh: () => {
                 console.log("[Flobby] Refresh requested")
             },
@@ -215,8 +209,7 @@ export class FlobbyManager {
                     // Lazily initialise tracked position (one-time DOM read)
                     if (!this._iframePos) {
                         const parentRect = parent.getBoundingClientRect()
-                        const iframeRect =
-                            this.iframe.getBoundingClientRect()
+                        const iframeRect = this.iframe.getBoundingClientRect()
                         this._iframePos = {
                             left: iframeRect.left - parentRect.left,
                             top: iframeRect.top - parentRect.top,
