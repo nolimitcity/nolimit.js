@@ -33,7 +33,7 @@ export async function createFlobbyIframe(gameIframe) {
     flobbyIframe.setAttribute("allow", "autoplay")
     flobbyIframe.setAttribute(
         "sandbox",
-        "allow-scripts allow-same-origin allow-forms",
+        "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox",
     )
     flobbyIframe.setAttribute("allowTransparency", "true")
     flobbyIframe.allowTransparency = true
