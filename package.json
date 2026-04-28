@@ -34,7 +34,7 @@
     "webpack-cli": "^7.0.2",
     "raw-loader": "^4.0.2",
     "replace": "^1.2.2",
-    "eslint": "^10.1.0",
+    "eslint": "^10.2.1",
     "jsdoc": "^4.0.5"
   }
 }
