@@ -17,12 +17,16 @@ export function waitForElement(selector, doc = document, timeout = 5000) {
 
         // If no root element to observe, reject immediately
         if (!doc.body && !doc.documentElement) {
-            return reject(new Error("[Flobby] Document has no body or documentElement"))
+            return reject(
+                new Error("[Flobby] Document has no body or documentElement"),
+            )
         }
 
         let timeoutId = null
         const observer = new MutationObserver(() => {
-            const element = isFunction ? selector() : doc.querySelector(selector)
+            const element = isFunction
+                ? selector()
+                : doc.querySelector(selector)
 
             if (element) {
                 observer.disconnect()
@@ -35,7 +39,7 @@ export function waitForElement(selector, doc = document, timeout = 5000) {
 
         observer.observe(doc.documentElement || doc.body, {
             childList: true,
-            subtree: true
+            subtree: true,
         })
 
         // Set timeout if specified

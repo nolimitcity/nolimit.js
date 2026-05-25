@@ -2,7 +2,7 @@ export function styleElement(element, styles) {
     if (!element || !styles) {
         return
     }
-    Object.keys(styles).forEach(property => {
+    for (const property of Object.keys(styles)) {
         element.style[property] = styles[property]
-    })
+    }
 }
