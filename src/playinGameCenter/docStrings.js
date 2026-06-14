@@ -10,7 +10,7 @@ export function getLaunchButtonDocString() {
                     pointer-events: auto;
                 }
 
-                .flobby-launch-button {
+                .playin-game-center-launch-button {
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
@@ -28,39 +28,39 @@ export function getLaunchButtonDocString() {
                     transition: border-color 0.2s;
                 }
 
-                .flobby-launch-button:active {
+                .playin-game-center-launch-button:active {
                     transform: scale(.98);
                 }
 
-                .flobby-launch-button[data-state="loading"] {
+                .playin-game-center-launch-button[data-state="loading"] {
                     cursor: wait;
                 }
 
-                .flobby-launch-button[data-state="ready"] {
+                .playin-game-center-launch-button[data-state="ready"] {
                     border-color: rgba(255,255,255,0.7);
                 }
 
-                .flobby-launch-button[data-state="error"] {
+                .playin-game-center-launch-button[data-state="error"] {
                     border-color: rgba(255,17,17,0.7);
                 }
 
-                .flobby-launch-button svg {
+                .playin-game-center-launch-button svg {
                     fill: #fff;
                 }
 
-                .flobby-icon {
+                .playin-game-center-icon {
                     display: block;
                 }
 
-                .flobby-spinner {
+                .playin-game-center-spinner {
                     display: none;
                 }
 
-                .flobby-launch-button[data-state="loading"] .flobby-icon {
+                .playin-game-center-launch-button[data-state="loading"] .playin-game-center-icon {
                     display: none;
                 }
 
-                .flobby-launch-button[data-state="loading"] .flobby-spinner {
+                .playin-game-center-launch-button[data-state="loading"] .playin-game-center-spinner {
                     display: block;
                     animation: spin 1s linear infinite;
                 }
@@ -72,14 +72,14 @@ export function getLaunchButtonDocString() {
             </style>
         </head>
         <body>
-            <button id="flobby-launch-button" class="flobby-launch-button" data-state="idle" title="Open Flobby">
-                <svg class="flobby-icon" xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 99 111">
+            <button id="playin-game-center-launch-button" class="playin-game-center-launch-button" data-state="idle" title="Open Playin Game Center">
+                <svg class="playin-game-center-icon" xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 99 111">
                     <g>
                         <path d="M17.8881 3.75972C15.4501 0.763694 12.5716 0 10.2805 0C8.66499 0 7.34321 0.381847 6.69701 0.61683C5.11087 1.17491 0 3.52474 0 10.1043V100.866C0 107.475 5.14025 109.796 6.69701 110.354C8.28314 110.912 13.7171 112.351 17.8881 107.211L45.6747 73.0503L54.7803 61.8298C57.7764 58.1582 57.7764 52.8124 54.7803 49.1114L17.8881 3.73035V3.75972Z"/>
                         <path d="M88.0304 0H78.8367C72.7272 0 67.7631 4.96401 67.7631 11.0736V62.1823C66.9701 64.7378 65.707 67.1463 63.9447 69.3199L54.8391 80.5404L53.3117 82.4202L68.3212 104.42C68.7031 104.949 69.1143 105.449 69.5549 105.918C71.5229 108.973 74.9595 111 78.8367 111H88.0304C94.1399 111 99.104 106.036 99.104 99.9264V11.0736C99.104 4.96401 94.1399 0 88.0304 0Z"/>
                     </g>
                 </svg>
-                <svg class="flobby-spinner" xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="playin-game-center-spinner" xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
                 </svg>
             </button>
@@ -87,13 +87,12 @@ export function getLaunchButtonDocString() {
     </html>`
 }
 
-export function getAppWrapperDocString(inlineCss = "") {
+export function getAppWrapperDocString() {
     return `<!doctype html>
         <html>
         <head>
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <style>${inlineCss}</style>
             <style>
                 *, *::before, *::after {
                     box-sizing: border-box;
@@ -120,7 +119,7 @@ export function getAppWrapperDocString(inlineCss = "") {
                     color-scheme: light only;
                 }
 
-                #flobby-root {
+                #playin-game-center-root {
                     position: relative;
                     width: 100%;
                     height: 100%;
@@ -129,7 +128,7 @@ export function getAppWrapperDocString(inlineCss = "") {
                     background: var(--background, #fff);
                 }
 
-                #flobby-close-button {
+                #playin-game-center-close-button {
                     position: fixed;
                     top: 8px;
                     right: 8px;
@@ -149,23 +148,23 @@ export function getAppWrapperDocString(inlineCss = "") {
                     pointer-events: auto;
                     transition: background-color 0.15s;
                 }
-                #flobby-close-button:hover {
+                #playin-game-center-close-button:hover {
                     background-color: #3b3b3b;
                     color: #fff;
                 }
-                #flobby-close-button:active {
+                #playin-game-center-close-button:active {
                     transform: scale(.98);
                 }
             </style>
             <script>
                 window.addEventListener("error", function(e) {
-                    console.error("[Flobby] Script error:", e.error || e.message, e.filename, e.lineno)
+                    console.error("[PlayinGameCenter] Script error:", e.error || e.message, e.filename, e.lineno)
                 })
             </script>
         </head>
         <body>
-            <div id="flobby-root"></div>
-            <button id="flobby-close-button" title="Close Flobby">✕</button>
+            <div id="playin-game-center-root"></div>
+            <button id="playin-game-center-close-button" title="Close Playin Game Center">✕</button>
         </body>
     </html>`
 }

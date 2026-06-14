@@ -1,10 +1,10 @@
-/**
- * @module nolimit
- */
-import { initFlobby } from "./flobby"
 import { loadInfo } from "./info"
 import { nolimitApiFactory } from "./nolimit-api"
 import nolimitCss from "./nolimit.css"
+/**
+ * @module nolimit
+ */
+import { initPlayinGameCenter } from "./playinGameCenter"
 
 const CDN = "https://{ENV}"
 const LOADER_URL =
@@ -17,10 +17,9 @@ const DEFAULT_OPTIONS = {
     environment: "partner",
     language: "en",
     "nolimit.js": __VERSION__,
-    flobbyCdn: "https://ccsqmvifdmwllajsrihc.supabase.co",
-    flobbyVersion: "latest",
-    flobbyEnv: "prod",
-    flobbyEnabled: true,
+    playinGameCenterCdn: "https://gc-cdn.playin.com",
+    playinGameCenterEnv: "prod",
+    playinGameCenterEnabled: true,
 }
 
 /**
@@ -68,10 +67,9 @@ let options = {}
  * @param {Boolean} [initOptions.depositEvent] instead of using URL, emit "deposit" event (see event documentation)
  * @param {Boolean} [initOptions.lobbyEvent] instead of using URL, emit "lobby" event (see event documentation) (mobile only)
  * @param {String}  [initOptions.accountHistoryUrl] URL to support page, if not using a target element
- * @param {Boolean} [initOptions.flobbyEnabled=true] enable or disable lobby event
- * @param {String}  [initOptions.flobbyEnv=prod] set to "prod" or "dev" to override the environment
- * @param {String}  [initOptions.flobbyVersion=latest] set to specific version (e.g v1.2.3) to override the default version.
- * @param {String}  [initOptions.flobbyCdn] set to override the default CDN URL
+ * @param {Boolean} [initOptions.playinGameCenterEnabled=true] enable or disable the PlayinGameCenter overlay
+ * @param {String}  [initOptions.playinGameCenterEnv=prod] internal/operator environment for PlayinGameCenter config (e.g. "prod", "partner", "test"). Deliberately decoupled from the game `environment`: a test game may run prod PlayinGameCenter config.
+ * @param {String}  [initOptions.playinGameCenterCdn] CloudFront base URL serving the PlayinGameCenter config endpoint and bundles
  *
  * @example
  * nolimit.init({
@@ -139,7 +137,7 @@ export function load(loadOptions) {
 
         return nolimitApiFactory(gameFrame, async () => {
             html(gameFrame.contentWindow, processedOptions)
-            await initFlobby(gameFrame, processedOptions)
+            await initPlayinGameCenter(gameFrame, processedOptions)
         })
     }
 

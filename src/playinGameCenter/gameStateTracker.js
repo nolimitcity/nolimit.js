@@ -1,13 +1,24 @@
+import { devLog } from "./log"
+
+const MAX_ROUNDS = 200
+
+function getRoundMultiplier(betAmount, winAmount) {
+    if (betAmount <= 0) {
+        return 0
+    }
+    return Math.round((winAmount / betAmount) * 100) / 100
+}
+
 export class GameStateTracker {
     /**
-     * @param {Function} sendFn - Called to send a JSON-RPC message to Flobby
+     * @param {Function} sendFn - Called to send a JSON-RPC message to PlayinGameCenter
      * @param {Function} onExternalLoaded - Called when the "loaded" external event fires
      */
     constructor(sendFn, onExternalLoaded, { operator, game, device } = {}) {
         this._sendFn = sendFn
         this._onExternalLoaded = onExternalLoaded
         this._device = device || "mobile"
-        this._storageKey = `${operator || "unknown"}.${game || "unknown"}.flobby_game_state`
+        this._storageKey = `${operator || "unknown"}.${game || "unknown"}.playin_game_center_game_state`
         this.gameInfo = null
         this._sessionStartTime = null
         this._currentRoundId = null
@@ -17,29 +28,44 @@ export class GameStateTracker {
         this._roundInProgress = false
         this._pendingRound = null
         this._rounds = []
+        this._persistScheduled = false
         this._restore()
     }
 
     _persist() {
-        try {
-            localStorage.setItem(
-                this._storageKey,
-                JSON.stringify({
-                    gameInfo: this.gameInfo,
-                    _currentRoundId: this._currentRoundId,
-                    _currency: this._currency,
-                    _lastBalance: this._lastBalance,
-                    _lastTotalCost: this._lastTotalCost,
-                    _rounds: this._rounds,
-                }),
-            )
-        } catch (_) {}
+        if (this._persistScheduled) {
+            return
+        }
+        this._persistScheduled = true
+        const flush = () => {
+            this._persistScheduled = false
+            try {
+                localStorage.setItem(
+                    this._storageKey,
+                    JSON.stringify({
+                        gameInfo: this.gameInfo,
+                        _currentRoundId: this._currentRoundId,
+                        _currency: this._currency,
+                        _lastBalance: this._lastBalance,
+                        _lastTotalCost: this._lastTotalCost,
+                        _rounds: this._rounds,
+                    }),
+                )
+            } catch (_) {}
+        }
+        if (typeof requestAnimationFrame === "function") {
+            requestAnimationFrame(flush)
+        } else {
+            setTimeout(flush, 0)
+        }
     }
 
     _restore() {
         try {
             const raw = localStorage.getItem(this._storageKey)
-            if (!raw) return
+            if (!raw) {
+                return
+            }
             const s = JSON.parse(raw)
             this.gameInfo = s.gameInfo ?? this.gameInfo
             this._currentRoundId = s._currentRoundId ?? this._currentRoundId
@@ -51,7 +77,7 @@ export class GameStateTracker {
     }
 
     forwardEvent(event, data) {
-        console.log("[Game Event]", event, data)
+        devLog("[Game Event]", event, data)
         const handlers = {
             info: () => {
                 this.gameInfo = { ...data, device: this._device }
@@ -90,12 +116,10 @@ export class GameStateTracker {
                     totalCost,
                     winAmount: pending.winAmount,
                     netResult: pending.winAmount - totalCost,
-                    winMultiplier:
-                        pending.betAmount > 0
-                            ? Math.round(
-                                  (pending.winAmount / pending.betAmount) * 100,
-                              ) / 100
-                            : 0,
+                    winMultiplier: getRoundMultiplier(
+                        pending.betAmount,
+                        pending.winAmount,
+                    ),
                     balanceStart: pending.balanceStart,
                     balanceEnd: this._lastBalance,
                     currency: this._currency?.code || "USD",
@@ -111,8 +135,8 @@ export class GameStateTracker {
                 }
 
                 this._rounds.push(round)
-                if (this._rounds.length > 1000) {
-                    this._rounds = this._rounds.slice(-1000)
+                if (this._rounds.length > MAX_ROUNDS) {
+                    this._rounds = this._rounds.slice(-MAX_ROUNDS)
                 }
 
                 this._pendingRound = null
@@ -221,7 +245,7 @@ export class GameStateTracker {
 
     /**
      * Returns an array of JSON-RPC messages representing current state,
-     * for replay when Flobby reconnects.
+     * for replay when PlayinGameCenter reconnects.
      */
     getPendingState() {
         const messages = []

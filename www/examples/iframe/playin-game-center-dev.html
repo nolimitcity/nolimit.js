@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Flobby Dev – nolimit.js integration</title>
+    <title>PlayinGameCenter Dev – nolimit.js integration</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; }
         body {
@@ -189,7 +189,7 @@
     </style>
 </head>
 <body>
-    <!-- Left: Game + Flobby rendered by nolimit.js -->
+    <!-- Left: Game + PlayinGameCenter rendered by nolimit.js -->
     <div id="game-area">
         <div id="phone-frame">
             <div id="game-target"></div>
@@ -203,8 +203,8 @@
             <span id="status-game">Game not started</span>
         </div>
         <div class="panel-header">
-            <span class="dot" id="dot-flobby"></span>
-            <span id="status-flobby">Flobby not loaded</span>
+            <span class="dot" id="dot-playinGameCenter"></span>
+            <span id="status-playinGameCenter">PlayinGameCenter not loaded</span>
         </div>
 
         <div class="section">
@@ -212,30 +212,30 @@
             <div class="btn-grid">
                 <button class="rpc" id="btn-desktop">Desktop</button>
                 <button class="rpc" id="btn-rotate">Rotate</button>
-                <button class="rpc" id="btn-open" disabled>Open Flobby</button>
-                <button class="rpc" id="btn-preload" disabled>Preload Flobby</button>
+                <button class="rpc" id="btn-open" disabled>Open Playin Game Center</button>
+                <button class="rpc" id="btn-preload" disabled>Preload PlayinGameCenter</button>
                 <button class="rpc" id="btn-logger" disabled>logger()</button>
                 <button class="rpc" id="btn-start-logger" disabled>startLogger()</button>
                 <button class="rpc" id="btn-stop-logger" disabled>stopLogger()</button>
             </div>
             <p class="hint" style="margin-top:8px;">
                 Also available in console:<br>
-                <code>FlobbyManager.logger()</code>
-                <code>FlobbyManager.startLogger(10000)</code>
-                <code>FlobbyManager.stopLogger()</code>
+                <code>PlayinGameCenterManager.logger()</code>
+                <code>PlayinGameCenterManager.startLogger(10000)</code>
+                <code>PlayinGameCenterManager.stopLogger()</code>
             </p>
         </div>
 
         <div class="section">
-            <h3>JSON-RPC 2.0 &rarr; Flobby</h3>
+            <h3>JSON-RPC 2.0 &rarr; PlayinGameCenter</h3>
             <div class="btn-grid">
                 <button class="rpc" id="btn-version" disabled>sendVersion()</button>
                 <button class="rpc" id="btn-echo" disabled>sendEcho()</button>
             </div>
             <p class="hint" style="margin-top:8px;">
                 Also available in console:<br>
-                <code>FlobbyManager.sendVersion()</code><br>
-                <code>FlobbyManager.sendEcho()</code>
+                <code>PlayinGameCenterManager.sendVersion()</code><br>
+                <code>PlayinGameCenterManager.sendEcho()</code>
             </p>
         </div>
 
@@ -254,9 +254,9 @@
     <script>
         const logEl = document.getElementById("log");
         const dotGame = document.getElementById("dot-game");
-        const dotFlobby = document.getElementById("dot-flobby");
+        const dotPlayinGameCenter = document.getElementById("dot-playinGameCenter");
         const statusGame = document.getElementById("status-game");
-        const statusFlobby = document.getElementById("status-flobby");
+        const statusPlayinGameCenter = document.getElementById("status-playinGameCenter");
 
         // ---- Logging ----
         function ts() { return new Date().toLocaleTimeString("en-GB", { hour12: false }); }
@@ -294,11 +294,11 @@
 
         document.getElementById("btn-clear").addEventListener("click", () => { logEl.innerHTML = ""; });
 
-        // ---- Intercept [Flobby] console.logs ----
+        // ---- Intercept [PlayinGameCenter] console.logs ----
         const origLog = console.log;
         console.log = function(...args) {
             origLog.apply(console, args);
-            if (typeof args[0] === "string" && args[0].startsWith("[Flobby]")) {
+            if (typeof args[0] === "string" && args[0].startsWith("[PlayinGameCenter]")) {
                 sysLog(args.map(a => typeof a === "object" ? JSON.stringify(a) : String(a)).join(" "));
             }
         };
@@ -306,10 +306,15 @@
         // ---- nolimit.js setup ----
         sysLog("nolimit.js v" + nolimit.version + " loaded");
 
+        // Point Playin Game Center at a locally-running jinx (mock-backed config service).
+        // Overridable via URL params: ?operator=comeon&pgcCdn=http://localhost:4000&pgcEnv=test
+        const pgcParams = new URLSearchParams(location.search);
         nolimit.init({
-            operator: "FAKE1",
+            operator: pgcParams.get("operator") || "FAKE1",
             mute: true,
             environment: "test",
+            playinGameCenterCdn: pgcParams.get("pgcCdn") || "http://localhost:4000",
+            playinGameCenterEnv: pgcParams.get("pgcEnv") || "test",
         });
 
         // ---- Auto-start game (read device from URL, default mobile) ----
@@ -337,17 +342,17 @@
             sysLog("Game is ready");
         });
 
-        // Poll for FlobbyManager
-        const flobbyPoll = setInterval(() => {
-            if (window.FlobbyManager) {
-                clearInterval(flobbyPoll);
-                onFlobbyManagerReady();
+        // Poll for PlayinGameCenterManager
+        const playinGameCenterPoll = setInterval(() => {
+            if (window.PlayinGameCenterManager) {
+                clearInterval(playinGameCenterPoll);
+                onPlayinGameCenterManagerReady();
             }
         }, 200);
 
-        // ---- Once FlobbyManager exists ----
-        function onFlobbyManagerReady() {
-            sysLog("FlobbyManager available on window");
+        // ---- Once PlayinGameCenterManager exists ----
+        function onPlayinGameCenterManagerReady() {
+            sysLog("PlayinGameCenterManager available on window");
             document.getElementById("btn-preload").disabled = false;
             document.getElementById("btn-open").disabled = false;
             document.getElementById("btn-logger").disabled = false;
@@ -355,8 +360,8 @@
             document.getElementById("btn-stop-logger").disabled = false;
 
             // Patch the message port listener to also log to our panel
-            const orig_handleJsonRpc = window.FlobbyManager._handleJsonRpc.bind(window.FlobbyManager);
-            window.FlobbyManager._handleJsonRpc = function(message) {
+            const orig_handleJsonRpc = window.PlayinGameCenterManager._handleJsonRpc.bind(window.PlayinGameCenterManager);
+            window.PlayinGameCenterManager._handleJsonRpc = function(message) {
                 if ("result" in message || "error" in message) {
                     msgLog("r", message);
                 } else {
@@ -365,21 +370,21 @@
                 return orig_handleJsonRpc(message);
             };
 
-            // Poll for flobby ready
+            // Poll for playinGameCenter ready
             const readyPoll = setInterval(() => {
-                if (window.FlobbyManager.isFlobbyReady) {
+                if (window.PlayinGameCenterManager.isPlayinGameCenterReady) {
                     clearInterval(readyPoll);
-                    onFlobbyReady();
+                    onPlayinGameCenterReady();
                 }
             }, 200);
         }
 
-        function onFlobbyReady() {
-            dotFlobby.classList.add("ready");
-            statusFlobby.textContent = "Flobby connected";
+        function onPlayinGameCenterReady() {
+            dotPlayinGameCenter.classList.add("ready");
+            statusPlayinGameCenter.textContent = "PlayinGameCenter connected";
             document.getElementById("btn-version").disabled = false;
             document.getElementById("btn-echo").disabled = false;
-            sysLog("Flobby is ready — JSON-RPC enabled");
+            sysLog("PlayinGameCenter is ready — JSON-RPC enabled");
         }
 
         // ---- Buttons ----
@@ -404,56 +409,56 @@
         });
 
         document.getElementById("btn-preload").addEventListener("click", () => {
-            if (!window.FlobbyManager) return;
-            sysLog("Preloading Flobby assets...");
-            window.FlobbyManager.preload();
+            if (!window.PlayinGameCenterManager) return;
+            sysLog("Preloading PlayinGameCenter assets...");
+            window.PlayinGameCenterManager.preload();
         });
 
         document.getElementById("btn-open").addEventListener("click", () => {
-            if (!window.FlobbyManager) return;
-            if (window.FlobbyManager.preloadState === "ready") {
-                window.FlobbyManager.showApp();
-                sysLog("Flobby opened");
+            if (!window.PlayinGameCenterManager) return;
+            if (window.PlayinGameCenterManager.preloadState === "ready") {
+                window.PlayinGameCenterManager.showApp();
+                sysLog("PlayinGameCenter opened");
             } else {
                 sysLog("Preloading first, then opening...");
-                window.FlobbyManager.preload().then(() => {
-                    window.FlobbyManager.showApp();
-                    sysLog("Flobby opened");
+                window.PlayinGameCenterManager.preload().then(() => {
+                    window.PlayinGameCenterManager.showApp();
+                    sysLog("PlayinGameCenter opened");
                 });
             }
         });
 
         document.getElementById("btn-logger").addEventListener("click", () => {
-            if (!window.FlobbyManager) return;
-            sysLog("Run Flobby logger once.");
-            window.FlobbyManager.logger();
+            if (!window.PlayinGameCenterManager) return;
+            sysLog("Run PlayinGameCenter logger once.");
+            window.PlayinGameCenterManager.logger();
         });
 
         document.getElementById("btn-start-logger").addEventListener("click", () => {
-            if (!window.FlobbyManager) return;
-            sysLog("Start Flobby logger...");
-            window.FlobbyManager.startLogger(5000);
+            if (!window.PlayinGameCenterManager) return;
+            sysLog("Start PlayinGameCenter logger...");
+            window.PlayinGameCenterManager.startLogger(5000);
         });
 
         document.getElementById("btn-stop-logger").addEventListener("click", () => {
-            if (!window.FlobbyManager) return;
-            sysLog("Stop Flobby logger...");
-            window.FlobbyManager.stopLogger();
+            if (!window.PlayinGameCenterManager) return;
+            sysLog("Stop PlayinGameCenter logger...");
+            window.PlayinGameCenterManager.stopLogger();
         });
 
         document.getElementById("btn-version").addEventListener("click", () => {
-            if (!window.FlobbyManager) return;
-            window.FlobbyManager.sendVersion();
+            if (!window.PlayinGameCenterManager) return;
+            window.PlayinGameCenterManager.sendVersion();
             // Log the sent message
             msgLog("s", {
                 jsonrpc: "2.0", method: "version",
-                params: { version: window.FlobbyManager.config.version },
+                params: { version: window.PlayinGameCenterManager.config.version },
             });
         });
 
         document.getElementById("btn-echo").addEventListener("click", () => {
-            if (!window.FlobbyManager) return;
-            window.FlobbyManager.sendEcho();
+            if (!window.PlayinGameCenterManager) return;
+            window.PlayinGameCenterManager.sendEcho();
             msgLog("s", {
                 jsonrpc: "2.0", method: "echo",
                 params: { message: "Hello from nolimit.js!" },

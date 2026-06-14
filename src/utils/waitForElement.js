@@ -18,7 +18,9 @@ export function waitForElement(selector, doc = document, timeout = 5000) {
         // If no root element to observe, reject immediately
         if (!doc.body && !doc.documentElement) {
             return reject(
-                new Error("[Flobby] Document has no body or documentElement"),
+                new Error(
+                    "[PlayinGameCenter] Document has no body or documentElement",
+                ),
             )
         }
 

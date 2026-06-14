@@ -15,5 +15,7 @@ export const fetchRetry = async (input, init) => {
             retryLeft -= 1
         }
     }
-    throw new Error("[Flobby] Failed to load flobby - max retries")
+    throw new Error(
+        "[PlayinGameCenter] Failed to load playinGameCenter - max retries",
+    )
 }

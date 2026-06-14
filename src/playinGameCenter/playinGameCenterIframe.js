@@ -2,24 +2,26 @@ import { styleElement } from "../utils/styleElement"
 import { waitForBody } from "../utils/waitForElement"
 
 /**
- * Creates a nested Flobby iframe inside the game iframes body.
+ * Creates a nested PlayinGameCenter iframe inside the game iframes body.
  *
  * @param {HTMLIFrameElement} gameIframe - The game iframe element
  * @returns {Promise<{iframe: HTMLIFrameElement, gameWindow: Window}|null>}
  */
-export async function createFlobbyIframe(gameIframe) {
+export async function createPlayinGameCenterIframe(gameIframe) {
     const gameDoc =
         gameIframe.contentDocument || gameIframe.contentWindow?.document
 
     if (!gameDoc) {
-        console.error("[Flobby] Cannot access game iframe document")
+        console.error("[PlayinGameCenter] Cannot access game iframe document")
         return null
     }
 
     const body = await waitForBody(gameDoc, 5000)
 
     if (!body) {
-        console.error("[Flobby] Timeout waiting for game body to load")
+        console.error(
+            "[PlayinGameCenter] Timeout waiting for game body to load",
+        )
         return null
     }
 
@@ -27,18 +29,18 @@ export async function createFlobbyIframe(gameIframe) {
         body.style.position = "relative"
     }
 
-    const flobbyIframe = gameDoc.createElement("iframe")
-    flobbyIframe.title = "Flobby"
-    flobbyIframe.setAttribute("frameBorder", "0")
-    flobbyIframe.setAttribute("allow", "autoplay")
-    flobbyIframe.setAttribute(
+    const playinGameCenterIframe = gameDoc.createElement("iframe")
+    playinGameCenterIframe.title = "Playin Game Center"
+    playinGameCenterIframe.setAttribute("frameBorder", "0")
+    playinGameCenterIframe.setAttribute("allow", "autoplay")
+    playinGameCenterIframe.setAttribute(
         "sandbox",
         "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox",
     )
-    flobbyIframe.setAttribute("allowTransparency", "true")
-    flobbyIframe.allowTransparency = true
+    playinGameCenterIframe.setAttribute("allowTransparency", "true")
+    playinGameCenterIframe.allowTransparency = true
 
-    styleElement(flobbyIframe, {
+    styleElement(playinGameCenterIframe, {
         position: "absolute",
         top: "0px",
         left: "0px",
@@ -49,7 +51,10 @@ export async function createFlobbyIframe(gameIframe) {
         zIndex: "2147483648",
     })
 
-    body.appendChild(flobbyIframe)
+    body.appendChild(playinGameCenterIframe)
 
-    return { iframe: flobbyIframe, gameWindow: gameIframe.contentWindow }
+    return {
+        iframe: playinGameCenterIframe,
+        gameWindow: gameIframe.contentWindow,
+    }
 }

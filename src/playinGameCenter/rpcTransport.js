@@ -46,13 +46,15 @@ export class RpcTransport {
     }
 
     /**
-     * Transfers port2 to the Flobby iframe window for private communication.
+     * Transfers port2 to the PlayinGameCenter iframe window for private communication.
      */
     sendPort(targetWindow) {
         if (targetWindow && this._channel) {
-            targetWindow.postMessage({ type: "__FLOBBY_PORT__" }, "*", [
-                this._channel.port2,
-            ])
+            targetWindow.postMessage(
+                { type: "__PLAYIN_GAME_CENTER_PORT__" },
+                "*",
+                [this._channel.port2],
+            )
         }
     }
 

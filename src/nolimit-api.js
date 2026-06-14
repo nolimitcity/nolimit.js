@@ -1,4 +1,4 @@
-import { getFlobbyInstance } from "./flobby"
+import { getPlayinGameCenterInstance } from "./playinGameCenter"
 
 export function nolimitApiFactory(target, onload) {
     const listeners = {}
@@ -81,8 +81,8 @@ export function nolimitApiFactory(target, onload) {
             unhandledEvents[event].push(data)
         }
 
-        const flobby = getFlobbyInstance()
-        flobby?.forwardEvent(event, data)
+        const playinGameCenter = getPlayinGameCenterInstance()
+        playinGameCenter?.forwardEvent(event, data)
     }
 
     function on(event, callback) {
