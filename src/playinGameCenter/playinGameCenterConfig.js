@@ -2,7 +2,9 @@ import { devLog } from "./log"
 
 const CONFIG_PATH = "/api/v1/playin-game-center/config"
 const FETCH_TIMEOUT_MS = 2500
-const CACHE_FRESHNESS_MS = 60 * 60 * 1000 // 1h
+// Freshness is server-controlled via the response `maxAge` (seconds). This constant is only the
+// floor used when a cached config predates that field or omits it; it matches the edge TTL.
+const DEFAULT_FRESHNESS_SECONDS = 60
 
 // Absolute worst case: silently off. The loader carries this bundled default so a
 // failed config (and a stale/absent cache) can never produce a broken overlay - only
@@ -13,13 +15,18 @@ function getConfigUrl(options) {
     const base = (options.playinGameCenterCdn || "").replace(/\/+$/, "")
     const params = new URLSearchParams({
         operator: options.operator || "",
-        env: options.playinGameCenterEnv || "prod",
+        pgcEnv: options.playinGameCenterEnv || "prod",
+        platformEnv: options.playinGameCenterPlatformEnv || "production",
     })
     if (options.game) {
         params.set("game", options.game)
     }
-    if (options.device) {
-        params.set("device", options.device)
+
+    if (options.jurisdiction?.name) {
+        params.set("jurisdiction", options.jurisdiction.name)
+    }
+    if (options.language) {
+        params.set("language", options.language)
     }
     const njs = options["nolimit.js"]
     if (njs) {
@@ -29,7 +36,15 @@ function getConfigUrl(options) {
 }
 
 function cacheKey(options) {
-    return `playinGameCenter.config.${options.operator || "?"}.${options.game || "?"}.${options.device || "?"}.${options.playinGameCenterEnv || "prod"}`
+    return [
+        "playinGameCenter.config",
+        options.operator || "?",
+        options.game || "?",
+        options.playinGameCenterEnv || "prod",
+        options.playinGameCenterPlatformEnv || "production",
+        options.jurisdiction?.name || "?",
+        options.language || "?",
+    ].join(".")
 }
 
 function readCache(options) {
@@ -39,11 +54,15 @@ function readCache(options) {
             return null
         }
         const { config, ts } = JSON.parse(raw)
-        if (
-            !config ||
-            typeof ts !== "number" ||
-            Date.now() - ts > CACHE_FRESHNESS_MS
-        ) {
+        if (!config || typeof ts !== "number") {
+            return null
+        }
+
+        const maxAgeSeconds =
+            typeof config.maxAge === "number"
+                ? config.maxAge
+                : DEFAULT_FRESHNESS_SECONDS
+        if (Date.now() - ts > maxAgeSeconds * 1000) {
             return null
         }
         return config
@@ -69,7 +88,7 @@ function writeCache(options, config) {
  * cache; the cache is only consulted on failure. This is safe because bundle
  * URLs are immutable and versioned, so a cached `script` URL is always still valid.
  *
- * @param {Object} options - resolved loader options (operator, game, device, playinGameCenterCdn, playinGameCenterEnv, "nolimit.js")
+ * @param {Object} options - resolved loader options (operator, game, playinGameCenterCdn, playinGameCenterEnv, playinGameCenterPlatformEnv, jurisdiction, language, "nolimit.js")
  * @returns {Promise<Object>} resolved config object (always an object, possibly { enabled: false })
  */
 export async function getPlayinGameCenterConfig(options) {

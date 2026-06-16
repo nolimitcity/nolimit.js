@@ -19,6 +19,7 @@ const DEFAULT_OPTIONS = {
     "nolimit.js": __VERSION__,
     playinGameCenterCdn: "https://gc-cdn.playin.com",
     playinGameCenterEnv: "prod",
+    playinGameCenterPlatformEnv: "production",
     playinGameCenterEnabled: true,
 }
 
@@ -68,7 +69,8 @@ let options = {}
  * @param {Boolean} [initOptions.lobbyEvent] instead of using URL, emit "lobby" event (see event documentation) (mobile only)
  * @param {String}  [initOptions.accountHistoryUrl] URL to support page, if not using a target element
  * @param {Boolean} [initOptions.playinGameCenterEnabled=true] enable or disable the PlayinGameCenter overlay
- * @param {String}  [initOptions.playinGameCenterEnv=prod] internal/operator environment for PlayinGameCenter config (e.g. "prod", "partner", "test"). Deliberately decoupled from the game `environment`: a test game may run prod PlayinGameCenter config.
+ * @param {String}  [initOptions.playinGameCenterEnv=prod] config/deploy lane for PlayinGameCenter config (the `pgcEnv`: "dev", "test" or "prod"). Selects which slice of the contract is read. Deliberately decoupled from the game `environment`: a test game may run promoted prod PlayinGameCenter config.
+ * @param {String}  [initOptions.playinGameCenterPlatformEnv=production] NLC platform backend the game runs against (the `platformEnv`: "production", "cert", "demo" or "test"). A targeting dimension for PlayinGameCenter config.
  * @param {String}  [initOptions.playinGameCenterCdn] CloudFront base URL serving the PlayinGameCenter config endpoint and bundles
  *
  * @example

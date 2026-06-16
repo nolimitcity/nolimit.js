@@ -302,3 +302,31 @@ div.game, iframe.game {...}
 
 .game {...}
 ```
+
+## Local development with Playin Game Center
+
+To run **nolimit.js** and the **playin-game-center** overlay in dev mode
+together which is driven from the `playin-game-center` repo, it expects `nolimit.js`
+checked out alongside it at `../nolimit.js`.
+
+So, on your machine have the repos:
+`/p/nolimit.js`
+`/p/playin-game-center`
+
+```bash
+# in /playin-game-center, one-time setup:
+pnpm install
+ln -s "$(cd ../nolimit.js && pwd)/dist/nolimit-latest.js" public/nolimit.js   # serve the live nolimit.js build at /nolimit.js
+
+# in playin-game-center, start everything in one terminal:
+pnpm dev:all     # build+watch nolimit.js (../nolimit.js), watch-build the overlay, serve Vite on :3000
+
+open http://localhost:3000/dev-mode.html   # game + overlay + JSON-RPC dev controls
+```
+
+Only touching nolimit.js? Run its watcher on its own instead:
+
+```bash
+# in /nolimit.js
+npm run dev      # webpack --watch, rebuilds dist/nolimit-latest.js on every change
+```

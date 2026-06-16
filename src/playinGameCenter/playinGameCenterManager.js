@@ -84,7 +84,13 @@ export class PlayinGameCenterManager {
                 return
             }
 
-            this.appConfig = config.app || {}
+            // Forward the opaque `app` blob plus the resolved per-feature objects. jinx now emits
+            // `features` as a sibling of `app` (each feature: { enabled, ...settings }); the overlay
+            // consumes that shape over the `appConfig` RPC.
+            this.appConfig = {
+                ...(config.app || {}),
+                features: config.features || {},
+            }
 
             const result = await createPlayinGameCenterIframe(this.gameIframe)
             if (!result) {
