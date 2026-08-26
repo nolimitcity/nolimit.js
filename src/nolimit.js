@@ -6,7 +6,7 @@ import {loadInfo} from './info';
 import nolimitCss from './nolimit.css';
 
 const CDN = 'https://{ENV}';
-const LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}';
+const LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}&provider={PROVIDER}';
 const REPLACE_URL = '{CDN}/loader/game-loader.html?{QUERY}';
 const GAMES_URL = '{CDN}/games';
 
@@ -290,7 +290,8 @@ function html(contentWindow, htmlOptions) {
         .replace('{DEVICE}', htmlOptions.device)
         .replace('{OPERATOR}', htmlOptions.operator)
         .replace('{GAME}', htmlOptions.game)
-        .replace('{LANGUAGE}', htmlOptions.language);
+        .replace('{LANGUAGE}', htmlOptions.language)
+        .replace('{PROVIDER}', htmlOptions.provider || 'nlc');
 
     document.body.innerHTML = '';
 
