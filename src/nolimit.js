@@ -47,6 +47,7 @@ let options = {}
  * @param {Boolean} [initOptions.mute=false] start the game without sound
  * @param {Boolean} [initOptions.hideCurrency] hide currency symbols/codes in the game
  * @param {String}  [initOptions.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
+ * @param {String}  [initOptions.skinId=default] load the game with an alternative skin (asset set), for example a seasonal or operator-branded look. Passed through untouched to the game, which must ship assets for that skin. Omit to get 'default', the game's standard look.
  * @param {Object}  [initOptions.jurisdiction] force a specific jurisdiction to enforce specific license requirements and set specific options and overrides. See README for jurisdiction-specific details.
  * @param {Object}  [initOptions.jurisdiction.name] the name of the jurisdiction, for example "MT", "DK", "LV", "RO", "UKGC", "PT", "ES", "IT" or "SE".
  * @param {Object}  [initOptions.realityCheck] set options for reality check. See README for more details.
@@ -278,6 +279,7 @@ function setupViewport(head) {
 function processOptions(optionsToProcess) {
     optionsToProcess.device = optionsToProcess.device.toLowerCase()
     optionsToProcess.mute = optionsToProcess.mute || false
+    optionsToProcess.skinId = optionsToProcess.skinId || "default"
     let environment = optionsToProcess.environment.toLowerCase()
     if (environment.indexOf(".") === -1) {
         environment += ".nolimitcdn.com"

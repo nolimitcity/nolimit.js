@@ -308,6 +308,7 @@
 
         // Point Playin Game Center at a locally-running jinx (mock-backed config service).
         // Overridable via URL params: ?operator=comeon&pgcCdn=http://localhost:4000&pgcEnv=test
+        // Add &skinId=<id> to load the game with an alternative skin.
         const pgcParams = new URLSearchParams(location.search);
         nolimit.init({
             operator: pgcParams.get("operator") || "FAKE1",
@@ -332,6 +333,7 @@
             target: document.getElementById("game-target"),
             game: "Seamen",
             device: currentDevice,
+            skinId: params.get("skinId") || undefined,
         });
 
         dotGame.classList.add("ready");

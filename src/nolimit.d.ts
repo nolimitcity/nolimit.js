@@ -21,6 +21,7 @@ declare namespace nolimit {
         mute?: boolean;
         version?: string;
         hideCurrency?: boolean;
+        skinId?: string;
         lobbyUrl?: string;
         depositUrl?: string;
         supportUrl?: string;
@@ -40,6 +41,7 @@ declare namespace nolimit {
         mute?: boolean;
         version?: string;
         hideCurrency?: boolean;
+        skinId?: string;
     }
 
     export interface ReplaceOptions {
@@ -54,6 +56,7 @@ declare namespace nolimit {
         mute?: boolean;
         version?: string;
         hideCurrency?: boolean;
+        skinId?: string;
         lobbyUrl?: string;
         depositUrl?: string;
         supportUrl?: string;
