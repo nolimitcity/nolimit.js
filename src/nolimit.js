@@ -1,31 +1,37 @@
+import { loadInfo } from "./info"
+import { nolimitApiFactory } from "./nolimit-api"
+import nolimitCss from "./nolimit.css"
 /**
  * @module nolimit
  */
-import {nolimitApiFactory} from './nolimit-api';
-import {loadInfo} from './info';
-import nolimitCss from './nolimit.css';
+import { initPlayinGameCenter } from "./playinGameCenter"
 
-const CDN = 'https://{ENV}';
-const LOADER_URL = '{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}&provider={PROVIDER}';
-const REPLACE_URL = '{CDN}/loader/game-loader.html?{QUERY}';
-const GAMES_URL = '{CDN}/games';
+const CDN = "https://{ENV}"
+const LOADER_URL =
+    "{CDN}/loader/loader-{DEVICE}.html?operator={OPERATOR}&game={GAME}&language={LANGUAGE}&provider={PROVIDER}"
+const REPLACE_URL = "{CDN}/loader/game-loader.html?{QUERY}"
+const GAMES_URL = "{CDN}/games"
 
 const DEFAULT_OPTIONS = {
-    device: 'desktop',
-    environment: 'partner',
-    language: 'en',
-    'nolimit.js': __VERSION__
-};
+    device: "desktop",
+    environment: "partner",
+    language: "en",
+    "nolimit.js": __VERSION__,
+    playinGameCenterCdn: "https://gc-cdn.playin.com",
+    playinGameCenterEnv: "prod",
+    playinGameCenterPlatformEnv: "production",
+    playinGameCenterEnabled: true,
+}
 
 /**
  * @property {String} version current version of nolimit.js
  */
-export const version = __VERSION__;
+export const version = __VERSION__
 
 /**
  * @property {Object} options current options used
  */
-let options = {};
+let options = {}
 
 /**
  * Initialize loader with default parameters. Can be skipped if the parameters are included in the call to load instead.
@@ -41,6 +47,7 @@ let options = {};
  * @param {Boolean} [initOptions.mute=false] start the game without sound
  * @param {Boolean} [initOptions.hideCurrency] hide currency symbols/codes in the game
  * @param {String}  [initOptions.quality] force asset quality. Possible values are 'high', 'medium', 'low'. Defaults to smart loading in each game.
+ * @param {String}  [initOptions.skinId=default] load the game with an alternative skin (asset set), for example a seasonal or operator-branded look. Passed through untouched to the game, which must ship assets for that skin. Omit to get 'default', the game's standard look.
  * @param {Object}  [initOptions.jurisdiction] force a specific jurisdiction to enforce specific license requirements and set specific options and overrides. See README for jurisdiction-specific details.
  * @param {Object}  [initOptions.jurisdiction.name] the name of the jurisdiction, for example "MT", "DK", "LV", "RO", "UKGC", "PT", "ES", "IT" or "SE".
  * @param {Object}  [initOptions.realityCheck] set options for reality check. See README for more details.
@@ -62,6 +69,10 @@ let options = {};
  * @param {Boolean} [initOptions.depositEvent] instead of using URL, emit "deposit" event (see event documentation)
  * @param {Boolean} [initOptions.lobbyEvent] instead of using URL, emit "lobby" event (see event documentation) (mobile only)
  * @param {String}  [initOptions.accountHistoryUrl] URL to support page, if not using a target element
+ * @param {Boolean} [initOptions.playinGameCenterEnabled=true] enable or disable the PlayinGameCenter overlay
+ * @param {String}  [initOptions.playinGameCenterEnv=prod] config/deploy lane for PlayinGameCenter config (the `pgcEnv`: "dev", "test" or "prod"). Selects which slice of the contract is read. Deliberately decoupled from the game `environment`: a test game may run promoted prod PlayinGameCenter config.
+ * @param {String}  [initOptions.playinGameCenterPlatformEnv=production] NLC platform backend the game runs against (the `platformEnv`: "production", "cert", "demo" or "test"). A targeting dimension for PlayinGameCenter config.
+ * @param {String}  [initOptions.playinGameCenterCdn] CloudFront base URL serving the PlayinGameCenter config endpoint and bundles
  *
  * @example
  * nolimit.init({
@@ -79,7 +90,7 @@ let options = {};
  * });
  */
 export function init(initOptions) {
-    options = window.nolimit.options = initOptions;
+    options = window.nolimit.options = initOptions
 }
 
 /**
@@ -107,24 +118,33 @@ export function init(initOptions) {
  * });
  */
 export function load(loadOptions) {
-    loadOptions = processOptions(mergeOptions(options, loadOptions));
+    const processedOptions = processOptions(mergeOptions(options, loadOptions))
 
-    let target = loadOptions.target || window;
+    let target = processedOptions.target || window
 
     if (target.Window && target instanceof target.Window) {
-        target = document.createElement('div');
-        target.setAttribute('style', 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;');
-        document.body.appendChild(target);
+        target = document.createElement("div")
+        target.setAttribute(
+            "style",
+            "position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;",
+        )
+        document.body.appendChild(target)
     }
 
-    if (target.ownerDocument && target instanceof target.ownerDocument.defaultView.HTMLElement) {
-        const iframe = makeIframe(target);
-        target.parentNode.replaceChild(iframe, target);
+    if (
+        target.ownerDocument &&
+        target instanceof target.ownerDocument.defaultView.HTMLElement
+    ) {
+        const gameFrame = makeIframe(target)
+        target.parentNode.replaceChild(gameFrame, target)
 
-        return nolimitApiFactory(iframe, () => html(iframe.contentWindow, loadOptions));
-    } else {
-        throw 'Invalid option target: ' + target;
+        return nolimitApiFactory(gameFrame, async () => {
+            html(gameFrame.contentWindow, processedOptions)
+            await initPlayinGameCenter(gameFrame, processedOptions)
+        })
     }
+
+    throw `Invalid option target: ${target}`
 }
 
 /**
@@ -145,12 +165,9 @@ export function load(loadOptions) {
  * });
  */
 export function replace(replaceOptions) {
-    location.href = url(replaceOptions);
-
-    function noop() {
-    }
-
-    return {on: noop, call: noop};
+    location.href = url(replaceOptions)
+    const noop = () => {}
+    return { on: noop, call: noop }
 }
 
 /**
@@ -161,10 +178,11 @@ export function replace(replaceOptions) {
  * @return {string}
  */
 export function url(urlOptions) {
-    const gameOptions = processOptions(mergeOptions(options, urlOptions));
-    return REPLACE_URL
-        .replace('{CDN}', gameOptions.cdn)
-        .replace('{QUERY}', makeQueryString(gameOptions));
+    const gameOptions = processOptions(mergeOptions(options, urlOptions))
+    return REPLACE_URL.replace("{CDN}", gameOptions.cdn).replace(
+        "{QUERY}",
+        makeQueryString(gameOptions),
+    )
 }
 
 /**
@@ -185,167 +203,187 @@ export function url(urlOptions) {
  * });
  */
 export function info(infoOptions, callback) {
-    infoOptions = processOptions(mergeOptions(options, infoOptions));
-    loadInfo(infoOptions, callback);
+    const processedOptions = processOptions(mergeOptions(options, infoOptions))
+    loadInfo(processedOptions, callback)
 }
 
 function makeQueryString(makeQueryStringOptions) {
-    const query = [];
-    for (let key in makeQueryStringOptions) {
-        let value = makeQueryStringOptions[key];
-        if (typeof value === 'undefined') {
-            continue;
+    const query = []
+    for (const key in makeQueryStringOptions) {
+        let value = makeQueryStringOptions[key]
+        if (typeof value === "undefined") {
+            continue
         }
         if (value instanceof HTMLElement) {
-            continue;
+            continue
         }
-        if (typeof value === 'object') {
-            value = JSON.stringify(value);
+        if (typeof value === "object") {
+            value = JSON.stringify(value)
         }
-        query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+        query.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     }
-    return query.join('&');
+    return query.join("&")
 }
 
 function makeIframe(element) {
-    const iframe = document.createElement('iframe');
-    copyAttributes(element, iframe);
+    const iframe = document.createElement("iframe")
+    copyAttributes(element, iframe)
 
-    iframe.setAttribute('frameBorder', '0');
-    iframe.setAttribute('allowfullscreen', '');
-    iframe.setAttribute('allow', 'autoplay; fullscreen');
-    iframe.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin allow-top-navigation allow-popups');
+    iframe.setAttribute("frameBorder", "0")
+    iframe.setAttribute("allowfullscreen", "")
+    iframe.setAttribute("allow", "autoplay; fullscreen")
+    iframe.setAttribute(
+        "sandbox",
+        "allow-forms allow-scripts allow-same-origin allow-top-navigation allow-popups",
+    )
 
-    const name = generateName(iframe.getAttribute('name') || iframe.id);
-    iframe.setAttribute('name', name);
+    const name = generateName(iframe.getAttribute("name") || iframe.id)
+    iframe.setAttribute("name", name)
 
-    return iframe;
+    return iframe
 }
 
 function mergeOptions(globalOptions, gameOptions) {
-    delete globalOptions.version;
-    delete globalOptions.replay;
-    delete globalOptions.token;
-    const result = {};
-    for (let name in DEFAULT_OPTIONS) {
-        result[name] = DEFAULT_OPTIONS[name];
+    globalOptions.version = undefined
+    globalOptions.replay = undefined
+    globalOptions.token = undefined
+    const result = {}
+    for (const name in DEFAULT_OPTIONS) {
+        result[name] = DEFAULT_OPTIONS[name]
     }
-    for (let name in globalOptions) {
-        result[name] = globalOptions[name];
+    for (const name in globalOptions) {
+        result[name] = globalOptions[name]
     }
-    for (let name in gameOptions) {
-        result[name] = gameOptions[name];
+    for (const name in gameOptions) {
+        result[name] = gameOptions[name]
     }
-    return result;
+    return result
 }
 
 function insertCss(document) {
-    const style = document.createElement('style');
-    document.head.appendChild(style);
-    style.appendChild(document.createTextNode(nolimitCss));
+    const style = document.createElement("style")
+    document.head.appendChild(style)
+    style.appendChild(document.createTextNode(nolimitCss))
 }
 
 function setupViewport(head) {
-    const viewport = head.querySelector('meta[name="viewport"]');
+    const viewport = head.querySelector('meta[name="viewport"]')
     if (!viewport) {
-        head.insertAdjacentHTML('beforeend', '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">');
+        head.insertAdjacentHTML(
+            "beforeend",
+            '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">',
+        )
     }
 }
 
 function processOptions(optionsToProcess) {
-    optionsToProcess.device = optionsToProcess.device.toLowerCase();
-    optionsToProcess.mute = optionsToProcess.mute || false;
-    let environment = optionsToProcess.environment.toLowerCase();
-    if (environment.indexOf('.') === -1) {
-        environment += '.nolimitcdn.com';
+    optionsToProcess.device = optionsToProcess.device.toLowerCase()
+    optionsToProcess.mute = optionsToProcess.mute || false
+    optionsToProcess.skinId = optionsToProcess.skinId || "default"
+    let environment = optionsToProcess.environment.toLowerCase()
+    if (environment.indexOf(".") === -1) {
+        environment += ".nolimitcdn.com"
     }
-    optionsToProcess.cdn = optionsToProcess.cdn || CDN.replace('{ENV}', environment);
-    optionsToProcess.staticRoot = optionsToProcess.staticRoot || GAMES_URL.replace('{CDN}', optionsToProcess.cdn);
-    optionsToProcess.playForFunCurrency = optionsToProcess.playForFunCurrency || optionsToProcess.currency;
-    if (optionsToProcess.language === 'pe' || optionsToProcess.language === 'cl') {
-        optionsToProcess.language = 'es';
+    optionsToProcess.cdn =
+        optionsToProcess.cdn || CDN.replace("{ENV}", environment)
+    optionsToProcess.staticRoot =
+        optionsToProcess.staticRoot ||
+        GAMES_URL.replace("{CDN}", optionsToProcess.cdn)
+    optionsToProcess.playForFunCurrency =
+        optionsToProcess.playForFunCurrency || optionsToProcess.currency
+    if (
+        optionsToProcess.language === "pe" ||
+        optionsToProcess.language === "cl"
+    ) {
+        optionsToProcess.language = "es"
     }
-    return optionsToProcess;
+    return optionsToProcess
 }
 
 function html(contentWindow, htmlOptions) {
-    const document = contentWindow.document;
+    const document = contentWindow.document
 
-    contentWindow.focus();
+    contentWindow.focus()
 
-    insertCss(document);
-    setupViewport(document.head);
+    insertCss(document)
+    setupViewport(document.head)
 
-    const loaderElement = document.createElement('iframe');
-    loaderElement.setAttribute('frameBorder', '0');
-    loaderElement.style.backgroundColor = 'black';
-    loaderElement.style.width = '100vw';
-    loaderElement.style.height = '100vh';
-    loaderElement.style.position = 'relative';
-    loaderElement.style.zIndex = '2147483647';
-    loaderElement.classList.add('loader');
+    const loaderElement = document.createElement("iframe")
+    loaderElement.setAttribute("frameBorder", "0")
+    loaderElement.style.backgroundColor = "black"
+    loaderElement.style.width = "100vw"
+    loaderElement.style.height = "100vh"
+    loaderElement.style.position = "relative"
+    loaderElement.style.zIndex = "2147483647"
+    loaderElement.classList.add("loader")
 
-    loaderElement.src = LOADER_URL
-        .replace('{CDN}', htmlOptions.cdn)
-        .replace('{DEVICE}', htmlOptions.device)
-        .replace('{OPERATOR}', htmlOptions.operator)
-        .replace('{GAME}', htmlOptions.game)
-        .replace('{LANGUAGE}', htmlOptions.language)
-        .replace('{PROVIDER}', htmlOptions.provider || 'nlc');
+    loaderElement.src = LOADER_URL.replace("{CDN}", htmlOptions.cdn)
+        .replace("{DEVICE}", htmlOptions.device)
+        .replace("{OPERATOR}", htmlOptions.operator)
+        .replace("{GAME}", htmlOptions.game)
+        .replace("{LANGUAGE}", htmlOptions.language)
+        .replace("{PROVIDER}", htmlOptions.provider || "nlc")
 
-    document.body.innerHTML = '';
+    document.body.innerHTML = ""
 
-    contentWindow.on('error', function (error) {
-        if (loaderElement && loaderElement.contentWindow) {
-            loaderElement.contentWindow.postMessage(JSON.stringify({'error': error}), '*');
+    contentWindow.on("error", (error) => {
+        if (loaderElement?.contentWindow) {
+            loaderElement.contentWindow.postMessage(
+                JSON.stringify({ error: error }),
+                "*",
+            )
         }
-    });
+    })
 
     const infoPromise = new Promise((resolve, reject) => {
-        window.nolimit.info(htmlOptions, function (info) {
+        window.nolimit.info(htmlOptions, (info) => {
             if (info.error) {
-                reject(info);
+                reject(info)
             } else {
-                resolve(info);
+                resolve(info)
             }
-        });
-    });
+        })
+    })
 
-    loaderElement.onload = function () {
-        infoPromise.then(info => {
-            contentWindow.trigger('info', info);
-            loaderElement.contentWindow.postMessage(JSON.stringify(info), '*');
-            const gameElement = document.createElement('script');
-            gameElement.src = info.staticRoot + '/game.js';
-            contentWindow.nolimit = window.nolimit;
-            contentWindow.nolimit.options = htmlOptions;
-            contentWindow.nolimit.options.loadStart = Date.now();
-            contentWindow.nolimit.options.version = info.version;
-            contentWindow.nolimit.options.info = info;
-            document.body.appendChild(gameElement);
-        }).catch(info => {
-            contentWindow.trigger('error', info.error);
-            loaderElement.contentWindow.postMessage(JSON.stringify(info), '*');
-        });
-        loaderElement.onload = function () {
-        };
-    };
+    loaderElement.onload = () => {
+        infoPromise
+            .then((info) => {
+                contentWindow.trigger("info", info)
+                loaderElement.contentWindow.postMessage(
+                    JSON.stringify(info),
+                    "*",
+                )
+                const gameElement = document.createElement("script")
+                gameElement.src = `${info.staticRoot}/game.js`
+                contentWindow.nolimit = window.nolimit
+                contentWindow.nolimit.options = htmlOptions
+                contentWindow.nolimit.options.loadStart = Date.now()
+                contentWindow.nolimit.options.version = info.version
+                contentWindow.nolimit.options.info = info
+                document.body.appendChild(gameElement)
+            })
+            .catch((info) => {
+                contentWindow.trigger("error", info.error)
+                loaderElement.contentWindow.postMessage(
+                    JSON.stringify(info),
+                    "*",
+                )
+            })
+        loaderElement.onload = () => {}
+    }
 
-    document.body.appendChild(loaderElement);
+    document.body.appendChild(loaderElement)
 }
 
 function copyAttributes(from, to) {
-    const attributes = from.attributes;
+    const attributes = from?.attributes || []
     for (let i = 0; i < attributes.length; i++) {
-        let attr = attributes[i];
-        to.setAttribute(attr.name, attr.value);
+        const attr = attributes[i]
+        to.setAttribute(attr.name, attr.value)
     }
 }
 
-const generateName = (function () {
-    let generatedIndex = 1;
-    return function (name) {
-        return name || 'Nolimit-' + generatedIndex++;
-    };
-})();
-
+const generateName = (() => {
+    let generatedIndex = 1
+    return (name) => name || `Nolimit-${generatedIndex++}`
+})()
