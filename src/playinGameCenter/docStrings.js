@@ -7,11 +7,22 @@ export function getLaunchButtonDocString() {
             <style>
                 html, body {
                     margin: 0;
+                    width: 100%;
+                    height: 100%;
+                    box-sizing: border-box;
+                    overflow: hidden;
                     pointer-events: auto;
                 }
 
+                body {
+                    display: flex;
+                    padding: 6px;
+                }
+
                 .playin-game-center-launch-button {
+                    position: relative;
                     display: inline-flex;
+                    flex-shrink: 0;
                     align-items: center;
                     justify-content: center;
                     width: 48px;
@@ -26,6 +37,25 @@ export function getLaunchButtonDocString() {
                     color: #fff;
                     pointer-events: auto;
                     transition: border-color 0.2s;
+                }
+
+                .playin-game-center-notification {
+                    display: none;
+                    position: absolute;
+                    top: 2px;
+                    left: 2px;
+                    transform: translate(-25%, -25%);
+                    z-index: 1;
+                    width: 13px;
+                    height: 13px;
+                    border-radius: 50%;
+                    background: #ef4444;
+                    box-shadow: 0 0 0 1px rgba(0,0,0,.35);
+                    pointer-events: none;
+                }
+
+                .playin-game-center-launch-button[data-notification="true"] .playin-game-center-notification {
+                    display: block;
                 }
 
                 .playin-game-center-launch-button:active {
@@ -50,6 +80,21 @@ export function getLaunchButtonDocString() {
 
                 .playin-game-center-icon {
                     display: block;
+                    width: 32px;
+                    height: 32px;
+                    overflow: hidden;
+                }
+
+                #playin-game-center-reel {
+                    display: block;
+                }
+
+                .playin-game-center-reel-item {
+                    width: 32px;
+                    height: 32px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
 
                 .playin-game-center-spinner {
@@ -72,13 +117,20 @@ export function getLaunchButtonDocString() {
             </style>
         </head>
         <body>
-            <button id="playin-game-center-launch-button" class="playin-game-center-launch-button" data-state="idle" title="Open Playin Game Center">
-                <svg class="playin-game-center-icon" xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 99 111">
-                    <g>
-                        <path d="M17.8881 3.75972C15.4501 0.763694 12.5716 0 10.2805 0C8.66499 0 7.34321 0.381847 6.69701 0.61683C5.11087 1.17491 0 3.52474 0 10.1043V100.866C0 107.475 5.14025 109.796 6.69701 110.354C8.28314 110.912 13.7171 112.351 17.8881 107.211L45.6747 73.0503L54.7803 61.8298C57.7764 58.1582 57.7764 52.8124 54.7803 49.1114L17.8881 3.73035V3.75972Z"/>
-                        <path d="M88.0304 0H78.8367C72.7272 0 67.7631 4.96401 67.7631 11.0736V62.1823C66.9701 64.7378 65.707 67.1463 63.9447 69.3199L54.8391 80.5404L53.3117 82.4202L68.3212 104.42C68.7031 104.949 69.1143 105.449 69.5549 105.918C71.5229 108.973 74.9595 111 78.8367 111H88.0304C94.1399 111 99.104 106.036 99.104 99.9264V11.0736C99.104 4.96401 94.1399 0 88.0304 0Z"/>
-                    </g>
-                </svg>
+            <button id="playin-game-center-launch-button" class="playin-game-center-launch-button" data-state="idle" title="Open Playin Game Center" aria-label="Open Playin Game Center">
+                <span class="playin-game-center-notification" aria-hidden="true"></span>
+                <span class="playin-game-center-icon" aria-hidden="true">
+                    <span id="playin-game-center-reel">
+                        <span class="playin-game-center-reel-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 99 111">
+                                <g>
+                                    <path d="M17.8881 3.75972C15.4501 0.763694 12.5716 0 10.2805 0C8.66499 0 7.34321 0.381847 6.69701 0.61683C5.11087 1.17491 0 3.52474 0 10.1043V100.866C0 107.475 5.14025 109.796 6.69701 110.354C8.28314 110.912 13.7171 112.351 17.8881 107.211L45.6747 73.0503L54.7803 61.8298C57.7764 58.1582 57.7764 52.8124 54.7803 49.1114L17.8881 3.73035V3.75972Z"/>
+                                    <path d="M88.0304 0H78.8367C72.7272 0 67.7631 4.96401 67.7631 11.0736V62.1823C66.9701 64.7378 65.707 67.1463 63.9447 69.3199L54.8391 80.5404L53.3117 82.4202L68.3212 104.42C68.7031 104.949 69.1143 105.449 69.5549 105.918C71.5229 108.973 74.9595 111 78.8367 111H88.0304C94.1399 111 99.104 106.036 99.104 99.9264V11.0736C99.104 4.96401 94.1399 0 88.0304 0Z"/>
+                                </g>
+                            </svg>
+                        </span>
+                    </span>
+                </span>
                 <svg class="playin-game-center-spinner" xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
                 </svg>
