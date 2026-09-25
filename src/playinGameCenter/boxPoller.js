@@ -1,5 +1,5 @@
 const POLL_INTERVAL_MS = 2_000
-const MAX_BACKOFF_STEPS = 3 // 15s → 30s → 60s → 120s
+const MAX_BACKOFF_STEPS = 3 // 2s → 4s → 8s → 16s, plus jitter
 const JITTER_MS = 3_000
 const REQUEST_TIMEOUT_MS = 5_000
 
@@ -59,17 +59,28 @@ export class BoxPoller {
             return
         }
         clearTimeout(this._timer)
-        const request = new AbortController()
+        // AbortController may be missing in older browsers; the timeout race still bounds the request.
+        const controller = typeof AbortController !== "undefined" ? new AbortController() : null
+        const request = { abort: () => controller?.abort() }
         this._request = request
-        const timeout = setTimeout(() => request.abort(), REQUEST_TIMEOUT_MS)
+        let timeout
+        const timedOut = new Promise((_, reject) => {
+            timeout = setTimeout(() => {
+                request.abort()
+                reject(new Error("Box poll timed out"))
+            }, REQUEST_TIMEOUT_MS)
+        })
 
         try {
-            const response = await fetch(this._url, {
-                headers: { Authorization: `Bearer ${this._token}` },
-                credentials: "omit",
-                cache: "no-store",
-                signal: request.signal,
-            })
+            const response = await Promise.race([
+                fetch(this._url, {
+                    headers: { Authorization: `Bearer ${this._token}` },
+                    credentials: "omit",
+                    cache: "no-store",
+                    signal: controller?.signal,
+                }),
+                timedOut,
+            ])
             if (this._request !== request) {
                 return
             }
@@ -82,7 +93,7 @@ export class BoxPoller {
                 throw new Error(`Box poll failed: ${response.status}`)
             }
 
-            const summary = await response.json()
+            const summary = await Promise.race([response.json(), timedOut])
             if (this._request !== request) {
                 return
             }

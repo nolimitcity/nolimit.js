@@ -27,6 +27,7 @@ export class PlayinGameCenterManager {
         this.hasNotification = false
         this._boxPoller = null
         this._latestBoxId = null // kept across pollers so reopening the launcher does not replay the spin
+        this._notSeen = 0
         this._acknowledgedBoxId = null // latest box when the player last opened the app, maybe save in LocalStorage?
         this._isGameActive = true
         this._playerConnect = null
@@ -576,28 +577,24 @@ export class PlayinGameCenterManager {
         }
         const latest = summary.latestBoxId ?? null
         const isNewBox = latest !== null && latest !== this._latestBoxId && summary.notSeen > 0
-        const isAcknowledged = latest !== null && latest === this._acknowledgedBoxId
         this._latestBoxId = latest
-        const showDot = summary.notSeen > 0 && !isAcknowledged
-        if (!isNewBox) {
-            this.setNotification(showDot)
+        this._notSeen = summary.notSeen
+        const spin = isNewBox ? this.spinLauncher() : null
+        if (!spin) {
+            this.setNotification(this._shouldShowDot())
             return
         }
         devLog("[PlayinGameCenter] New box:", summary)
-        const spin = this.spinLauncher()
-        if (!spin) {
-            this.setNotification(showDot)
-            return
-        }
-        // Show the dot once the spin lands. A cancelled spin means a newer one took over.
+        // Show the dot once the spin lands, from the state at that time rather than when it
+        // started. A cancelled spin means a newer one took over.
         spin.finished.then(
-            () => {
-                if (!this._destroyed && this._acknowledgedBoxId !== latest) {
-                    this.setNotification(showDot)
-                }
-            },
+            () => !this._destroyed && this.setNotification(this._shouldShowDot()),
             () => {},
         )
+    }
+
+    _shouldShowDot() {
+        return this._notSeen > 0 && this._latestBoxId !== this._acknowledgedBoxId
     }
 
     // UI Flow
