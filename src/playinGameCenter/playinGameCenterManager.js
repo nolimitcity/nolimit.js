@@ -1,5 +1,6 @@
 import { styleElement } from "../utils/styleElement"
 import { AssetPreloader, PreloadState } from "./assetPreloader"
+import { BoxPoller } from "./boxPoller"
 import { getAppWrapperDocString, getLaunchButtonDocString } from "./docStrings"
 import { GameStateTracker } from "./gameStateTracker"
 import { devLog } from "./log"
@@ -23,6 +24,14 @@ export class PlayinGameCenterManager {
         this.doc = null
         this.window = null
         this._loadStarted = false
+        this.hasNotification = false
+        this._boxPoller = null
+        this._latestBoxId = null // kept across pollers so reopening the launcher does not replay the spin
+        this._notSeen = 0
+        this._acknowledgedBoxId = null // latest box when the player last opened the app, maybe save in LocalStorage?
+        this._isGameActive = true
+        this._playerConnect = null
+        this._destroyed = false
 
         this._iframePos = null // { left, top } — tracked to avoid getBoundingClientRect on every drag
         this._pendingDelta = null // accumulated deltas waiting for rAF
@@ -61,6 +70,9 @@ export class PlayinGameCenterManager {
 
         try {
             const config = await getPlayinGameCenterConfig(this.options)
+            if (this._destroyed) {
+                return
+            }
             this.config = config
 
             if (!config || !config.enabled || !config.script) {
@@ -93,6 +105,10 @@ export class PlayinGameCenterManager {
             }
 
             const result = await createPlayinGameCenterIframe(this.gameIframe)
+            if (this._destroyed) {
+                result?.iframe.remove()
+                return
+            }
             if (!result) {
                 return
             }
@@ -106,6 +122,8 @@ export class PlayinGameCenterManager {
             )
 
             this.showLauncher()
+            this.startBoxPolling()
+
             // Warm the bundle into the launcher document so the first open is instant.
             this._preloader.warm(this.doc)
         } catch (error) {
@@ -434,13 +452,74 @@ export class PlayinGameCenterManager {
     }
 
     forwardEvent(event, data) {
-        this._gameState.forwardEvent(event, data)
-
-        if (event === "idle") {
-            this._setIframeVisible(true)
-        } else if (event === "external" && data?.name === "bet") {
-            this._setIframeVisible(false)
+        if (this._destroyed) {
+            return
         }
+        if (event === "external" && data?.name === "hidden") {
+            // The game reports focus as true, despite the event's name.
+            if (typeof data.data === "boolean" && data.data !== this._isGameActive) {
+                devLog("[PlayinGameCenter] hidden event:", data.data, data.data ? "resuming polling" : "pausing polling")
+                this._isGameActive = data.data
+                this._boxPoller?.refresh()
+            }
+        }
+        if (event === "external" && data?.name === "playerConnect") {
+            const token = typeof data.data === "string" && data.data.trim() ? data.data : null
+            if (token !== this._playerConnect) {
+                this._playerConnect = token
+                this.startBoxPolling()
+            }
+            return
+        }
+        this._gameState.forwardEvent(event, data)
+        // Testing to not spin on every event
+        // if (
+        //     event === "external" &&
+        //     data?.name === "state" &&
+        //     data.data === "starting"
+        // ) {
+        //     this.spinLauncher()
+        // }
+    }
+
+    spinLauncher() {
+        const reel = this.doc?.getElementById("playin-game-center-reel")
+        const button = this.doc?.getElementById("playin-game-center-launch-button")
+        if (!reel || this.isAppVisible || button?.dataset.state === "loading") {
+            return
+        }
+
+        const logo = reel.querySelector("svg")
+        if (!logo) {
+            return
+        }
+        const iconCount = 4
+        const fragment = this.doc.createDocumentFragment()
+        for (let index = 0; index < iconCount * 3; index++) {
+            const item = this.doc.createElement("span")
+            item.className = "playin-game-center-reel-item"
+            item.appendChild(logo.cloneNode(true))
+            fragment.appendChild(item)
+        }
+        // Restart cleanly even if another win arrives during the spin.
+        for (const animation of reel.getAnimations()) {
+            animation.cancel()
+        }
+        reel.replaceChildren(fragment)
+        const itemHeight = reel.firstElementChild.getBoundingClientRect().height
+        const start = iconCount * 2 * itemHeight
+        const stop = Math.floor(Math.random() * iconCount) * itemHeight
+        reel.style.transform = "translateY(-" + stop + "px)"
+        if (this.window?.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            return
+        }
+        return reel.animate(
+            [
+                { transform: "translateY(-" + start + "px)" },
+                { transform: "translateY(-" + stop + "px)" },
+            ],
+            { duration: 1500, easing: "ease-in-out" },
+        )
     }
 
     _setIframeVisible(visible) {
@@ -464,6 +543,58 @@ export class PlayinGameCenterManager {
         if (this._preloader && this.doc) {
             this._preloader.warm(this.doc)
         }
+    }
+
+
+    startBoxPolling() {
+        this._boxPoller?.stop()
+        this._boxPoller = null
+        if (this._destroyed || !this.iframe || !this.config?.enabled || !this._playerConnect) {
+            return
+        }
+        const base = (this.options.playinGameCenterCdn || "").replace(/\/+$/, "")
+        this._boxPoller = new BoxPoller({
+            url: `${base}/api/v1/pgc/player/summary`,
+            token: this._playerConnect,
+            isActive: () => this._isGameActive,
+            onSummary: (summary) => this._onBoxSummary(summary),
+            onUnauthorized: () =>
+                devLog("[PlayinGameCenter] Box polling paused until a new playerConnect token arrives"),
+        })
+        this._boxPoller.start()
+    }
+
+
+    /**
+     * Updates the launcher from a box summary. The notification dot shows while the player has
+     * boxes they have not looked at yet (notSeen > 0), unless they have opened the app since the
+     * latest one arrived. The launcher spins once when a box arrives that was not there on the
+     * previous poll, i.e. latestBoxId changed, and the dot appears after the spin finishes.
+     */
+    _onBoxSummary(summary) {
+        if (typeof summary?.notSeen !== "number") {
+            return
+        }
+        const latest = summary.latestBoxId ?? null
+        const isNewBox = latest !== null && latest !== this._latestBoxId && summary.notSeen > 0
+        this._latestBoxId = latest
+        this._notSeen = summary.notSeen
+        const spin = isNewBox ? this.spinLauncher() : null
+        if (!spin) {
+            this.setNotification(this._shouldShowDot())
+            return
+        }
+        devLog("[PlayinGameCenter] New box:", summary)
+        // Show the dot once the spin lands, from the state at that time rather than when it
+        // started. A cancelled spin means a newer one took over.
+        spin.finished.then(
+            () => !this._destroyed && this.setNotification(this._shouldShowDot()),
+            () => {},
+        )
+    }
+
+    _shouldShowDot() {
+        return this._notSeen > 0 && this._latestBoxId !== this._acknowledgedBoxId
     }
 
     // UI Flow
@@ -490,17 +621,22 @@ export class PlayinGameCenterManager {
             "playin-game-center-launch-button",
         )
         const rect = launchButton.getBoundingClientRect()
+        // Keep the button in place while reserving transparent room for its badge.
+        const padding = Number.parseFloat(this.window.getComputedStyle(this.doc.body).paddingTop) || 0
 
         styleElement(this.iframe, {
             position: "absolute",
             inset: "",
-            top: "40px",
-            left: "8px",
-            width: `${Math.ceil(rect.width)}px`,
-            height: `${Math.ceil(rect.height)}px`,
-            borderRadius: "9999px",
+            top: `${40 - padding}px`,
+            left: `${8 - padding}px`,
+            width: `${Math.ceil(rect.width + padding * 2)}px`,
+            height: `${Math.ceil(rect.height + padding * 2)}px`,
+            borderRadius: "0",
             overflow: "hidden",
         })
+
+        // Restore notification state when returning from the overlay.
+        this.setNotification(this.hasNotification)
 
         // Update button state based on preload state
         this._updateButtonState()
@@ -508,6 +644,53 @@ export class PlayinGameCenterManager {
         launchButton.addEventListener("click", () => {
             this._onLaunchClick()
         })
+    }
+
+    // Can be called before the launcher exists or while the overlay is open.
+    setNotification(visible) {
+        const wasVisible = this.hasNotification
+        this.hasNotification = Boolean(visible)
+        const button = this.doc?.getElementById("playin-game-center-launch-button")
+        if (!button) {
+            return
+        }
+
+        button.dataset.notification = String(this.hasNotification)
+        const label = this.hasNotification
+            ? "Open Playin Game Center — new notifications"
+            : "Open Playin Game Center"
+        button.setAttribute("aria-label", label)
+        button.title = label
+
+        if (this.hasNotification && !wasVisible) {
+            this.animateNotificationPop()
+        } else if (!this.hasNotification) {
+            const dot = button.querySelector(".playin-game-center-notification")
+            for (const animation of dot?.getAnimations() || []) animation.cancel()
+        }
+    }
+
+    animateNotificationPop() {
+        const dot = this.doc?.querySelector(".playin-game-center-notification")
+        if (!dot || !this.hasNotification || this.isAppVisible) {
+            return
+        }
+
+        for (const animation of dot.getAnimations()) animation.cancel()
+        if (this.window?.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            return
+        }
+
+        dot.animate([
+            { transform: "translate(-25%, -25%) scale(0.25)", opacity: 0, offset: 0 },
+            { transform: "translate(-25%, -25%) scale(1.25)", opacity: 1, offset: 0.55 },
+            { transform: "translate(-25%, -25%) scale(0.92)", opacity: 1, offset: 0.8 },
+            { transform: "translate(-25%, -25%) scale(1)", opacity: 1, offset: 1 },
+        ], { id: "notification-pop", duration: 450, easing: "ease-out" })
+    }
+
+    toggleNotification() {
+        this.setNotification(!this.hasNotification)
     }
 
     _updateButtonState() {
@@ -576,6 +759,10 @@ export class PlayinGameCenterManager {
 
                 // Only now is it safe to take over the screen.
                 this.isAppVisible = true
+                // Opening the app counts as seeing the current boxes, so the dot stays
+                // hidden after closing until a newer box arrives.
+                this._acknowledgedBoxId = this._latestBoxId
+                this.setNotification(false)
                 styleElement(this.iframe, {
                     position: "absolute",
                     inset: "0",
@@ -614,6 +801,11 @@ export class PlayinGameCenterManager {
      * clean config-failure path. Safe to call multiple times.
      */
     destroy() {
+        this._destroyed = true
+        this._playerConnect = null
+        this._boxPoller?.stop()
+        this._boxPoller = null
+
         try {
             this._rpc.reset()
             this.iframe?.parentElement?.removeChild(this.iframe)
@@ -636,6 +828,7 @@ export class PlayinGameCenterManager {
 
         // Return to launcher state
         this.showLauncher()
+        this.startBoxPolling()
     }
 
     getWindow() {
