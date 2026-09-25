@@ -26,6 +26,8 @@ export class PlayinGameCenterManager {
         this._loadStarted = false
         this.hasNotification = false
         this._boxPoller = null
+        this._latestBoxId = null // kept across pollers so reopening the launcher does not replay the spin
+        this._acknowledgedBoxId = null // latest box when the player last opened the app, maybe save in LocalStorage?
         this._isGameActive = true
         this._playerConnect = null
         this._destroyed = false
@@ -469,13 +471,14 @@ export class PlayinGameCenterManager {
             return
         }
         this._gameState.forwardEvent(event, data)
-        if (
-            event === "external" &&
-            data?.name === "state" &&
-            data.data === "starting"
-        ) {
-            this.spinLauncher()
-        }
+        // Testing to not spin on every event
+        // if (
+        //     event === "external" &&
+        //     data?.name === "state" &&
+        //     data.data === "starting"
+        // ) {
+        //     this.spinLauncher()
+        // }
     }
 
     spinLauncher() {
@@ -509,7 +512,7 @@ export class PlayinGameCenterManager {
         if (this.window?.matchMedia("(prefers-reduced-motion: reduce)").matches) {
             return
         }
-        reel.animate(
+        return reel.animate(
             [
                 { transform: "translateY(-" + start + "px)" },
                 { transform: "translateY(-" + stop + "px)" },
@@ -550,20 +553,52 @@ export class PlayinGameCenterManager {
         }
         const base = (this.options.playinGameCenterCdn || "").replace(/\/+$/, "")
         this._boxPoller = new BoxPoller({
-            url: `${base}/api/v1/pgc/player/boxes`,
+            url: `${base}/api/v1/pgc/player/summary`,
             token: this._playerConnect,
             isActive: () => this._isGameActive,
-            onBoxes: (boxes) => {
-                devLog("[PlayinGameCenter] Box poll:", boxes)
-                this.setNotification(true)
-                this.spinLauncher()
-            },
+            onSummary: (summary) => this._onBoxSummary(summary),
             onUnauthorized: () =>
                 devLog("[PlayinGameCenter] Box polling paused until a new playerConnect token arrives"),
         })
         this._boxPoller.start()
     }
 
+
+    /**
+     * Updates the launcher from a box summary. The notification dot shows while the player has
+     * boxes they have not looked at yet (notSeen > 0), unless they have opened the app since the
+     * latest one arrived. The launcher spins once when a box arrives that was not there on the
+     * previous poll, i.e. latestBoxId changed, and the dot appears after the spin finishes.
+     */
+    _onBoxSummary(summary) {
+        if (typeof summary?.notSeen !== "number") {
+            return
+        }
+        const latest = summary.latestBoxId ?? null
+        const isNewBox = latest !== null && latest !== this._latestBoxId && summary.notSeen > 0
+        const isAcknowledged = latest !== null && latest === this._acknowledgedBoxId
+        this._latestBoxId = latest
+        const showDot = summary.notSeen > 0 && !isAcknowledged
+        if (!isNewBox) {
+            this.setNotification(showDot)
+            return
+        }
+        devLog("[PlayinGameCenter] New box:", summary)
+        const spin = this.spinLauncher()
+        if (!spin) {
+            this.setNotification(showDot)
+            return
+        }
+        // Show the dot once the spin lands. A cancelled spin means a newer one took over.
+        spin.finished.then(
+            () => {
+                if (!this._destroyed && this._acknowledgedBoxId !== latest) {
+                    this.setNotification(showDot)
+                }
+            },
+            () => {},
+        )
+    }
 
     // UI Flow
 
@@ -727,6 +762,10 @@ export class PlayinGameCenterManager {
 
                 // Only now is it safe to take over the screen.
                 this.isAppVisible = true
+                // Opening the app counts as seeing the current boxes, so the dot stays
+                // hidden after closing until a newer box arrives.
+                this._acknowledgedBoxId = this._latestBoxId
+                this.setNotification(false)
                 styleElement(this.iframe, {
                     position: "absolute",
                     inset: "0",

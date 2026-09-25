@@ -4,24 +4,24 @@ const JITTER_MS = 3_000
 const REQUEST_TIMEOUT_MS = 5_000
 
 /**
- * Polls the player's boxes endpoint until boxes are found, the token is rejected, or it is
- * stopped. Only one request is ever in flight; a request counts as live only while it is
+ * Polls the player's box summary until the token is rejected or it is stopped, handing every
+ * summary to the caller. Only one request is ever in flight; a request counts as live only while it is
  * `this._request`, so cancelled requests neither schedule a retry nor count as failures.
  */
 export class BoxPoller {
     /**
      * @param {Object} options
-     * @param {string} options.url - Boxes endpoint
+     * @param {string} options.url - Summary endpoint
      * @param {string} options.token - playerConnect bearer token
      * @param {Function} options.isActive - Returns whether the game is active; polling pauses when not
-     * @param {Function} options.onBoxes - Called with the boxes once any are found; polling then stops
+     * @param {Function} options.onSummary - Called with each summary received
      * @param {Function} options.onUnauthorized - Called on 401/403; polling then stops
      */
-    constructor({ url, token, isActive, onBoxes, onUnauthorized }) {
+    constructor({ url, token, isActive, onSummary, onUnauthorized }) {
         this._url = url
         this._token = token
         this._isActive = isActive
-        this._onBoxes = onBoxes
+        this._onSummary = onSummary
         this._onUnauthorized = onUnauthorized
         this._stopped = false
         this._request = null
@@ -82,15 +82,12 @@ export class BoxPoller {
                 throw new Error(`Box poll failed: ${response.status}`)
             }
 
-            const boxes = await response.json()
+            const summary = await response.json()
             if (this._request !== request) {
                 return
             }
             this._failures = 0
-            if (Array.isArray(boxes) && boxes.length > 0) {
-                this.stop()
-                this._onBoxes(boxes)
-            }
+            this._onSummary(summary)
         } catch {
             // Keep existing box state and retry silently with backoff.
             if (this._request === request) {
