@@ -474,6 +474,32 @@ export class PlayinGameCenterManager {
             return
         }
         this._gameState.forwardEvent(event, data)
+        if (event === "external" && data?.name === "state" && data.data === "starting") {
+            this.traceLauncherBorder()
+        }
+    }
+
+    /** Runs a subtle light once around the launcher border; a running trace is not restarted. */
+    traceLauncherBorder() {
+        const trace = this.doc?.getElementById("playin-game-center-trace")
+        if (
+            !trace ||
+            this.isAppVisible ||
+            ["loading", "error"].includes(trace.parentElement.dataset.state) ||
+            trace.getAnimations().length ||
+            this.window?.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
+            return
+        }
+        trace.animate(
+            [
+                { transform: "rotate(0deg)", opacity: 0 },
+                { opacity: 0.6, offset: 0.25 },
+                { opacity: 0.6, offset: 0.75 },
+                { transform: "rotate(360deg)", opacity: 0 },
+            ],
+            { duration: 1600, easing: "ease-in-out" },
+        )
     }
 
     spinLauncher() {

@@ -114,11 +114,25 @@ export function getLaunchButtonDocString() {
                     from { transform: rotate(0deg); }
                     to { transform: rotate(360deg); }
                 }
+
+                .playin-game-center-trace {
+                    position: absolute;
+                    inset: -2px;
+                    padding: 2px;
+                    border-radius: inherit;
+                    background: conic-gradient(transparent 0 72%, rgba(255,255,255,.75) 98%, transparent);
+                    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+                    -webkit-mask-composite: xor;
+                    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+                    opacity: 0;
+                    pointer-events: none;
+                }
             </style>
         </head>
         <body>
             <button id="playin-game-center-launch-button" class="playin-game-center-launch-button" data-state="idle" title="Open Playin Game Center" aria-label="Open Playin Game Center">
                 <span class="playin-game-center-notification" aria-hidden="true"></span>
+                <span id="playin-game-center-trace" class="playin-game-center-trace" aria-hidden="true"></span>
                 <span class="playin-game-center-icon" aria-hidden="true">
                     <span id="playin-game-center-reel">
                         <span class="playin-game-center-reel-item">
