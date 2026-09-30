@@ -247,6 +247,7 @@ export class PlayinGameCenterManager {
                         params: this.appConfig,
                     })
                 }
+                this._sendPlayerConnect()
                 for (const msg of this._gameState.getPendingState()) {
                     this._rpc.send(msg)
                 }
@@ -468,6 +469,9 @@ export class PlayinGameCenterManager {
             if (token !== this._playerConnect) {
                 this._playerConnect = token
                 this.startBoxPolling()
+                if (this._rpc.isReady) {
+                    this._sendPlayerConnect()
+                }
             }
             return
         }
@@ -545,6 +549,15 @@ export class PlayinGameCenterManager {
         }
     }
 
+
+    /** Hands the overlay the playerConnect token so it can call jinx and ashe as this player. */
+    _sendPlayerConnect() {
+        this._rpc.send({
+            jsonrpc: "2.0",
+            method: "playerConnect",
+            params: { token: this._playerConnect },
+        })
+    }
 
     startBoxPolling() {
         this._boxPoller?.stop()
