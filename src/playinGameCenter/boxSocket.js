@@ -9,7 +9,6 @@ const CLOSE_TOO_MANY = 4429
 /**
  * Keeps a player events WebSocket open and hands the summary from each message to the caller.
  * Reconnects with backoff after drops; stops when the token is rejected or stop() is called.
- * Protocol: ashe docs/ARCHITECTURE.md, "Player events".
  */
 export class BoxSocket {
     /**
