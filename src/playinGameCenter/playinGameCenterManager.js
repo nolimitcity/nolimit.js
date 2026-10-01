@@ -1,6 +1,6 @@
 import { styleElement } from "../utils/styleElement"
 import { AssetPreloader, PreloadState } from "./assetPreloader"
-import { BoxPoller } from "./boxPoller"
+import { BoxSocket } from "./boxSocket"
 import { getAppWrapperDocString, getLaunchButtonDocString } from "./docStrings"
 import { GameStateTracker } from "./gameStateTracker"
 import { devLog } from "./log"
@@ -25,8 +25,8 @@ export class PlayinGameCenterManager {
         this.window = null
         this._loadStarted = false
         this.hasNotification = false
-        this._boxPoller = null
-        this._latestBoxId = null // kept across pollers so reopening the launcher does not replay the spin
+        this._boxSocket = null
+        this._latestBoxId = null // kept across sockets so reopening the launcher does not replay the spin
         this._notSeen = 0
         this._acknowledgedBoxId = null // set when the app is opened
         this._isGameActive = true
@@ -120,7 +120,7 @@ export class PlayinGameCenterManager {
             )
 
             this.showLauncher()
-            this.startBoxPolling()
+            this.startBoxEvents()
 
             // Warm the bundle into the launcher document so the first open is instant.
             this._preloader.warm(this.doc)
@@ -457,16 +457,18 @@ export class PlayinGameCenterManager {
         if (event === "external" && data?.name === "hidden") {
             // The game reports focus as true, despite the event's name.
             if (typeof data.data === "boolean" && data.data !== this._isGameActive) {
-                devLog("[PlayinGameCenter] hidden event:", data.data, data.data ? "resuming polling" : "pausing polling")
+                devLog("[PlayinGameCenter] hidden event:", data.data)
                 this._isGameActive = data.data
-                this._boxPoller?.refresh()
+                if (data.data) {
+                    this._boxSocket?.refresh()
+                }
             }
         }
         if (event === "external" && data?.name === "playerConnect") {
             const token = typeof data.data === "string" && data.data.trim() ? data.data : null
             if (token !== this._context) {
                 this._context = token
-                this.startBoxPolling()
+                this.startBoxEvents()
                 if (this._rpc.isReady) {
                     this._syncContext()
                 }
@@ -575,22 +577,21 @@ export class PlayinGameCenterManager {
         })
     }
 
-    startBoxPolling() {
-        this._boxPoller?.stop()
-        this._boxPoller = null
+    startBoxEvents() {
+        this._boxSocket?.stop()
+        this._boxSocket = null
         if (this._destroyed || !this.iframe || !this.config?.enabled || !this._context) {
             return
         }
         const base = (this.options.playinGameCenterCdn || "").replace(/\/+$/, "")
-        this._boxPoller = new BoxPoller({
-            url: `${base}/api/v1/pgc/player/summary`,
+        this._boxSocket = new BoxSocket({
+            url: `${base}/api/v1/pgc/player/events`,
             token: this._context,
-            isActive: () => this._isGameActive,
             onSummary: (summary) => this._onBoxSummary(summary),
             onUnauthorized: () =>
-                devLog("[PlayinGameCenter] Polling paused until a new token arrives"),
+                devLog("[PlayinGameCenter] Box events paused until a new token arrives"),
         })
-        this._boxPoller.start()
+        this._boxSocket.start()
     }
 
 
@@ -826,8 +827,8 @@ export class PlayinGameCenterManager {
     destroy() {
         this._destroyed = true
         this._context = null
-        this._boxPoller?.stop()
-        this._boxPoller = null
+        this._boxSocket?.stop()
+        this._boxSocket = null
 
         try {
             this._rpc.reset()
@@ -851,7 +852,7 @@ export class PlayinGameCenterManager {
 
         // Return to launcher state
         this.showLauncher()
-        this.startBoxPolling()
+        this.startBoxEvents()
     }
 
     getWindow() {
