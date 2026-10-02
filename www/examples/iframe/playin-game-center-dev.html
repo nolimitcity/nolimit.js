@@ -306,7 +306,7 @@
         // ---- nolimit.js setup ----
         sysLog("nolimit.js v" + nolimit.version + " loaded");
 
-        // Point Playin Game Center at a locally-running jinx (mock-backed config service).
+        // Point Playin Game Center at a local backend.
         // Overridable via URL params: ?operator=comeon&pgcCdn=http://localhost:4000&pgcEnv=test
         // Add &gameEditionCode=<code> to load the game in an alternative edition.
         const pgcParams = new URLSearchParams(location.search);
