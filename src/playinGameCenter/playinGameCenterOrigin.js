@@ -1,7 +1,7 @@
 // Each NLC platform has its own ashe deployment, because ashe awards boxes from that platform's rounds.
 const ORIGINS = {
     test: "https://test.pgc.evorng.com",
-    production: "https://gc-cdn.playin.com",
+    production: "https://pgc.evorng.com",
 }
 
 /**
