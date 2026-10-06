@@ -1,9 +1,6 @@
 import { devLog } from "./log"
 
 const CONFIG_PATH = "/api/v1/pgc/config"
-// gc-cdn.playin.com serves a static config file at the path from before ashe, until production moves to ashe.
-const LEGACY_HOST = "gc-cdn.playin.com"
-const LEGACY_CONFIG_PATH = "/api/v1/playin-game-center/config"
 const FETCH_TIMEOUT_MS = 2500
 // Freshness is server-controlled via the response `maxAge` (seconds). This constant is only the
 // floor used when a cached config predates that field or omits it; it matches the edge TTL.
@@ -35,16 +32,7 @@ function getConfigUrl(options) {
     if (njs) {
         params.set("njs", njs)
     }
-    const path = isLegacyHost(base) ? LEGACY_CONFIG_PATH : CONFIG_PATH
-    return `${base}${path}?${params.toString()}`
-}
-
-function isLegacyHost(base) {
-    try {
-        return new URL(base).host === LEGACY_HOST
-    } catch (_) {
-        return false
-    }
+    return `${base}${CONFIG_PATH}?${params.toString()}`
 }
 
 function cacheKey(options) {
