@@ -307,7 +307,7 @@ export class PlayinGameCenterManager {
                     this._pendingDelta = null
                     if (!delta) return
 
-                    const parent = this.iframe.parentElement
+                    const parent = this.iframe?.parentElement
                     if (!parent) return
 
                     // Lazily initialise tracked position (one-time DOM read)
@@ -407,7 +407,11 @@ export class PlayinGameCenterManager {
             },
         }
 
-        handlers[message.method]?.()
+        try {
+            handlers[message.method]?.()
+        } catch (error) {
+            console.warn("[PlayinGameCenter] JSON-RPC handler failed:", error)
+        }
     }
 
     // Public API
@@ -850,9 +854,14 @@ export class PlayinGameCenterManager {
         this.isAppVisible = false
         this._rpc.reset()
 
+        // Swap in a blank copy of the iframe: discarding the old one closes any sockets/timers
+        // the app opened, which doc.open() alone would leave running.
+        const freshIframe = this.iframe.cloneNode(false)
+        this.iframe.replaceWith(freshIframe)
+        this.iframe = freshIframe
+
         // Return to launcher state
         this.showLauncher()
-        this.startBoxEvents()
     }
 
     getWindow() {
