@@ -1,6 +1,6 @@
 import { devLog } from "./log"
 
-const CONFIG_PATH = "/api/v1/playin-game-center/config"
+const CONFIG_PATH = "/api/v1/pgc/config"
 const FETCH_TIMEOUT_MS = 2500
 // Freshness is server-controlled via the response `maxAge` (seconds). This constant is only the
 // floor used when a cached config predates that field or omits it; it matches the edge TTL.
