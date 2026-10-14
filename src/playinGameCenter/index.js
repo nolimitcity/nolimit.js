@@ -1,5 +1,6 @@
 import { devInfo } from "./log"
 import { PlayinGameCenterManager } from "./playinGameCenterManager"
+import { withPlayinGameCenterOrigin } from "./playinGameCenterOrigin"
 
 const PlayinGameCenterContext = {
     instance: null,
@@ -63,7 +64,7 @@ export function initPlayinGameCenter(gameIframe, options) {
 
     const playinGameCenterManager = new PlayinGameCenterManager(
         gameIframe,
-        options,
+        withPlayinGameCenterOrigin(options),
     )
     PlayinGameCenterContext.setInstance(playinGameCenterManager)
 
