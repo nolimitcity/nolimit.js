@@ -136,11 +136,11 @@ export function load(loadOptions) {
         const gameFrame = makeIframe(target)
         target.parentNode.replaceChild(gameFrame, target)
 
-        return nolimitApiFactory(gameFrame, () => {
+        return nolimitApiFactory(gameFrame, (callGame) => {
             html(gameFrame.contentWindow, processedOptions)
             // PlayinGameCenter must never break the game; warn and carry on.
             try {
-                initPlayinGameCenter(gameFrame, processedOptions)
+                initPlayinGameCenter(gameFrame, processedOptions, callGame)
             } catch (error) {
                 console.warn("[PlayinGameCenter] Init failed:", error)
             }

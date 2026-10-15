@@ -22,7 +22,7 @@ export function nolimitApiFactory(target, onload) {
         })
         contentWindow.trigger = trigger
         contentWindow.on = on
-        onload()
+        onload(sendMessage)
     }
 
     if (target.nodeName === "IFRAME") {
