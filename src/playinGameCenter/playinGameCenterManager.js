@@ -15,7 +15,6 @@ export class PlayinGameCenterManager {
     constructor(gameIframe, options = {}, callGame = null) {
         this.gameIframe = gameIframe
         this._callGame = callGame
-        this._refreshAfterRound = false
         this.options = options
         this.config = null
         this.appConfig = null
@@ -258,9 +257,9 @@ export class PlayinGameCenterManager {
             },
             requestRefresh: () => {
                 devLog("[PlayinGameCenter] Refresh requested")
-                // Mid-spin the server balance already holds the round's win; refreshing then would show it before the reels do.
+                // Mid-round the server balance already holds the win before the reels show it; the next round's balance brings the payout in.
                 if (this._gameState._roundInProgress) {
-                    this._refreshAfterRound = true
+                    devLog("[PlayinGameCenter] Refresh dropped: round in progress")
                     return
                 }
                 // A PlayinGameCenter payout lands in the wallet outside a round; ask the game to re-read its balance.
@@ -489,14 +488,6 @@ export class PlayinGameCenterManager {
             return
         }
         this._gameState.forwardEvent(event, data)
-        if (
-            event === "idle" &&
-            this._refreshAfterRound &&
-            !this._gameState._roundInProgress
-        ) {
-            this._refreshAfterRound = false
-            this._callGame?.("refresh")
-        }
         if (event === "external" && data?.name === "state" && data.data === "starting") {
             this.traceLauncherBorder()
         }
