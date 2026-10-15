@@ -12,8 +12,9 @@ import { createPlayinGameCenterIframe } from "./playinGameCenterIframe"
 import { RpcTransport } from "./rpcTransport"
 
 export class PlayinGameCenterManager {
-    constructor(gameIframe, options = {}) {
+    constructor(gameIframe, options = {}, callGame = null) {
         this.gameIframe = gameIframe
+        this._callGame = callGame
         this.options = options
         this.config = null
         this.appConfig = null
@@ -256,6 +257,8 @@ export class PlayinGameCenterManager {
             },
             requestRefresh: () => {
                 devLog("[PlayinGameCenter] Refresh requested")
+                // A PlayinGameCenter payout lands in the wallet outside a round; ask the game to re-read its balance.
+                this._callGame?.("refresh")
             },
             version: () => {
                 // D3: the build is the source of truth for the version. The loader

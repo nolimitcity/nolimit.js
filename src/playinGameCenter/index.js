@@ -44,9 +44,10 @@ export function preloadPlayinGameCenter() {
  *
  * @param {HTMLIFrameElement} gameIframe - the game iframe element
  * @param {Object} options - resolved loader options (operator, game, device, playinGameCenterEnabled, playinGameCenterCdn, playinGameCenterEnv, "nolimit.js")
+ * @param {Function} [callGame] - the game api's `call(method, data)`, for PlayinGameCenter requests the game must act on
  * @returns {boolean} whether PlayinGameCenter was set up (it may still resolve to "off" once config loads)
  */
-export function initPlayinGameCenter(gameIframe, options) {
+export function initPlayinGameCenter(gameIframe, options, callGame) {
     if (!gameIframe) {
         console.error("[PlayinGameCenter] Invalid game iframe")
         return false
@@ -65,6 +66,7 @@ export function initPlayinGameCenter(gameIframe, options) {
     const playinGameCenterManager = new PlayinGameCenterManager(
         gameIframe,
         withPlayinGameCenterOrigin(options),
+        callGame,
     )
     PlayinGameCenterContext.setInstance(playinGameCenterManager)
 
