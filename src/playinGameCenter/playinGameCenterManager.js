@@ -767,6 +767,8 @@ export class PlayinGameCenterManager {
 
         // Write the app wrapper into the still-launcher-sized iframe. We do NOT expand
         // to fullscreen yet — a stalled/failed load must never cover the game.
+        // Hidden until it expands, so the wrapper's background and close button don't show in the launcher's spot.
+        styleElement(this.iframe, { visibility: "hidden" })
         this.doc.open()
         this.doc.write(getAppWrapperDocString()) // SEC2: no server-controlled CSS
         this.doc.close()
@@ -808,6 +810,7 @@ export class PlayinGameCenterManager {
                     left: "0",
                     borderRadius: "0",
                     overflow: "visible",
+                    visibility: "",
                 })
 
                 // Add close button handler (outside React, always works)
