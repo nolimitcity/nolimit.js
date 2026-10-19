@@ -31,6 +31,7 @@ export class PlayinGameCenterManager {
         this._notSeen = 0
         this._acknowledgedBoxId = null // set when the app is opened
         this._isGameActive = true
+        this._isGameScreenOpen = false // the game's own pages (menu, bet level, promo panel)
         this._context = null
         this._destroyed = false
 
@@ -487,6 +488,12 @@ export class PlayinGameCenterManager {
             }
             return
         }
+        if (event === "external" && data?.name === "screen") {
+            this._isGameScreenOpen = data.data === "open"
+            if (!this.isAppVisible) {
+                this._setIframeVisible(!this._isGameScreenOpen)
+            }
+        }
         this._gameState.forwardEvent(event, data)
         if (event === "external" && data?.name === "state" && data.data === "starting") {
             this.traceLauncherBorder()
@@ -671,6 +678,8 @@ export class PlayinGameCenterManager {
             overflow: "hidden",
         })
 
+        this._setIframeVisible(!this._isGameScreenOpen)
+
         // Restore notification state when returning from the overlay.
         this.setNotification(this.hasNotification)
 
@@ -809,6 +818,7 @@ export class PlayinGameCenterManager {
                     borderRadius: "0",
                     overflow: "visible",
                 })
+                this._setIframeVisible(true)
 
                 // Add close button handler (outside React, always works)
                 const closeButton = this.doc.getElementById(
