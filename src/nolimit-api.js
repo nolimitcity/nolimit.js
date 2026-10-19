@@ -22,7 +22,7 @@ export function nolimitApiFactory(target, onload) {
         })
         contentWindow.trigger = trigger
         contentWindow.on = on
-        onload()
+        onload(sendMessage)
     }
 
     if (target.nodeName === "IFRAME") {
@@ -81,8 +81,12 @@ export function nolimitApiFactory(target, onload) {
             unhandledEvents[event].push(data)
         }
 
-        const playinGameCenter = getPlayinGameCenterInstance()
-        playinGameCenter?.forwardEvent(event, data)
+        // PlayinGameCenter must never break the game; warn and carry on.
+        try {
+            getPlayinGameCenterInstance()?.forwardEvent(event, data)
+        } catch (error) {
+            console.warn("[PlayinGameCenter] forwardEvent failed:", error)
+        }
     }
 
     function on(event, callback) {
